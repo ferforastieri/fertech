@@ -2,13 +2,13 @@
 import Intro from "./app/intro.mdx";
 
 const siteData: any = {
-  author: "Arthur", // author name
-  title: "ArthDev", // website title
+  author: "Fernando", // author name
+  title: "FerTech", // website title
   description:
-    "Um blog minimalista para artigos e meu desenvolvimento pessoal como desenvolvedor", // website description
+    "Um blog minimalista para artigos e meu desenvolvimento pessoal", // website description
   theme: "light", // light | dark
   language: "pt-BR", // zh-CN | en
-  githubRepo: "https://github.com/arthcc/arth.dev", // your blog's github repo
+  githubRepo: "https://github.com/ferforastieri", // your blog's github repo
 
   // how to change the favicon of the website?
   // change the app/favicon.ico file directly，or refer to the document below
@@ -17,7 +17,7 @@ const siteData: any = {
   //header config
   header: {
     logo: "/logo.png", //  /public/logo.png
-    title: "ArthDev", // header title
+    title: "FerTech", // header title
 
     // navigation bar
     routes: [
@@ -33,23 +33,23 @@ const siteData: any = {
       {
         name: "Currículo",
         value:
-          "https://drive.google.com/file/d/1InT7WK2GuoojV6PvS_ZAu1roJg83Z0YX/view?usp=sharing",
+          "https://docs.google.com/document/d/1j93PsbvFdZ_y7pDpZ2mHGRevOjN-QTE1/edit?usp=sharing&ouid=104278206443109010114&rtpof=true&sd=true",
       },
     ],
   },
 
   home: {
-    title: "Bem vindo ao ArthDev",
+    title: "Bem vindo ao FerTech",
 
     // introduction or about me
     intro: Intro, // file path of the introduction
     socials: {
-      email: "arthurdaconceicaocunha@gmail.com",
-      github: "https://github.com/arthcc",
-      linkedin: "https://linkedin.com/in/arthcc",
+      email: "fernandoforastieri2@gmail.com",
+      github: "https://github.com/ferforastieri",
+      linkedin: "www.linkedin.com/in/fernando-forastieri",
       facebook: "",
       instagram: "",
-      youtube: "",
+      youtube: "https://www.youtube.com/channel/UCD3Zn5P8s8ojIi3U5-oOBSQ",
     },
   },
 
@@ -74,7 +74,7 @@ const siteData: any = {
             description:
               "Projeto OpenSource que criei com o objetivo de ajudar desenvolvedores a melhorarem seu inglês técnico por meio de um jogo estilo Wordle",
             link: "https://techears.vercel.app",
-            github: "https://github.com/arthcc/tech-ears",
+            github: "",
             status: "active",
           },
           {
@@ -82,7 +82,7 @@ const siteData: any = {
             description:
               "Projeto OpenSource que participo com o objetivo de agregar e organizar conteúdos gratuitos em português para pessoas que querem ingressar na área de Tecnologia.",
             link: "https://trilha.info/",
-            github: "https://github.com/flaviojmendes/trilhainfo",
+            github: "",
             status: "active",
           },
       {
@@ -90,7 +90,7 @@ const siteData: any = {
         description:
           "UM ERP completo para a industria de odontologia, utlizando NestJs para a API  e front em NextJs",
         link: "",
-        github: "https://github.com/DentalDash/dental-dash",
+        github: "",
         status: "dev",
       },
       {
