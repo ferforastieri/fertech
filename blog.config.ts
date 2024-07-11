@@ -73,7 +73,7 @@ const siteData: any = {
             name: "Tech Ears",
             description:
               "Projeto OpenSource que criei com o objetivo de ajudar desenvolvedores a melhorarem seu inglês técnico por meio de um jogo estilo Wordle",
-            link: "https://techears.vercel.app",
+            link: "",
             github: "",
             status: "active",
           },
