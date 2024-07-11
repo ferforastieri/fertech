@@ -1,8 +1,6 @@
-# ArthDev 
+## FerTech
 
-Um lugar onde posso mostrar meu conhecimento e poder compartilhar o mesmo. A ideia é sempre poder escrever aqui sobre o que estou aprendendo e sobre os projetos que tenho desenvolvido/participado para assim atingir um maior público e também mostrar o meu conhecimento para o mundo, sinta-se livre para comentários e para trocar ideia comigo.
-
-Pode colar no [linkedin](https://www.linkedin.com/in/arthcc/) que estou sempre lá comentando sobre as postagens e aberto a conhecimento.
+Bem-vindo ao meu portfolio de projetos profissionais desenvolvidos em TypeScript. Aqui você encontrará uma visão geral dos projetos em que trabalhei e suas respectivas informações.
 
 ###  Stacks utilizadas
 
@@ -12,6 +10,12 @@ Pode colar no [linkedin](https://www.linkedin.com/in/arthcc/) que estou sempre l
 - [Shadcn-ui](https://ui.shadcn.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
 
-# O modelo do Blog foi baseado em:
+## Visão Geral
 
- - [NextBlog](https://next-blog.imyuanli.cn)
+Este site foi criado para destacar os projetos que desenvolvi ao longo da minha carreira profissional utilizando TypeScript. Cada projeto representa uma oportunidade de demonstrar minhas habilidades e experiência em desenvolvimento de software, aplicativos web, APIs, entre outros.
+
+## Como Contribuir
+Contribuições não são esperadas diretamente neste repositório, pois ele serve principalmente como um showcase de projetos profissionais. No entanto, sinta-se à vontade para explorar os projetos e entrar em contato se tiver alguma dúvida ou interesse em colaboração.
+
+## Licença
+Este projeto é licenciado sob a Licença MIT. Veja o arquivo LICENSE para mais detalhes.
