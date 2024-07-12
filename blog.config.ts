@@ -35,10 +35,6 @@ const siteData: any = {
         value:
           "https://docs.google.com/document/d/1j93PsbvFdZ_y7pDpZ2mHGRevOjN-QTE1/edit?usp=sharing&ouid=104278206443109010114&rtpof=true&sd=true",
       },
-      {
-        name: "",
-        value: "/esports",
-      },
     ],
   },
 
@@ -65,7 +61,7 @@ const siteData: any = {
     title: "O que eu tenho feito e contribuido:",
     description:
       "Um resumo de todos os projetos e de participacoes ativas na comunidade Tech ao longo dos anos",
-      
+
     // name, description, link are required
     // github: the address of the project's github repo
     // status: active | inactive
@@ -92,7 +88,7 @@ const siteData: any = {
             name: "E-Sports",
             description:
               "Minha Carreira Completa nos E-sports:",
-            link: "konect.gg/vicio",
+            link: "https://konect.gg/vicio",
             github: "",
             status: "active",
           },
