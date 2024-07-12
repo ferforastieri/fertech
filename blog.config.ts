@@ -36,7 +36,7 @@ const siteData: any = {
           "https://docs.google.com/document/d/1j93PsbvFdZ_y7pDpZ2mHGRevOjN-QTE1/edit?usp=sharing&ouid=104278206443109010114&rtpof=true&sd=true",
       },
       {
-        name: "esports",
+        name: "",
         value: "/esports",
       },
     ],
@@ -60,6 +60,11 @@ const siteData: any = {
   blog: {
     title: "Portifólio",
     description: "Toda a minha vida tech, documentada",
+  },
+
+  esports: {
+    title: "Esports",
+    description: "Minha carreira nos E-sports",
   },
 
   project: {
