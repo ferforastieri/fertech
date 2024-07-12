@@ -98,7 +98,7 @@ const siteData: any = {
         github: "",
         status: "dev",
       }
-    ]
+    ],
     // status color and text
     getStatus: (status: string) => {
       switch (status) {
