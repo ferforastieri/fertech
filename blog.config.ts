@@ -103,49 +103,12 @@ const siteData: any = {
         status: "dev",
       }
     ],
+
     esports: {
-      title: "O que eu tenho feito e contribuido:",
-      description:
-        "Um resumo de todos os projetos e de participacoes ativas na comunidade Tech ao longo dos anos",
-  
-      // name, description, link are required
-      // github: the address of the project's github repo
-      // status: active | inactive
-      // and so on
-      // you can add more fields according to your needs ,but you need to modify the code in the projects/page.tsx file
-      projects: [
-          {
-              name: "Tech Ears",
-              description:
-                "Projeto OpenSource que criei com o objetivo de ajudar desenvolvedores a melhorarem seu inglês técnico por meio de um jogo estilo Wordle",
-              link: "",
-              github: "",
-              status: "active",
-            },
-            {
-              name: "TrilhaInfo",
-              description:
-                "Projeto OpenSource que participo com o objetivo de agregar e organizar conteúdos gratuitos em português para pessoas que querem ingressar na área de Tecnologia.",
-              link: "https://trilha.info/",
-              github: "",
-              status: "active",
-            },
-        {
-          name: "DentalDash",
-          description:
-            "UM ERP completo para a industria de odontologia, utlizando NestJs para a API  e front em NextJs",
-          link: "",
-          github: "",
-          status: "dev",
-        },
-        {
-          name: "WooviChallenge",
-          description: "Resolucao dos desafios propostos pela fintech Woovi",
-          link: "https://woovi.com",
-          github: "",
-          status: "dev",
-        }
-      ],
+      title: "Portifólio",
+      description: "Toda a minha vida tech, documentada",
+    },
+    
     // status color and text
     getStatus: (status: string) => {
       switch (status) {
