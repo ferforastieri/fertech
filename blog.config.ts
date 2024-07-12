@@ -35,6 +35,10 @@ const siteData: any = {
         value:
           "https://docs.google.com/document/d/1j93PsbvFdZ_y7pDpZ2mHGRevOjN-QTE1/edit?usp=sharing&ouid=104278206443109010114&rtpof=true&sd=true",
       },
+      {
+        name: "esports",
+        value: "/esports",
+      },
     ],
   },
 
@@ -99,9 +103,7 @@ const siteData: any = {
         link: "https://woovi.com",
         github: "",
         status: "dev",
-      },
-    
-     
+      }
     ],
     // status color and text
     getStatus: (status: string) => {
