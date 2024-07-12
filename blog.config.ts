@@ -60,24 +60,6 @@ const siteData: any = {
     title: "Portifólio",
     description: "Toda a minha vida tech, documentada",
   },
-  esports: {
-    title: "Portifólio",
-    description: "Toda a minha vida tech, documentada",
-  },
-  project: {
-    title: "O que eu tenho feito e contribuido:",
-    description:
-      "Um resumo de todos os projetos e de participacoes ativas na comunidade Tech ao longo dos anos",
-      projects: [
-        {
-            name: "Tech Ears",
-            description:
-              "Projeto OpenSource que criei com o objetivo de ajudar desenvolvedores a melhorarem seu inglês técnico por meio de um jogo estilo Wordle",
-            link: "",
-            github: "",
-            status: "active",
-          },
-      ]
     // name, description, link are required
     // github: the address of the project's github repo
     // status: active | inactive
@@ -97,6 +79,14 @@ const siteData: any = {
             description:
               "Projeto OpenSource que participo com o objetivo de agregar e organizar conteúdos gratuitos em português para pessoas que querem ingressar na área de Tecnologia.",
             link: "https://trilha.info/",
+            github: "",
+            status: "active",
+          },
+          {
+            name: "E-Sports",
+            description:
+              "Minha Carreira Completa nos E-sports:",
+            link: "konect.gg/vicio",
             github: "",
             status: "active",
           },
