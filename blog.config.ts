@@ -35,10 +35,6 @@ const siteData: any = {
         value:
           "https://docs.google.com/document/d/1j93PsbvFdZ_y7pDpZ2mHGRevOjN-QTE1/edit?usp=sharing&ouid=104278206443109010114&rtpof=true&sd=true",
       },
-      {
-        name: "E-sports",
-        value: "/esports",
-      },
     ],
   },
 
