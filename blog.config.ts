@@ -60,6 +60,12 @@ const siteData: any = {
     title: "Portifólio",
     description: "Toda a minha vida tech, documentada",
   },
+
+  project: {
+    title: "O que eu tenho feito e contribuido:",
+    description:
+      "Um resumo de todos os projetos e de participacoes ativas na comunidade Tech ao longo dos anos",
+      
     // name, description, link are required
     // github: the address of the project's github repo
     // status: active | inactive
