@@ -25,6 +25,19 @@ const Header = () => {
     const {theme, setTheme} = useTheme()
     const [open, setOpen] = useState(false)
 
+    const handleCurriculumClick = () => {
+        // Download do PDF local
+        const link = document.createElement('a');
+        link.href = '/CVFernandoForasteri.pdf';
+        link.download = 'Fernando_Forastieri_Curriculo.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Redirecionar para a página do currículo
+        window.location.href = '/curriculum';
+    }
+
     return (
         <header className={'container flex justify-between py-4'}>
             <div className={'flex justify-center items-center'}>
@@ -41,11 +54,22 @@ const Header = () => {
                 </Link>
                 <div className={'hidden md:block space-x-1'}>
                     {routes.map((route: any) => (
-                        <Link href={route?.value}>
-                            <Button variant={active == route.name ? 'secondary' : 'ghost'} className={'text-base'}>
+                        route.name === 'Currículo' ? (
+                            <Button 
+                                key={route.name}
+                                variant={active == route.name ? 'secondary' : 'ghost'} 
+                                className={'text-base'}
+                                onClick={handleCurriculumClick}
+                            >
                                 {route.name}
                             </Button>
-                        </Link>
+                        ) : (
+                            <Link key={route.name} href={route?.value}>
+                                <Button variant={active == route.name ? 'secondary' : 'ghost'} className={'text-base'}>
+                                    {route.name}
+                                </Button>
+                            </Link>
+                        )
                     ))}
                 </div>
             </div>
@@ -61,14 +85,27 @@ const Header = () => {
                         </SheetTrigger>
                         <SheetContent side={'top'} className={'w-full space-y-4 p-12 text-sm'}>
                             {routes.map((route: any, index: number) => (
-                                <div className={'space-y-4'}>
-                                    <Link href={route.value} onClick={() => {
-                                        setOpen(false)
-                                    }}>
-                                        <Button variant={active ? 'secondary' : 'ghost'} className={'text-base w-full'}>
+                                <div key={route.name} className={'space-y-4'}>
+                                    {route.name === 'Currículo' ? (
+                                        <Button 
+                                            variant={active == route.name ? 'secondary' : 'ghost'} 
+                                            className={'text-base w-full'}
+                                            onClick={() => {
+                                                handleCurriculumClick();
+                                                setOpen(false);
+                                            }}
+                                        >
                                             {route.name}
                                         </Button>
-                                    </Link>
+                                    ) : (
+                                        <Link href={route.value} onClick={() => {
+                                            setOpen(false)
+                                        }}>
+                                            <Button variant={active == route.name ? 'secondary' : 'ghost'} className={'text-base w-full'}>
+                                                {route.name}
+                                            </Button>
+                                        </Link>
+                                    )}
                                     {index != routes.length - 1 && <Separator/>}
                                 </div>
                             ))}

@@ -32,8 +32,7 @@ const siteData: any = {
 
       {
         name: "Currículo",
-        value:
-          "https://docs.google.com/document/d/1icyfcA5QMQezj8MPs7owUHYibq_xhy6O/edit?usp=sharing&ouid=104278206443109010114&rtpof=true&sd=true",
+        value: "/curriculum",
       },
     ],
   },
@@ -69,18 +68,34 @@ const siteData: any = {
     // you can add more fields according to your needs ,but you need to modify the code in the projects/page.tsx file
     projects: [
         {
-            name: "Tech Ears",
+            name: "Vendedor Gold - Império Cerveja",
             description:
-              "Projeto OpenSource que criei com o objetivo de ajudar desenvolvedores a melhorarem seu inglês técnico por meio de um jogo estilo Wordle",
-            link: "",
+              "Sistema completo de gestão para vendedores da Império Cerveja. Desenvolvido em React Native com TypeScript, backend robusto em NestJS e interface web em React. Inclui controle de vendas, gestão de clientes, relatórios em tempo real e integração com sistemas ERP.",
+            link: "https://clubepropintor.com.br",
             github: "",
             status: "active",
           },
           {
-            name: "TrilhaInfo",
+            name: "Parceiro Gold - Império Cerveja",
             description:
-              "Projeto OpenSource que participo com o objetivo de agregar e organizar conteúdos gratuitos em português para pessoas que querem ingressar na área de Tecnologia.",
-            link: "https://trilha.info/",
+              "Plataforma mobile para distribuidores da Império Cerveja, disponível na Play Store. Desenvolvido com React Native, TypeScript e NestJS. Sistema de gestão de distribuição, controle de estoque, rastreamento de entregas e dashboard analítico para parceiros.",
+            link: "https://parceirogold.com.br",
+            github: "",
+            status: "active",
+          },
+          {
+            name: "GabrielPro - Arquitetura",
+            description:
+              "Site institucional e portfólio para empresa de arquitetura. Desenvolvido em Next.js com TypeScript, implementando Clean Architecture e Use Cases. Design responsivo, otimizado para SEO, galeria de projetos e sistema de contato integrado.",
+            link: "https://gabrielpro.com.br",
+            github: "",
+            status: "active",
+          },
+          {
+            name: "Ecossistema Sherwin Williams",
+            description:
+              "Sistema completo de gestão de cores e produtos para Sherwin Williams. Aplicativo mobile em Ionic, backend em JavaScript e versão web responsiva. Inclui catálogo de cores, calculadora de tintas, gestão de pedidos e integração com estoque.",
+            link: "",
             github: "",
             status: "active",
           },
@@ -92,21 +107,6 @@ const siteData: any = {
             github: "",
             status: "active",
           },
-      {
-        name: "DentalDash",
-        description:
-          "UM ERP completo para a industria de odontologia, utlizando NestJs para a API  e front em NextJs",
-        link: "",
-        github: "",
-        status: "dev",
-      },
-      {
-        name: "WooviChallenge",
-        description: "Resolucao dos desafios propostos pela fintech Woovi",
-        link: "https://woovi.com",
-        github: "",
-        status: "dev",
-      }
     ],
     // status color and text
     getStatus: (status: string) => {
