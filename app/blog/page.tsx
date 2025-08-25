@@ -5,12 +5,12 @@ import Time from "@/app/blog/components/time";
 import {Badge} from "@/components/ui/badge";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
-import {ArrowRight} from "lucide-react";
+import {ArrowRight, ChevronDown, ChevronRight, Briefcase, Heart} from "lucide-react";
+import {Separator} from "@/components/ui/separator";
 import path from "path";
 import fs from "fs";
 import matter from "gray-matter";
 import readingTime from "reading-time";
-import {Separator} from "@/components/ui/separator";
 
 const getPostsData = () => {
     const postsDirectory = path.join(process.cwd(), 'posts')
@@ -29,6 +29,8 @@ const getPostsData = () => {
     })
 }
 
+import BlogClient from "./blog-client";
+
 const Blog = () => {
     const {blog: {title, description}} = siteData;
     const posts = getPostsData().filter((post: any) => !post.draft)
@@ -36,46 +38,7 @@ const Blog = () => {
     return (
         <>
             <Title title={title} description={description}/>
-            <div className={'space-y-4'}>
-                {posts.map((post: any, index: number) => (
-                    !post?.draft &&
-                      <div>
-                        <Card className={'col-span-1 border-none shadow-none'} key={index}>
-                          <CardHeader className={'pl-0'}>
-                            <div className={'flex items-center space-x-4'}>
-                              <Time date={post.date}/>
-                              <div className={'hidden md:block ml-4 space-x-1'}>
-                                  {post.tags.map((tag: string, index: number) => (
-                                      <Badge key={index} variant={'secondary'}>
-                                          {tag}
-                                      </Badge>
-                                  ))}
-                              </div>
-                            </div>
-                            <CardTitle>{post.title}</CardTitle>
-                            <CardDescription className={'block md:hidden space-x-1'}>
-                                {post.tags.map((tag: string, index: number) => (
-                                    <Badge key={index} variant={'secondary'}>
-                                        {tag}
-                                    </Badge>
-                                ))}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className={'pl-0'}>
-                              {post.summary}
-                          </CardContent>
-                          <CardFooter className={'flex justify-start pl-0'}>
-                            <Link href={`/blog/${post.id}`}>
-                              <Button>
-                                Leia mais <ArrowRight size={16} className={'ml-2'}/>
-                              </Button>
-                            </Link>
-                          </CardFooter>
-                        </Card>
-                          {index !== posts.length - 1 && <Separator/>}
-                      </div>
-                ))}
-            </div>
+            <BlogClient posts={posts} />
         </>
     )
 }
