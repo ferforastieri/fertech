@@ -3,7 +3,8 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {Button} from "@/components/ui/button";
-import {Moon, Sun, Home, BookOpen, FolderKanban, FileText, Github, Linkedin, Twitter, Mail} from "lucide-react";
+import {Moon, Sun, Home, BookOpen, FolderKanban, FileText, Github, Linkedin, Mail} from "lucide-react";
+import {XIcon} from "@/components/icons/x-icon";
 import {useTheme} from "next-themes";
 import {useState, useEffect} from "react";
 import {cn} from "@/lib/utils";
@@ -43,9 +44,9 @@ const socialLinks = [
         icon: Linkedin,
     },
     {
-        name: "Twitter",
-        url: "https://twitter.com",
-        icon: Twitter,
+        name: "X",
+        url: "https://x.com/viciofer",
+        icon: XIcon,
     },
     {
         name: "Email",

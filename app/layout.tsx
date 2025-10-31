@@ -3,6 +3,8 @@ import {Inter} from "next/font/google";
 import "./globals.css";
 import FloatingNav from "@/components/floating-nav";
 import {ProviderTheme} from "@/provider/provider-theme";
+import {ScrollToTop} from "@/components/scroll-to-top";
+import {ThemeTransitionIndicator} from "@/components/theme-transition-indicator";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -20,8 +22,10 @@ export default function RootLayout({
         <html lang="pt-BR" suppressHydrationWarning>
         <body className={'min-h-screen font-sans pb-20'}>
         <ProviderTheme attribute="class" defaultTheme="system" enableSystem>
+            <ScrollToTop />
+            <ThemeTransitionIndicator />
             <main className={'container my-12'}>
-                <div className={'prose md:prose-lg min-w-full w-full dark:prose-invert max-w-none'}>
+                <div className={'prose prose-headings:!text-lg md:prose-lg prose-headings:md:!text-xl min-w-full w-full dark:prose-invert max-w-none'}>
                     {children}
                 </div>
             </main>
@@ -31,4 +35,3 @@ export default function RootLayout({
         </html>
     );
 }
-

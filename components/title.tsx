@@ -1,5 +1,3 @@
-import {Separator} from "@/components/ui/separator";
-
 interface TitleProps {
     title: string;
     description?: string;
@@ -7,11 +5,9 @@ interface TitleProps {
 
 export default function Title({title, description}: TitleProps) {
     return (
-        <div className={'pb-6'}>
-            <h1>{title}</h1>
-            {description && <p className={'text-zinc-600 dark:text-zinc-400'}>{description}</p>}
-            <Separator className="mt-4"/>
+        <div className={'pb-3'}>
+            <h1 className="text-lg font-bold leading-tight">{title}</h1>
+            {description && <p className={'text-zinc-600 dark:text-zinc-400 mt-2'}>{description}</p>}
         </div>
     );
 }
-
