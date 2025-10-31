@@ -1,12 +1,9 @@
-import Title from "@/components/title";
+import {BlogArticlesSection} from "@/components/sections/blog-articles-section";
 
 export default function Blog() {
     return (
         <>
-            <Title title="Artigos e Opinões" description="Publicações em meu blog pessoal"/>
-            <p className="text-muted-foreground">
-                Em breve, artigos e publicações serão adicionados aqui.
-            </p>
+            <BlogArticlesSection />
         </>
     );
 }

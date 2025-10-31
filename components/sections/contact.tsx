@@ -35,7 +35,7 @@ export function Contact() {
                     <Link href="https://x.com/viciofer" target="_blank" rel="noopener noreferrer">
                         <Button className="transition-all duration-300 ease-out hover:scale-105">
                             <XIcon className="mr-2 h-4 w-4"/>
-                            X
+                            Twitter
                         </Button>
                     </Link>
                 </div>

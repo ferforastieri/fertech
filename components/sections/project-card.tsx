@@ -37,21 +37,19 @@ export function ProjectCard({title, description, url, logo}: ProjectCardProps) {
                     transform: `translateX(${translateX}px) scale(${scale})`,
                 }}
             >
-                <CardHeader className="pb-2 pt-4">
-                    <div className="flex items-center gap-3">
-                        {logo && (
-                            <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                <Image 
-                                    src={logo} 
-                                    alt={title}
-                                    width={40}
-                                    height={40}
-                                    className="object-contain p-1"
-                                />
-                            </div>
-                        )}
-                        <CardTitle className="text-base line-clamp-2 flex-1">{title}</CardTitle>
-                    </div>
+                <CardHeader className="pb-2 pt-4 !space-y-0 !flex-row items-start gap-3">
+                    {logo && (
+                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            <Image 
+                                src={logo} 
+                                alt={title}
+                                width={40}
+                                height={40}
+                                className="object-contain p-1"
+                            />
+                        </div>
+                    )}
+                    <CardTitle className="text-base line-clamp-2 flex-1">{title}</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 pb-4">
                     <CardDescription className="text-sm leading-relaxed">
