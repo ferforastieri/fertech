@@ -196,5 +196,21 @@
   .animate-lightbulb-off {
     animation: lightbulb-off 0.6s ease-in-out;
   }
+  
+  @keyframes bubble-float {
+    0% {
+      transform: translateY(0) scale(1) translateX(0);
+    }
+    50% {
+      transform: translateY(-20px) scale(1.15) translateX(var(--bubble-x, 0));
+    }
+    100% {
+      transform: translateY(0) scale(1) translateX(0);
+    }
+  }
+  
+  .animate-bubble {
+    animation: bubble-float 0.7s ease-in-out;
+  }
 }
 
