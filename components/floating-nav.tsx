@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {Button} from "@/components/ui/button";
-import {Moon, Sun, Home, BookOpen, Github, Linkedin, Twitter, Mail} from "lucide-react";
+import {Moon, Sun, Home, BookOpen, FolderKanban, FileText, Github, Linkedin, Twitter, Mail} from "lucide-react";
 import {useTheme} from "next-themes";
 import {useState, useEffect} from "react";
 import {cn} from "@/lib/utils";
@@ -18,6 +18,16 @@ const routes = [
         name: "Artigos",
         value: "/blog",
         icon: BookOpen,
+    },
+    {
+        name: "Projetos",
+        value: "/projects",
+        icon: FolderKanban,
+    },
+    {
+        name: "Currículo",
+        value: "/resume",
+        icon: FileText,
     },
 ];
 
@@ -58,11 +68,12 @@ export default function FloatingNav() {
     const active = pathname === '/' ? '/' : '/' + pathname.split('/')[1];
 
     return (
-        <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+        <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-auto max-w-[calc(100vw-2rem)] sm:max-w-none">
             <div 
                 className={cn(
-                    "flex items-center bg-background/80 backdrop-blur-md border border-border rounded-full shadow-lg px-3 py-2 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
-                    isBarHovered ? "gap-3" : "gap-2"
+                    "flex items-center bg-background/80 backdrop-blur-md border border-border rounded-full shadow-lg transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+                    "px-2 sm:px-3 py-2 gap-1 sm:gap-2",
+                    isBarHovered && "sm:gap-3"
                 )}
                 onMouseEnter={() => setIsBarHovered(true)}
                 onMouseLeave={() => {
@@ -95,7 +106,7 @@ export default function FloatingNav() {
                                 variant={isActive ? "secondary" : "ghost"}
                                 size="icon"
                                 className={cn(
-                                    "rounded-full transition-all duration-300 ease-out hover:bg-primary/10",
+                                    "rounded-full transition-all duration-300 ease-out hover:bg-primary/10 h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0",
                                     isActive && "bg-primary text-primary-foreground"
                                 )}
                                 style={{
@@ -103,12 +114,12 @@ export default function FloatingNav() {
                                 }}
                                 title={route.name}
                             >
-                                <Icon className="h-5 w-5" />
+                                <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                             </Button>
                         </Link>
                     );
                 })}
-                <div className="h-6 w-px bg-border mx-1" />
+                <div className="h-4 sm:h-6 w-px bg-border mx-0.5 sm:mx-1 flex-shrink-0" />
                 {socialLinks.map((social) => {
                     const SocialIcon = social.icon;
                     const iconKey = `social-${social.name}`;
@@ -129,23 +140,23 @@ export default function FloatingNav() {
                             <Button
                                 size="icon"
                                 variant="ghost"
-                                className="rounded-full transition-all duration-300 ease-out hover:bg-primary/10"
+                                className="rounded-full transition-all duration-300 ease-out hover:bg-primary/10 h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
                                 style={{
                                     transform: `translateX(${translateX}px) scale(${scale})`,
                                 }}
                                 title={social.name}
                             >
-                                <SocialIcon className="h-5 w-5" />
+                                <SocialIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                             </Button>
                         </Link>
                     );
                 })}
-                <div className="h-6 w-px bg-border mx-1" />
+                <div className="h-4 sm:h-6 w-px bg-border mx-0.5 sm:mx-1 flex-shrink-0" />
                 {mounted && (
                     <Button
                         size="icon"
                         variant="ghost"
-                        className="rounded-full transition-all duration-300 ease-out hover:bg-primary/10"
+                        className="rounded-full transition-all duration-300 ease-out hover:bg-primary/10 h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
                         style={{
                             transform: hoveredIcon === 'theme' 
                                 ? 'translateX(6px) scale(1.15)' 
@@ -161,9 +172,9 @@ export default function FloatingNav() {
                         title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
                     >
                         {theme === 'light' ? (
-                            <Moon className="h-5 w-5" />
+                            <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
                         ) : (
-                            <Sun className="h-5 w-5" />
+                            <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
                         )}
                     </Button>
                 )}

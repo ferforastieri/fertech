@@ -1,3 +1,5 @@
+'use client';
+
 import Title from "@/components/title";
 import {Separator} from "@/components/ui/separator";
 import {Button} from "@/components/ui/button";
@@ -13,11 +15,15 @@ export function BlogSection() {
                     Você pode encontrar alguns exemplos abaixo.
                 </p>
                 <Link href="/blog">
-                    <Button variant="outline">Ver todos os artigos</Button>
+                    <Button 
+                        variant="outline" 
+                        className="transition-all duration-300 ease-out hover:scale-105"
+                    >
+                        Ver todos os artigos
+                    </Button>
                 </Link>
             </div>
             <Separator className="my-12"/>
         </section>
     );
 }
-
