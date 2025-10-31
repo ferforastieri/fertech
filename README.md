@@ -1,21 +1,52 @@
-## FerTech
+# Portfolio - Fernando Forastieri Neto
 
-Bem-vindo ao meu portfolio de projetos profissionais desenvolvidos em TypeScript. Aqui você encontrará uma visão geral dos projetos em que trabalhei e suas respectivas informações.
+Portfolio profissional desenvolvido com Next.js 14, React, TypeScript e Tailwind CSS.
 
-###  Stacks utilizadas
+## Stack Tecnológica
 
-- [Next.js](https://nextjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [MDX](https://mdxjs.com/)
-- [Shadcn-ui](https://ui.shadcn.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
+- **Next.js 14** - Framework React
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Estilização
+- **shadcn/ui** - Componentes UI
+- **Radix UI** - Componentes acessíveis
 
-## Visão Geral
+## Estrutura do Projeto
 
-Este site foi criado para destacar os projetos que desenvolvi ao longo da minha carreira profissional utilizando TypeScript. Cada projeto representa uma oportunidade de demonstrar minhas habilidades e experiência em desenvolvimento de software, aplicativos web, APIs, entre outros.
+```
+/app
+  /blog          - Página de blog
+  layout.tsx     - Layout principal
+  page.tsx       - Página inicial
+  globals.css    - Estilos globais
 
-## Como Contribuir
-Contribuições não são esperadas diretamente neste repositório, pois ele serve principalmente como um showcase de projetos profissionais. No entanto, sinta-se à vontade para explorar os projetos e entrar em contato se tiver alguma dúvida ou interesse em colaboração.
+/components
+  /sections      - Componentes de seções (Hero, About, Experience, etc)
+  /ui            - Componentes UI reutilizáveis
+  header.tsx     - Cabeçalho do site
+  title.tsx     - Componente de título
 
-## Licença
-Este projeto é licenciado sob a Licença MIT. Veja o arquivo LICENSE para mais detalhes.
+/provider
+  provider-theme.tsx - Provider de tema (dark/light mode)
+```
+
+## Como executar
+
+1. Instale as dependências:
+```bash
+npm install
+```
+
+2. Execute o servidor de desenvolvimento:
+```bash
+npm run dev
+```
+
+3. Abra [http://localhost:3000](http://localhost:3000) no navegador
+
+## Build para produção
+
+```bash
+npm run build
+npm start
+```
+

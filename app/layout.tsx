@@ -1,16 +1,14 @@
 import type {Metadata} from "next";
 import {Inter} from "next/font/google";
 import "./globals.css";
-import {Separator} from "@/components/ui/separator";
-import Header from "@/components/header";
-import siteData from "@/blog.config";
-import ProviderTheme from "@/provider/provider-theme";
+import FloatingNav from "@/components/floating-nav";
+import {ProviderTheme} from "@/provider/provider-theme";
 
 const inter = Inter({subsets: ["latin"]});
 
 export const metadata: Metadata = {
-    title: siteData.title,
-    description: siteData.description,
+    title: "Fernando Forastieri Neto",
+    description: "Portfolio profissional",
 };
 
 export default function RootLayout({
@@ -19,18 +17,18 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-        <body className={'min-h-screen font-mono'}>
-        <ProviderTheme>
-            <Header/>
-            <Separator/>
+        <html lang="pt-BR" suppressHydrationWarning>
+        <body className={'min-h-screen font-sans pb-20'}>
+        <ProviderTheme attribute="class" defaultTheme="system" enableSystem>
             <main className={'container my-12'}>
-                <div className={'prose md:prose-lg min-w-full w-full dark:prose-invert'}>
+                <div className={'prose md:prose-lg min-w-full w-full dark:prose-invert max-w-none'}>
                     {children}
                 </div>
             </main>
+            <FloatingNav />
         </ProviderTheme>
         </body>
         </html>
     );
 }
+
