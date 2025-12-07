@@ -28,7 +28,7 @@ const imperioCervejaProjects = [
     description:
       'Sistema completo de gestão para vendedores. App mobile em React Native com TypeScript, interface web em React 18, backend NestJS com TypeORM e PostgreSQL. Gestão de pedidos, rotas, clientes e relatórios.',
     url: 'https://vendedorgold.com.br',
-    logo: '/sellergold-logo-DDxGLlDM.png',
+    logo: '/logos/vendedor-gold.png',
     tags: ['React Native', 'React 18', 'TypeScript', 'NestJS', 'TypeORM', 'PostgreSQL'],
   },
   {
@@ -163,11 +163,11 @@ const otherProjects = [
 
 function ProjectCard({ project }: { project: typeof currentProjects[0] }) {
   const cardContent = (
-    <Card className={`h-full transition-all duration-300 border-2 border-black dark:border-white bg-white dark:bg-black ${project.url ? 'hover:shadow-xl hover:-translate-y-2 cursor-pointer' : ''}`}>
+    <Card className={`h-full transition-all duration-300 ${project.url ? 'hover:shadow-xl hover:-translate-y-2 cursor-pointer' : ''}`}>
       <CardHeader>
         <div className="flex items-start gap-4 mb-4">
           {project.logo && (
-            <div className="w-16 h-16 rounded-lg bg-white dark:bg-black border-2 border-black dark:border-white flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <div className="w-16 h-16 rounded-lg bg-card border border-border flex items-center justify-center flex-shrink-0 overflow-hidden">
               <img
                 src={project.logo}
                 alt={project.title}
@@ -177,23 +177,23 @@ function ProjectCard({ project }: { project: typeof currentProjects[0] }) {
           )}
           <div className="flex-1">
             <div className="flex items-start justify-between gap-2">
-              <CardTitle className={`text-2xl transition-colors text-black dark:text-white ${project.url ? 'group-hover:underline' : ''}`}>
+              <CardTitle className={`text-2xl transition-colors text-foreground ${project.url ? 'group-hover:underline' : ''}`}>
                 {project.title}
               </CardTitle>
               {project.url && (
-                <ArrowTopRightOnSquareIcon className="h-5 w-5 text-black dark:text-white group-hover:scale-110 transition-transform flex-shrink-0 mt-1" />
+                <ArrowTopRightOnSquareIcon className="h-5 w-5 text-foreground group-hover:scale-110 transition-transform flex-shrink-0 mt-1" />
               )}
             </div>
           </div>
         </div>
-        <CardDescription className="text-base leading-relaxed text-black dark:text-white">
+        <CardDescription className="text-base leading-relaxed text-foreground">
           {project.description}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => (
-            <Badge key={tag} variant="outline" className="border border-black dark:border-white text-black dark:text-white bg-white dark:bg-black">
+            <Badge key={tag} variant="outline">
               {tag}
             </Badge>
           ))}
@@ -221,7 +221,7 @@ function ProjectCard({ project }: { project: typeof currentProjects[0] }) {
 function ProjectSection({ title, projects }: { title: string; projects: typeof currentProjects }) {
   return (
     <div className="mb-16">
-      <h2 className="text-3xl font-bold mb-8 text-black dark:text-white">{title}</h2>
+      <h2 className="text-3xl font-bold mb-8 text-foreground">{title}</h2>
       <div className="grid md:grid-cols-2 gap-8">
         {projects.map((project, index) => (
           <ProjectCard key={index} project={project} />
@@ -236,8 +236,8 @@ export default function Projects() {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4 text-black dark:text-white">Meus Projetos</h1>
-          <p className="text-xl text-black dark:text-white max-w-2xl mx-auto">
+          <h1 className="text-5xl font-bold mb-4 text-foreground">Meus Projetos</h1>
+          <p className="text-xl text-foreground max-w-2xl mx-auto">
             Uma seleção dos projetos em que trabalhei e contribuí ao longo dos anos
           </p>
         </div>

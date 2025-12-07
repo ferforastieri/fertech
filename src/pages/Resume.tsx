@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Separator } from '@/components/ui/layout'
 import { Badge } from '@/components/ui/feedback'
 import { Button } from '@/components/ui/forms'
@@ -69,9 +70,37 @@ const education = [
 ]
 
 export default function Resume() {
+  const [isGenerating, setIsGenerating] = useState(false)
+
+  const handleDownloadPDF = async () => {
+    setIsGenerating(true)
+    const element = document.getElementById('resume-content')
+    if (!element) {
+      setIsGenerating(false)
+      return
+    }
+
+    try {
+      const html2pdf = (await import('html2pdf.js')).default
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'CV_Fernando_Forastieri.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      }
+
+      await html2pdf().set(opt).from(element).save()
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto space-y-12">
+      <div id="resume-content" className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
         <div className="text-center">
           <div className="flex justify-center mb-6">
@@ -81,24 +110,27 @@ export default function Resume() {
               className="w-24 h-24 object-contain"
             />
           </div>
-          <h1 className="text-5xl font-bold mb-4 text-black dark:text-white">Fernando Forastieri Neto</h1>
-          <p className="text-xl text-black dark:text-white mb-6">
+          <h1 className="text-5xl font-bold mb-4 text-foreground">Fernando Forastieri Neto</h1>
+          <p className="text-xl text-foreground mb-6">
             Desenvolvedor Fullstack focado em frontend e experiência do usuário
           </p>
-          <a href="/CVFernandoForasteri.pdf" target="_blank" rel="noopener noreferrer">
-            <Button size="lg" className="bg-black dark:bg-white text-white dark:text-black border-2 border-black dark:border-white hover:bg-white dark:hover:bg-black hover:text-black dark:hover:text-white">
-              <ArrowDownTrayIcon className="mr-2 h-5 w-5" />
-              Baixar PDF
-            </Button>
-          </a>
+          <Button 
+            size="lg" 
+            onClick={handleDownloadPDF}
+            disabled={isGenerating}
+            className="disabled:opacity-50"
+          >
+            <ArrowDownTrayIcon className="mr-2 h-5 w-5" />
+            {isGenerating ? 'Gerando PDF...' : 'Baixar PDF'}
+          </Button>
         </div>
 
-        <Separator className="bg-black dark:bg-white" />
+        <Separator />
 
         {/* About */}
         <section>
-          <h2 className="text-3xl font-bold mb-6 text-black dark:text-white">Sobre</h2>
-          <div className="space-y-4 text-black dark:text-white">
+          <h2 className="text-3xl font-bold mb-6 text-foreground">Sobre</h2>
+          <div className="space-y-4 text-foreground">
             <p>
               Tenho experiência no desenvolvimento de aplicativos há um ano, e também experiência 
               em eletrônica e manutenção a dois anos, com o objetivo de solucionar problemas cotidianos.
@@ -119,21 +151,21 @@ export default function Resume() {
           </div>
         </section>
 
-        <Separator className="bg-black dark:bg-white" />
+        <Separator />
 
         {/* Education */}
         <section>
-          <h2 className="text-3xl font-bold mb-6 flex items-center gap-2 text-black dark:text-white">
+          <h2 className="text-3xl font-bold mb-6 flex items-center gap-2 text-foreground">
             <AcademicCapIcon className="h-8 w-8" />
             Educação
           </h2>
           <div className="space-y-6">
             {education.map((edu, index) => (
-              <Card key={index} className="border-2 border-black dark:border-white bg-white dark:bg-black">
+              <Card key={index}>
                 <CardHeader>
-                  <CardTitle className="text-xl text-black dark:text-white">{edu.course}</CardTitle>
-                  <CardDescription className="text-base text-black dark:text-white">{edu.institution}</CardDescription>
-                  <div className="flex items-center gap-4 text-sm text-black dark:text-white mt-2">
+                  <CardTitle className="text-xl text-foreground">{edu.course}</CardTitle>
+                  <CardDescription className="text-base text-muted-foreground">{edu.institution}</CardDescription>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
                     <div className="flex items-center gap-1">
                       <MapPinIcon className="h-4 w-4" />
                       {edu.location}
@@ -149,29 +181,29 @@ export default function Resume() {
           </div>
         </section>
 
-        <Separator className="bg-black dark:bg-white" />
+        <Separator />
 
         {/* Experience */}
         <section>
-          <h2 className="text-3xl font-bold mb-6 flex items-center gap-2 text-black dark:text-white">
+          <h2 className="text-3xl font-bold mb-6 flex items-center gap-2 text-foreground">
             <BriefcaseIcon className="h-8 w-8" />
             Experiência Profissional
           </h2>
           <div className="space-y-6">
             {experiences.map((exp, index) => (
-              <Card key={index} className="border-2 border-black dark:border-white bg-white dark:bg-black">
+              <Card key={index}>
                 <CardHeader>
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
                     <div>
-                      <CardTitle className="text-xl text-black dark:text-white">{exp.position}</CardTitle>
-                      <CardDescription className="text-base text-black dark:text-white">{exp.company}</CardDescription>
+                      <CardTitle className="text-xl text-foreground">{exp.position}</CardTitle>
+                      <CardDescription className="text-base text-muted-foreground">{exp.company}</CardDescription>
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-black dark:text-white">
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <CalendarIcon className="h-4 w-4" />
                       {exp.period}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-black dark:text-white mb-4">
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
                     <MapPinIcon className="h-4 w-4" />
                     {exp.location}
                   </div>
@@ -179,7 +211,7 @@ export default function Resume() {
                 <CardContent>
                   <ul className="space-y-2">
                     {exp.responsibilities.map((resp, respIndex) => (
-                      <li key={respIndex} className="text-sm leading-relaxed flex items-start gap-2 text-black dark:text-white">
+                      <li key={respIndex} className="text-sm leading-relaxed flex items-start gap-2 text-foreground">
                         <span className="mt-1.5">•</span>
                         <span>{resp}</span>
                       </li>
@@ -191,33 +223,33 @@ export default function Resume() {
           </div>
         </section>
 
-        <Separator className="bg-black dark:bg-white" />
+        <Separator />
 
         {/* Skills */}
         <section>
-          <h2 className="text-3xl font-bold mb-6 text-black dark:text-white">Habilidades Técnicas</h2>
+          <h2 className="text-3xl font-bold mb-6 text-foreground">Habilidades Técnicas</h2>
           <div className="flex flex-wrap gap-2">
             {technologies.map((tech) => (
-              <Badge key={tech} variant="secondary" className="text-sm px-3 py-1 border border-black dark:border-white bg-white dark:bg-black text-black dark:text-white">
+              <Badge key={tech} variant="secondary" className="text-sm px-3 py-1">
                 {tech}
               </Badge>
             ))}
           </div>
         </section>
 
-        <Separator className="bg-black dark:bg-white" />
+        <Separator />
 
         {/* Languages */}
         <section>
-          <h2 className="text-3xl font-bold mb-6 text-black dark:text-white">Idiomas</h2>
+          <h2 className="text-3xl font-bold mb-6 text-foreground">Idiomas</h2>
           <div className="space-y-4">
             <div>
-              <p className="font-semibold text-lg text-black dark:text-white">Português</p>
-              <p className="text-sm text-black dark:text-white">Nativo</p>
+              <p className="font-semibold text-lg text-foreground">Português</p>
+              <p className="text-sm text-muted-foreground">Nativo</p>
             </div>
             <div>
-              <p className="font-semibold text-lg text-black dark:text-white">Inglês</p>
-              <p className="text-sm text-black dark:text-white">
+              <p className="font-semibold text-lg text-foreground">Inglês</p>
+              <p className="text-sm text-muted-foreground">
                 Inglês técnico - Capacidade de escrita e leitura de documentações técnicas
               </p>
             </div>
