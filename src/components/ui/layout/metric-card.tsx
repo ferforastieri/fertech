@@ -19,13 +19,13 @@ export interface MetricCardProps
 const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
   ({ className, title, value, subtitle, secondaryValue, icon: Icon, trend, variant = 'default', ...props }, ref) => {
     const variants = {
-      default: 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800',
-      success: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20',
-      warning: 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20',
-      danger: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20',
-      blue: 'border-blue-600 bg-gradient-to-br from-blue-600 to-blue-500 text-white dark:from-blue-600 dark:to-blue-500',
-      'blue-light': 'border-blue-400 bg-blue-400/60 text-white dark:border-blue-400 dark:bg-blue-400/40 dark:text-white',
-      dark: 'border-gray-800 bg-gray-900 text-white dark:border-gray-600 dark:bg-gray-700',
+      default: 'border-border bg-popover',
+      success: 'border-green-500/20 bg-green-500/10',
+      warning: 'border-yellow-500/20 bg-yellow-500/10',
+      danger: 'border-destructive/20 bg-destructive/10',
+      blue: 'border-foreground bg-foreground text-background',
+      'blue-light': 'border-border bg-accent',
+      dark: 'border-border bg-muted',
     }
 
     return (
@@ -42,13 +42,13 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
           <div className="flex-1 flex flex-col justify-start min-w-0">
             <div className="min-w-0">
               <p 
-                className={`font-medium leading-tight truncate sm:break-words text-sm ${variant === 'blue' || variant === 'dark' || variant === 'blue-light' ? 'text-white/80' : 'text-gray-600 dark:text-gray-400'}`}
+                className={`font-medium leading-tight truncate sm:break-words text-sm ${variant === 'blue' ? 'text-background/80' : 'text-muted-foreground'}`}
                 title={title}
               >
                 {title}
               </p>
               <p 
-                className={`font-bold mt-1 leading-tight truncate sm:break-all text-lg sm:text-xl ${variant === 'blue' || variant === 'dark' || variant === 'blue-light' ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}
+                className={`font-bold mt-1 leading-tight truncate sm:break-all text-lg sm:text-xl ${variant === 'blue' ? 'text-background' : 'text-foreground'}`}
                 title={value.toString()}
               >
                 {value}
@@ -56,12 +56,12 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
             </div>
             <div className="mt-1">
               {secondaryValue && (
-                <p className={`text-xs sm:text-sm leading-tight ${variant === 'blue' || variant === 'dark' || variant === 'blue-light' ? 'text-white/70' : 'text-gray-600 dark:text-gray-400'}`}>
+                <p className={`text-xs sm:text-sm leading-tight ${variant === 'blue' ? 'text-background/70' : 'text-muted-foreground'}`}>
                   {secondaryValue}
                 </p>
               )}
               {subtitle && (
-                <p className={`text-xs sm:text-sm leading-tight ${variant === 'blue' || variant === 'dark' || variant === 'blue-light' ? 'text-white/70' : 'text-gray-600 dark:text-gray-400'}`}>
+                <p className={`text-xs sm:text-sm leading-tight ${variant === 'blue' ? 'text-background/70' : 'text-muted-foreground'}`}>
                   {subtitle}
                 </p>
               )}
@@ -70,7 +70,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
           <div className="flex flex-col items-end justify-start gap-2">
             {Icon && (
               <div className="flex-shrink-0">
-                <Icon className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 ${variant === 'blue' || variant === 'dark' || variant === 'blue-light' ? 'text-white/70' : 'text-gray-600 dark:text-gray-400'}`} />
+                <Icon className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 ${variant === 'blue' ? 'text-background/70' : 'text-muted-foreground'}`} />
               </div>
             )}
           </div>

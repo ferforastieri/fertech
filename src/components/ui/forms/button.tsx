@@ -22,19 +22,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
+      'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
 
     const variants = {
       primary:
-        'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg focus-visible:ring-blue-600',
+        'bg-foreground hover:bg-foreground/90 text-background shadow-sm hover:shadow-md focus-visible:ring-foreground',
       secondary:
-        'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-100',
+        'bg-muted hover:bg-muted/80 text-foreground shadow-sm hover:shadow-md focus-visible:ring-muted',
       outline:
-        'border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-blue-600 dark:text-blue-600',
+        'border border-border text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-border',
       ghost:
-        'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100',
+        'hover:bg-accent hover:text-accent-foreground focus-visible:ring-accent',
       destructive:
-        'bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg focus-visible:ring-red-500',
+        'bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-sm hover:shadow-md focus-visible:ring-destructive',
     }
 
     const sizes = {

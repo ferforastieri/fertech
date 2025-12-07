@@ -15,11 +15,11 @@ const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(
     const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
 
     const colors = {
-      blue: 'bg-blue-500',
+      blue: 'bg-foreground',
       green: 'bg-green-500',
       purple: 'bg-purple-500',
       orange: 'bg-orange-500',
-      red: 'bg-red-500',
+      red: 'bg-destructive',
       yellow: 'bg-yellow-500',
     }
 
@@ -36,7 +36,7 @@ const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(
         {...props}
       >
         <div className={cn(
-          'w-full bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700',
+          'w-full bg-muted rounded-full overflow-hidden',
           sizes[size]
         )}>
           <div
@@ -48,7 +48,7 @@ const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(
           />
         </div>
         {showLabel && (
-          <div className="mt-1 text-xs text-gray-600 dark:text-gray-400 text-center">
+          <div className="mt-1 text-xs text-muted-foreground text-center">
             {percentage.toFixed(1)}%
           </div>
         )}

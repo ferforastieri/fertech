@@ -43,7 +43,10 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     return (
       <div className="space-y-2">
         <div className="flex items-start space-x-3">
-          <div className="relative flex items-center">
+          <label
+            htmlFor={checkboxId || undefined}
+            className="relative flex items-center cursor-pointer"
+          >
             <input
               type="checkbox"
               id={checkboxId}
@@ -55,37 +58,24 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             />
             <div
               className={cn(
-                'w-5 h-5 rounded border-2 transition-all duration-200 cursor-pointer flex items-center justify-center',
-                'border-gray-300 bg-white hover:border-blue-600',
-                isChecked &&
-                  'bg-blue-600 border-blue-600 hover:bg-blue-700',
-                'focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2',
-                props.disabled && 'opacity-50 cursor-not-allowed',
-                'dark:border-gray-600 dark:bg-gray-800 dark:hover:border-blue-600',
-                isChecked && 'dark:bg-blue-600 dark:border-blue-600',
-                error && 'border-red-500',
-                error && isChecked && 'bg-red-500 border-red-500',
+                'w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center pointer-events-none',
+                !isChecked && 'border-border bg-background',
+                isChecked && 'bg-primary border-primary',
+                'focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2',
+                props.disabled && 'opacity-50',
+                error && !isChecked && 'border-destructive',
+                error && isChecked && 'bg-destructive border-destructive',
                 className
               )}
-              onClick={() => {
-                if (checkboxId && !props.disabled) {
-                  const input = document.getElementById(
-                    checkboxId
-                  ) as HTMLInputElement
-                  if (input) {
-                    input.click()
-                  }
-                }
-              }}
             >
               <CheckIcon
                 className={cn(
-                  'w-3 h-3 text-white transition-opacity duration-200',
+                  'w-3 h-3 text-primary-foreground transition-opacity duration-200',
                   isChecked ? 'opacity-100' : 'opacity-0'
                 )}
               />
             </div>
-          </div>
+          </label>
 
           {(label || description) && (
             <div className="flex-1 min-w-0">
@@ -94,9 +84,9 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                   htmlFor={checkboxId || undefined}
                   className={cn(
                     'text-sm font-medium cursor-pointer select-none',
-                    'text-gray-900 dark:text-gray-100',
+                    'text-foreground',
                     props.disabled && 'opacity-50 cursor-not-allowed',
-                    error && 'text-red-600 dark:text-red-400',
+                    error && 'text-destructive',
                     labelClassName
                   )}
                 >
@@ -106,9 +96,9 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               {description && (
                 <p
                   className={cn(
-                    'text-sm text-gray-500 dark:text-gray-400 mt-1',
+                    'text-sm text-muted-foreground mt-1',
                     props.disabled && 'opacity-50',
-                    error && 'text-red-500 dark:text-red-400'
+                    error && 'text-destructive'
                   )}
                 >
                   {description}
@@ -119,7 +109,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         </div>
 
         {error && (
-          <p className="text-sm text-red-600 dark:text-red-400 ml-8">{error}</p>
+          <p className="text-sm text-destructive ml-8">{error}</p>
         )}
       </div>
     )

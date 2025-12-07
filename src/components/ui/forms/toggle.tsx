@@ -29,11 +29,9 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
             size === 'sm' && 'w-8 h-4',
             size === 'md' && 'w-11 h-6', 
             size === 'lg' && 'w-14 h-7',
-            'border-gray-300 bg-gray-200',
+            'border-border bg-muted',
             props.disabled && 'opacity-50 cursor-not-allowed',
-            isActive && 'bg-blue-600 border-blue-600',
-            'dark:border-gray-600 dark:bg-gray-700',
-            isActive && 'dark:bg-blue-600 dark:border-blue-600',
+            isActive && 'bg-foreground border-foreground',
             className
           )}
         >
@@ -48,7 +46,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
           />
           <div
             className={cn(
-              'absolute bg-white rounded-full shadow-lg transition-transform duration-200',
+              'absolute bg-background rounded-full shadow-lg transition-transform duration-200',
               size === 'sm' && 'w-3 h-3',
               size === 'md' && 'w-5 h-5',
               size === 'lg' && 'w-6 h-6',
@@ -66,7 +64,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
               <span
                 className={cn(
                   'text-sm font-medium cursor-pointer select-none',
-                  'text-gray-900 dark:text-gray-100',
+                  'text-foreground',
                   props.disabled && 'opacity-50 cursor-not-allowed'
                 )}
               >
@@ -76,7 +74,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
             {description && (
               <p
                 className={cn(
-                  'text-sm text-gray-500 dark:text-gray-400 mt-1',
+                  'text-sm text-muted-foreground mt-1',
                   props.disabled && 'opacity-50'
                 )}
               >

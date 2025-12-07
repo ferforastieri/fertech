@@ -85,13 +85,13 @@ const DonutChart = forwardRef<HTMLDivElement, DonutChartProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-2xl bg-white p-4 sm:p-6 shadow-sm flex flex-col dark:bg-gray-800 min-h-[280px]',
+          'rounded-2xl bg-popover border border-border p-4 sm:p-6 shadow-sm flex flex-col min-h-[280px] transition-all duration-200',
           className
         )}
         {...props}
       >
         <div className="flex items-center justify-center mb-3 sm:mb-4 flex-shrink-0 min-h-[2rem]">
-          <h3 className="font-semibold text-blue-600 dark:text-blue-400 leading-tight text-center break-words px-2 text-sm sm:text-base">
+          <h3 className="font-semibold text-foreground leading-tight text-center break-words px-2 text-sm sm:text-base">
             {title}
           </h3>
         </div>

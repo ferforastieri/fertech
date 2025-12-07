@@ -23,7 +23,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={inputId}
             className={cn(
-              "text-sm font-medium text-gray-900 dark:text-gray-100",
+              "text-sm font-medium text-foreground",
               labelClassName
             )}
           >
@@ -33,17 +33,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative">
           {leftIcon && (
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <div className="h-5 w-5 text-gray-400">{leftIcon}</div>
+              <div className="h-5 w-5 text-muted-foreground">{leftIcon}</div>
             </div>
           )}
           <input
             type={type}
             id={inputId}
             className={cn(
-              'flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus:ring-blue-600',
+              'flex h-10 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200',
               leftIcon && 'pl-10',
               rightIcon && 'pr-10',
-              error && 'border-red-500 focus:ring-red-500',
+              error && 'border-destructive focus:ring-destructive',
               className
             )}
             ref={ref}
@@ -51,12 +51,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           {rightIcon && (
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <div className="h-5 w-5 text-gray-400">{rightIcon}</div>
+              <div className="h-5 w-5 text-muted-foreground">{rightIcon}</div>
             </div>
           )}
         </div>
         {error && (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-sm text-destructive">{error}</p>
         )}
       </div>
     )

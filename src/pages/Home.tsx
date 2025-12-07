@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import { StatusBadge, Badge } from '@/components/feedback'
-import { Button } from '@/components/forms'
-import { Card, CardContent } from '@/components/layout'
+import { StatusBadge, Badge } from '@/components/ui/feedback'
+import { Button } from '@/components/ui/forms'
+import { Card, CardContent } from '@/components/ui/layout'
 import { 
   ArrowRightIcon,
   CodeBracketIcon,

@@ -5,12 +5,9 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: [
-      { find: /^@\/components$/, replacement: path.resolve(__dirname, './src/components/ui/index.ts') },
-      { find: /^@\/components\/(.*)/, replacement: path.resolve(__dirname, './src/components/ui/$1') },
-      { find: /^@\/lib$/, replacement: path.resolve(__dirname, './src/components/lib/index.ts') },
-      { find: /^@\/(.*)/, replacement: path.resolve(__dirname, './src/$1') },
-    ],
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
   },
   server: {

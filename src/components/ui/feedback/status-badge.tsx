@@ -11,12 +11,12 @@ export interface StatusBadgeProps
 const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(
   ({ className, status, children, size = 'md', ...props }, ref) => {
     const variants = {
-      active: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800',
-      inactive: 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800',
-      pending: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800',
-      completed: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800',
-      error: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800',
-      warning: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800',
+      active: 'bg-green-500/10 text-green-600 border-green-500/20',
+      inactive: 'bg-muted text-muted-foreground border-border',
+      pending: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
+      completed: 'bg-primary/10 text-primary border-primary/20',
+      error: 'bg-destructive/10 text-destructive border-destructive/20',
+      warning: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
     }
 
     const sizes = {

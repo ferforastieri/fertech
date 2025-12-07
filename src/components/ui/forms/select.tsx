@@ -120,30 +120,28 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="text-sm font-medium text-gray-900 dark:text-gray-100"
+            className="text-sm font-medium text-foreground"
           >
             {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
+            {required && <span className="text-destructive ml-1">*</span>}
           </label>
         )}
         
         <div className="relative w-full" ref={selectRef}>
           <div
             className={cn(
-              'flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm cursor-pointer',
-              'focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent',
+              'flex h-10 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground cursor-pointer transition-all duration-200',
+              'focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent',
               'disabled:cursor-not-allowed disabled:opacity-50',
-              'dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100',
-              'dark:focus:ring-blue-600',
-              error && 'border-red-500 focus:ring-red-500',
-              isOpen && 'ring-2 ring-blue-600 border-transparent',
+              error && 'border-destructive focus:ring-destructive',
+              isOpen && 'ring-2 ring-foreground border-transparent',
               className
             )}
             onClick={handleToggle}
           >
             <div className="flex-1 flex items-center gap-2 min-w-0">
               {selectedOptions.length === 0 ? (
-                <span className="text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground">
                   {placeholder || 'Selecione uma opção'}
                 </span>
               ) : mode === 'single' ? (
@@ -153,7 +151,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                   {selectedOptions.slice(0, 3).map((option) => (
                     <span
                       key={option.value}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600/10 text-blue-600 text-xs rounded-md"
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-accent text-accent-foreground text-xs rounded-xl"
                     >
                       {option.label}
                       <button
@@ -162,14 +160,14 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                           e.stopPropagation()
                           handleRemove(option.value)
                         }}
-                        className="hover:text-blue-700"
+                        className="hover:text-accent-foreground/80"
                       >
                         <XMarkIcon className="h-3 w-3" />
                       </button>
                     </span>
                   ))}
                   {selectedOptions.length > 3 && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       +{selectedOptions.length - 3} mais
                     </span>
                   )}
@@ -185,14 +183,14 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                     e.stopPropagation()
                     handleClear()
                   }}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                  className="p-1 hover:bg-muted rounded-xl transition-colors"
                 >
-                  <XMarkIcon className="h-4 w-4 text-gray-400" />
+                  <XMarkIcon className="h-4 w-4 text-muted-foreground" />
                 </button>
               )}
               <ChevronDownIcon 
                 className={cn(
-                  "h-4 w-4 text-gray-400 transition-transform",
+                  "h-4 w-4 text-muted-foreground transition-transform duration-200",
                   isOpen && "rotate-180"
                 )} 
               />
@@ -200,18 +198,18 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
           </div>
 
           {isOpen && (
-            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-hidden mb-2">
+            <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-xl shadow-lg max-h-60 overflow-hidden mb-2">
               {searchable && (
-                <div className="p-3 border-b border-gray-200 dark:border-gray-600 min-w-0">
+                <div className="p-3 border-b border-border min-w-0">
                   <div className="flex items-center gap-2 min-w-0">
-                    <MagnifyingGlassIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                    <MagnifyingGlassIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                     <input
                       ref={inputRef}
                       type="text"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Buscar..."
-                      className="flex-1 bg-transparent outline-none text-sm text-gray-900 dark:text-gray-100 min-w-0"
+                      className="flex-1 bg-transparent outline-none text-sm text-popover-foreground min-w-0"
                       onClick={(e) => e.stopPropagation()}
                       style={{ minWidth: '120px' }}
                     />
@@ -221,7 +219,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
               
               <div className="overflow-y-auto pb-3" style={{ maxHeight: searchable ? '180px' : '220px' }}>
                 {filteredOptions.length === 0 ? (
-                  <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="px-3 py-2 text-sm text-muted-foreground">
                     Nenhuma opção encontrada
                   </div>
                 ) : (
@@ -229,9 +227,9 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                     <div
                       key={option.value}
                       className={cn(
-                        'px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700',
+                        'px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors',
                         'flex items-center gap-3 min-w-0',
-                        selectedValues.includes(option.value) && 'bg-blue-600/10 text-blue-600',
+                        selectedValues.includes(option.value) && 'bg-accent text-accent-foreground',
                         option.disabled && 'opacity-50 cursor-not-allowed'
                       )}
                       onClick={() => !option.disabled && handleSelect(option.value)}
@@ -242,14 +240,14 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                             type="checkbox"
                             checked={selectedValues.includes(option.value)}
                             onChange={() => {}}
-                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600 focus:ring-2"
+                            className="h-4 w-4 rounded border-border text-foreground focus:ring-foreground focus:ring-2"
                           />
                         </div>
                       )}
                       <span className="flex-1">{option.label}</span>
                       {selectedValues.includes(option.value) && mode === 'single' && (
                         <div className="flex-shrink-0">
-                          <div className="h-2 w-2 bg-blue-600 rounded-full"></div>
+                          <div className="h-2 w-2 bg-foreground rounded-full"></div>
                         </div>
                       )}
                     </div>
@@ -261,7 +259,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
         </div>
         
         {error && (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-sm text-destructive">{error}</p>
         )}
       </div>
     )

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/layout'
-import { Accordion } from '@/components/layout'
-import { Badge } from '@/components/feedback'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/layout'
+import { Accordion } from '@/components/ui/layout'
+import { Badge } from '@/components/ui/feedback'
 import { workArticles, personalArticles } from '@/data/articles'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 

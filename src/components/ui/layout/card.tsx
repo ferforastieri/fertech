@@ -9,7 +9,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800',
+          'rounded-xl border border-border bg-popover shadow-sm transition-all duration-200',
           className
         )}
         {...props}
@@ -43,7 +43,7 @@ const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
     return (
       <h3
         ref={ref}
-        className={cn('text-2xl font-semibold leading-none tracking-tight text-gray-900 dark:text-gray-100', className)}
+        className={cn('text-2xl font-semibold leading-none tracking-tight text-popover-foreground', className)}
         {...props}
       />
     )
@@ -59,7 +59,7 @@ const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionProps>(
     return (
       <p
         ref={ref}
-        className={cn('text-sm text-gray-600 dark:text-gray-400', className)}
+        className={cn('text-sm text-muted-foreground', className)}
         {...props}
       />
     )

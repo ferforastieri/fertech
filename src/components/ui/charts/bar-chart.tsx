@@ -166,12 +166,12 @@ const BarChart = forwardRef<HTMLDivElement, BarChartProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-2xl border-2 border-gray-200 bg-white p-3 sm:p-4 shadow-sm flex flex-col dark:border-gray-700 dark:bg-gray-800 h-[280px] 2xl:h-[350px]',
+          'rounded-2xl border-2 border-border bg-popover p-3 sm:p-4 shadow-sm flex flex-col h-[280px] 2xl:h-[350px] transition-all duration-200',
           className
         )}
         {...props}
       >
-        <h3 className="flex-shrink-0 mb-2 font-semibold leading-tight break-words text-blue-600 dark:text-blue-400 sm:mb-3 text-sm sm:text-base">
+        <h3 className="flex-shrink-0 mb-2 font-semibold leading-tight break-words text-foreground sm:mb-3 text-sm sm:text-base">
           {title}
         </h3>
         

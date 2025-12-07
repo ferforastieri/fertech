@@ -1,6 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Separator } from '@/components/layout'
-import { Badge } from '@/components/feedback'
-import { Button } from '@/components/forms'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Separator } from '@/components/ui/layout'
+import { Badge } from '@/components/ui/feedback'
+import { Button } from '@/components/ui/forms'
 import { 
   BriefcaseIcon,
   AcademicCapIcon,

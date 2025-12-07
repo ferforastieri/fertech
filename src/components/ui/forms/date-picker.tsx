@@ -101,11 +101,11 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             key={i}
             type="button"
             className={cn(
-              'w-7 h-7 text-xs rounded-md transition-colors',
-              'hover:bg-blue-600/10 hover:text-blue-600',
-              isCurrentMonth ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400',
-              isToday && 'bg-blue-600/10 text-blue-600 font-semibold',
-              isSelected && 'bg-blue-600 text-white font-semibold hover:bg-blue-700'
+              'w-7 h-7 text-xs rounded-xl transition-colors',
+              'hover:bg-accent hover:text-accent-foreground',
+              isCurrentMonth ? 'text-popover-foreground' : 'text-muted-foreground',
+              isToday && 'bg-accent text-accent-foreground font-semibold',
+              isSelected && 'bg-foreground text-background font-semibold hover:bg-foreground/90'
             )}
             onClick={() => handleDateSelect(buttonDate)}
           >
@@ -124,7 +124,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         {label && (
           <label
             htmlFor={dateId}
-            className="text-sm font-medium text-gray-900 dark:text-gray-100"
+            className="text-sm font-medium text-foreground"
           >
             {label}
           </label>
@@ -137,15 +137,12 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             value={displayValue}
             onChange={handleInputChange}
             className={cn(
-              'flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm',
-              'focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent',
+              'flex h-10 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground',
+              'focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent',
               'disabled:cursor-not-allowed disabled:opacity-50',
-              'dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100',
-              'dark:focus:ring-blue-600',
               'transition-all duration-200',
-              'hover:border-blue-600/50',
-              'dark:hover:border-blue-600/50',
-              error && 'border-red-500 focus:ring-red-500',
+              'hover:border-foreground/50',
+              error && 'border-destructive focus:ring-destructive',
               className
             )}
             ref={ref}
@@ -154,15 +151,15 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors"
+            className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <CalendarIcon className="h-4 w-4" />
           </button>
         </div>
         
         {isOpen && (
-          <div className="absolute z-50 mt-1 w-64 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800 right-0">
-            <div className="flex items-center justify-between border-b border-gray-200 p-2 dark:border-gray-600">
+          <div className="absolute z-50 mt-1 w-64 rounded-xl border border-border bg-popover shadow-lg right-0">
+            <div className="flex items-center justify-between border-b border-border p-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -170,12 +167,12 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
                   const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
                   setCurrentMonth(newMonth)
                 }}
-                className="h-6 w-6 p-0 hover:bg-blue-600/10"
+                className="h-6 w-6 p-0 hover:bg-accent"
               >
                 <ChevronLeftIcon className="h-3 w-3" />
               </Button>
               
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">
+              <span className="text-sm font-medium text-popover-foreground capitalize">
                 {currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
               </span>
               
@@ -186,7 +183,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
                   const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
                   setCurrentMonth(newMonth)
                 }}
-                className="h-6 w-6 p-0 hover:bg-blue-600/10"
+                className="h-6 w-6 p-0 hover:bg-accent"
               >
                 <ChevronRightIcon className="h-3 w-3" />
               </Button>
@@ -195,7 +192,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             <div className="p-2">
               <div className="mb-1 grid grid-cols-7 gap-1">
                 {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
-                  <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <div key={day} className="text-center text-xs font-medium text-muted-foreground">
                     {day}
                   </div>
                 ))}
@@ -209,7 +206,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         )}
         
         {error && (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-sm text-destructive">{error}</p>
         )}
       </div>
     )

@@ -120,7 +120,7 @@ export function LineChart({ title, data, labels, color = '#3b82f6', formatValue,
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm p-6 h-[400px] dark:bg-gray-800 ${className || ''}`}>
+    <div className={`bg-popover border border-border rounded-xl shadow-sm p-6 h-[400px] transition-all duration-200 ${className || ''}`}>
       <Line data={chartData} options={options} />
     </div>
   );

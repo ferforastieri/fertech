@@ -17,11 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components": ["../valk-ui/packages/react/src/components"],
-      "@/components/*": ["../valk-ui/packages/react/src/components/*"],
-      "@/lib": ["../valk-ui/packages/react/src/lib"],
-      "@/lib/*": ["../valk-ui/packages/react/src/lib/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src", "../valk-ui/packages/react/src"]
