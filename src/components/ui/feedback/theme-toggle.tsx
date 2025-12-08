@@ -25,9 +25,9 @@ export function ThemeToggle({
   }
 
   const variantClasses = {
-    default: 'border border-white/20 bg-white/10 hover:bg-white/20 text-white dark:border-gray-600 dark:bg-gray-700/50 dark:hover:bg-gray-600/50',
-    ghost: 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300',
-    outline: 'border border-gray-300 dark:border-gray-600 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300',
+    default: 'border border-white/20 bg-white/10 hover:bg-white/20 text-white dark:border-border dark:bg-muted/50 dark:hover:bg-muted',
+    ghost: 'hover:bg-muted text-foreground',
+    outline: 'border border-border bg-transparent hover:bg-muted text-foreground',
   }
 
   const iconSizes = {

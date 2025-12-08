@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link as RouterLink, useLocation } from 'react-router-dom'
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
 import { 
   HomeIcon,
   DocumentTextIcon,
   BriefcaseIcon,
   UserIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ThemeToggle } from '@/components/ui/feedback'
 import { cn } from '@/components/lib'
@@ -15,7 +17,9 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  const navigate = useNavigate()
   const [isDark, setIsDark] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
@@ -29,6 +33,25 @@ export default function Layout({ children }: LayoutProps) {
       document.documentElement.classList.remove('dark')
     }
   }, [])
+
+  // Fechar menu ao pressionar ESC
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false)
+      }
+    }
+    
+    if (mobileMenuOpen) {
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [mobileMenuOpen])
 
   const toggleTheme = () => {
     const newDark = !isDark
@@ -76,20 +99,140 @@ export default function Layout({ children }: LayoutProps) {
     },
   ]
 
+  const handleNavClick = (href: string) => {
+    navigate(href)
+    setMobileMenuOpen(false)
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-x-hidden w-full">
+      {/* Mobile Header */}
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center justify-between h-16 px-4">
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="p-2 rounded-xl hover:bg-accent/50 transition-colors"
+            aria-label="Abrir menu"
+          >
+            <Bars3Icon className="h-6 w-6 text-foreground" />
+          </button>
+          
+          <div className="flex items-center gap-2">
+            {socialLinks.map((social) => (
+              <a
+                key={social.name}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  'p-2 rounded-xl transition-all duration-200',
+                  'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                )}
+                aria-label={social.name}
+              >
+                {social.icon}
+              </a>
+            ))}
+            <ThemeToggle
+              theme={isDark ? 'dark' : 'light'}
+              onToggle={toggleTheme}
+              variant="ghost"
+              size="sm"
+            />
+          </div>
+        </div>
+      </header>
+
       <main className={cn(
-        "flex-1 w-full overflow-x-hidden mx-auto max-w-6xl px-4 sm:px-6 py-8 md:px-8 md:py-10 lg:px-10 pb-20 sm:pb-16"
+        "flex-1 w-full overflow-x-hidden mx-auto max-w-6xl px-4 sm:px-6 py-8 md:px-8 md:py-10 lg:px-10",
+        "pt-24 md:pt-8 pb-20 md:pb-16"
       )}>
         {children}
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-20 sm:h-16">
+      {/* Mobile Menu Drawer */}
+      {mobileMenuOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 md:hidden transition-opacity duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-card border-r border-border shadow-xl md:hidden">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <h2 className="text-lg font-semibold text-foreground">Menu</h2>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-xl hover:bg-accent/50 transition-colors"
+                  aria-label="Fechar menu"
+                >
+                  <XMarkIcon className="h-6 w-6 text-foreground" />
+                </button>
+              </div>
+
+              {/* Navigation Items */}
+              <nav className="flex-1 overflow-y-auto p-4">
+                <div className="space-y-2">
+                  {navigationItems.map((item) => {
+                    const Icon = item.icon
+                    const isActive = location.pathname === item.href
+                    return (
+                      <button
+                        key={item.href}
+                        onClick={() => handleNavClick(item.href)}
+                        className={cn(
+                          'w-full flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-200 text-left',
+                          isActive
+                            ? 'text-foreground bg-accent shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                        )}
+                      >
+                        <Icon className="h-6 w-6 flex-shrink-0" />
+                        <span className="text-base font-medium">{item.name}</span>
+                        {isActive && (
+                          <div className="ml-auto w-2 h-2 rounded-full bg-foreground" />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              </nav>
+
+              {/* Footer with Social Links */}
+              <div className="p-4 border-t border-border">
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.name}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        'p-3 rounded-xl transition-all duration-200',
+                        'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                      )}
+                      aria-label={social.name}
+                    >
+                      {social.icon}
+                    </a>
+                  ))}
+                </div>
+                <div className="text-center text-sm text-muted-foreground">
+                  Fernando Forastieri Neto
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Desktop Bottom Navigation */}
+      <nav className="hidden md:flex fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
+          <div className="flex items-center justify-between h-16">
             {/* Navigation Items */}
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-center sm:justify-start">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-start">
               {navigationItems.map((item) => {
                 const Icon = item.icon
                 const isActive = location.pathname === item.href
@@ -104,10 +247,10 @@ export default function Layout({ children }: LayoutProps) {
                         : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
                     )}
                   >
-                    <Icon className="h-6 w-6 sm:h-5 sm:w-5 flex-shrink-0" />
-                    <span className="text-sm font-medium hidden md:inline">{item.name}</span>
+                    <Icon className="h-5 w-5 flex-shrink-0" />
+                    <span className="text-sm font-medium">{item.name}</span>
                     {isActive && (
-                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground hidden sm:block" />
+                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
                     )}
                   </RouterLink>
                 )
@@ -131,7 +274,7 @@ export default function Layout({ children }: LayoutProps) {
                   {social.icon}
                 </a>
               ))}
-              <div className="h-6 w-px bg-border hidden sm:block" />
+              <div className="h-6 w-px bg-border" />
               <ThemeToggle
                 theme={isDark ? 'dark' : 'light'}
                 onToggle={toggleTheme}
@@ -140,6 +283,34 @@ export default function Layout({ children }: LayoutProps) {
               />
             </div>
           </div>
+        </div>
+      </nav>
+
+      {/* Mobile Bottom Navigation - Simplified */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center justify-around h-16 px-2">
+          {navigationItems.map((item) => {
+            const Icon = item.icon
+            const isActive = location.pathname === item.href
+            return (
+              <RouterLink
+                key={item.href}
+                to={item.href}
+                className={cn(
+                  'relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 flex-1 max-w-[80px]',
+                  isActive
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                )}
+              >
+                <Icon className="h-5 w-5 flex-shrink-0" />
+                <span className="text-[10px] font-medium leading-tight text-center">{item.name}</span>
+                {isActive && (
+                  <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-foreground" />
+                )}
+              </RouterLink>
+            )
+          })}
         </div>
       </nav>
     </div>

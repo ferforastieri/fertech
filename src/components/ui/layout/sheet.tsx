@@ -43,7 +43,7 @@ export function Sheet({
         className={`
           fixed ${sideClasses[side]} 
           ${size === 'full' ? '' : sizeClasses[size]}
-          bg-white dark:bg-gray-800 
+          bg-white dark:bg-card 
           shadow-xl 
           transition-transform duration-300 ease-in-out
           ${side === 'right' ? 'translate-x-0' : ''}
@@ -55,7 +55,7 @@ export function Sheet({
         <div className="relative h-full flex flex-col">
           <button
             type="button"
-            className="absolute top-4 right-4 z-10 rounded-md p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="absolute top-4 right-4 z-10 rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-muted dark:hover:bg-muted transition-colors"
             onClick={onClose}
           >
             <span className="sr-only">Fechar</span>

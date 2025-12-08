@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/layout'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Accordion } from '@/components/ui/layout'
 import { Badge } from '@/components/ui/feedback'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 
@@ -218,20 +218,44 @@ function ProjectCard({ project }: { project: typeof currentProjects[0] }) {
   return <div className="block">{cardContent}</div>
 }
 
-function ProjectSection({ title, projects }: { title: string; projects: typeof currentProjects }) {
+function ProjectSection({ projects }: { projects: typeof currentProjects }) {
   return (
-    <div className="mb-16">
-      <h2 className="text-3xl font-bold mb-8 text-foreground">{title}</h2>
-      <div className="grid md:grid-cols-2 gap-8">
-        {projects.map((project, index) => (
-          <ProjectCard key={index} project={project} />
-        ))}
-      </div>
+    <div className="grid md:grid-cols-2 gap-8">
+      {projects.map((project, index) => (
+        <ProjectCard key={index} project={project} />
+      ))}
     </div>
   )
 }
 
 export default function Projects() {
+  const accordionItems = [
+    {
+      value: 'current',
+      trigger: `Projetos Atuais (${currentProjects.length})`,
+      content: <ProjectSection projects={currentProjects} />,
+      defaultOpen: true,
+    },
+    {
+      value: 'imperio',
+      trigger: `Império Cerveja (Gold) (${imperioCervejaProjects.length})`,
+      content: <ProjectSection projects={imperioCervejaProjects} />,
+      defaultOpen: true,
+    },
+    {
+      value: 'sherwin',
+      trigger: `Sherwin Williams (SW e Experiências) (${sherwinWilliamsProjects.length})`,
+      content: <ProjectSection projects={sherwinWilliamsProjects} />,
+      defaultOpen: true,
+    },
+    {
+      value: 'others',
+      trigger: `Outros Projetos (${otherProjects.length})`,
+      content: <ProjectSection projects={otherProjects} />,
+      defaultOpen: true,
+    },
+  ]
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-6xl mx-auto">
@@ -242,10 +266,11 @@ export default function Projects() {
           </p>
         </div>
 
-        <ProjectSection title="Projetos Atuais" projects={currentProjects} />
-        <ProjectSection title="Império Cerveja (Gold)" projects={imperioCervejaProjects} />
-        <ProjectSection title="Sherwin Williams (SW e Experiências)" projects={sherwinWilliamsProjects} />
-        <ProjectSection title="Outros Projetos" projects={otherProjects} />
+        <Accordion 
+          type="multiple" 
+          items={accordionItems}
+          className="space-y-4"
+        />
       </div>
     </div>
   )

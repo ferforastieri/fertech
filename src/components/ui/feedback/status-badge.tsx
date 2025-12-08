@@ -11,7 +11,7 @@ export interface StatusBadgeProps
 const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(
   ({ className, status, children, size = 'md', ...props }, ref) => {
     const variants = {
-      active: 'bg-green-500/10 text-green-600 border-green-500/20',
+      active: 'bg-muted text-foreground border-border',
       inactive: 'bg-muted text-muted-foreground border-border',
       pending: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
       completed: 'bg-primary/10 text-primary border-primary/20',

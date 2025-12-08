@@ -48,13 +48,13 @@ export default function Blog() {
       value: 'work',
       trigger: `Artigos Profissionais (${workArticles.length})`,
       content: renderArticles(workArticles),
-      defaultOpen: false,
+      defaultOpen: true,
     },
     {
       value: 'personal',
       trigger: `Artigos Pessoais (${personalArticles.length})`,
       content: renderArticles(personalArticles),
-      defaultOpen: false,
+      defaultOpen: true,
     },
   ]
 
