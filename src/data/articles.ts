@@ -1483,7 +1483,6 @@ No final, tanto games quanto aplicações web querem a mesma coisa: que usuário
     }
 ];
 
-// Função helper para gerar slug
 export function generateSlug(title: string): string {
     return title
         .toLowerCase()
@@ -1493,6 +1492,5 @@ export function generateSlug(title: string): string {
         .replace(/(^-|-$)/g, '');
 }
 
-// Exportar todos os artigos juntos
 export const allArticles = [...workArticles, ...personalArticles];
 

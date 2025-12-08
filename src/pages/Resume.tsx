@@ -59,7 +59,7 @@ const education = [
     institution: 'Centro Universitário Facens',
     course: 'Bacharelado em Engenharia da Computação',
     location: 'Sorocaba, São Paulo',
-    period: '01/2017 - 12/2020',
+    period: '01/2017 - 12/2022',
   },
   {
     institution: 'Universidade Paulista UNIP',
@@ -74,23 +74,246 @@ export default function Resume() {
 
   const handleDownloadPDF = async () => {
     setIsGenerating(true)
-    const element = document.getElementById('resume-content')
-    if (!element) {
-      setIsGenerating(false)
-      return
-    }
-
+    
     try {
-      const html2pdf = (await import('html2pdf.js')).default
-      const opt = {
-        margin: [10, 10, 10, 10],
-        filename: 'CV_Fernando_Forastieri.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      const { jsPDF } = await import('jspdf')
+      
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      })
+      
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+      const margin = 15
+      const maxWidth = pageWidth - (margin * 2)
+      let yPosition = margin
+      
+      doc.setFontSize(20)
+      doc.setFont('helvetica', 'bold')
+      doc.text('FERNANDO FORASTIERI NETO', pageWidth / 2, yPosition, { align: 'center' })
+      yPosition += 8
+      
+      doc.setFontSize(12)
+      doc.setFont('helvetica', 'normal')
+      doc.text('Desenvolvedor Fullstack | Frontend & UX', pageWidth / 2, yPosition, { align: 'center' })
+      yPosition += 6
+      
+      doc.setFontSize(10)
+      doc.text('LinkedIn: linkedin.com/in/fernando-forastieri | GitHub: github.com/ferforastieri', pageWidth / 2, yPosition, { align: 'center' })
+      yPosition += 5
+      doc.text('Twitter: @viciofer | Sorocaba, SP - Brasil', pageWidth / 2, yPosition, { align: 'center' })
+      yPosition += 10
+      
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('RESUMO PROFISSIONAL', margin, yPosition)
+      yPosition += 6
+      doc.setLineWidth(0.5)
+      doc.line(margin, yPosition, pageWidth - margin, yPosition)
+      yPosition += 5
+      
+      doc.setFontSize(10)
+      doc.setFont('helvetica', 'normal')
+      const aboutText = 'Desenvolvedor Fullstack especializado em frontend e experiência do usuário, com experiência no desenvolvimento de aplicações web utilizando React, TypeScript, Node.js e tecnologias modernas. Possui conhecimento em inglês técnico para escrita de código e documentações. Sempre em busca de novos desafios e mantém-se atualizado com tecnologias emergentes.'
+      const aboutLines = doc.splitTextToSize(aboutText, maxWidth)
+      doc.text(aboutLines, margin, yPosition)
+      yPosition += (aboutLines.length * 4) + 8
+      
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('EXPERIÊNCIA PROFISSIONAL', margin, yPosition)
+      yPosition += 6
+      doc.setLineWidth(0.5)
+      doc.line(margin, yPosition, pageWidth - margin, yPosition)
+      yPosition += 5
+      
+      experiences.forEach((exp) => {
+        if (yPosition > pageHeight - 40) {
+          doc.addPage()
+          yPosition = margin
+        }
+        
+        doc.setFontSize(12)
+        doc.setFont('helvetica', 'bold')
+        const positionLines = doc.splitTextToSize(exp.position, maxWidth - 50)
+        doc.text(positionLines, margin, yPosition)
+        
+        doc.setFontSize(10)
+        doc.setFont('helvetica', 'normal')
+        doc.text(exp.period, pageWidth - margin, yPosition, { align: 'right' })
+        yPosition += 6
+        
+        doc.setFontSize(11)
+        doc.setFont('helvetica', 'italic')
+        doc.text(`${exp.company} | ${exp.location}`, margin, yPosition)
+        yPosition += 6
+        
+        doc.setFontSize(10)
+        doc.setFont('helvetica', 'normal')
+        exp.responsibilities.forEach((resp) => {
+          if (yPosition > pageHeight - 20) {
+            doc.addPage()
+            yPosition = margin
+          }
+          const respLines = doc.splitTextToSize(`• ${resp}`, maxWidth - 5)
+          doc.text(respLines, margin + 5, yPosition)
+          yPosition += (respLines.length * 4) + 2
+        })
+        yPosition += 5
+      })
+      
+      if (yPosition > pageHeight - 30) {
+        doc.addPage()
+        yPosition = margin
       }
-
-      await html2pdf().set(opt).from(element).save()
+      
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('FORMAÇÃO ACADÊMICA', margin, yPosition)
+      yPosition += 6
+      doc.setLineWidth(0.5)
+      doc.line(margin, yPosition, pageWidth - margin, yPosition)
+      yPosition += 5
+      
+      education.forEach((edu) => {
+        if (yPosition > pageHeight - 20) {
+          doc.addPage()
+          yPosition = margin
+        }
+        
+        doc.setFontSize(11)
+        doc.setFont('helvetica', 'bold')
+        doc.text(edu.course, margin, yPosition)
+        yPosition += 5
+        
+        doc.setFontSize(10)
+        doc.setFont('helvetica', 'normal')
+        doc.text(`${edu.institution} | ${edu.location} | ${edu.period}`, margin, yPosition)
+        yPosition += 8
+      })
+      
+      if (yPosition > pageHeight - 30) {
+        doc.addPage()
+        yPosition = margin
+      }
+      
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('HABILIDADES TÉCNICAS', margin, yPosition)
+      yPosition += 6
+      doc.setLineWidth(0.5)
+      doc.line(margin, yPosition, pageWidth - margin, yPosition)
+      yPosition += 5
+      
+      doc.setFontSize(10)
+      doc.setFont('helvetica', 'normal')
+      const skillsText = technologies.join(' • ')
+      const skillsLines = doc.splitTextToSize(skillsText, maxWidth)
+      doc.text(skillsLines, margin, yPosition)
+      yPosition += (skillsLines.length * 4) + 8
+      
+      if (yPosition > pageHeight - 30) {
+        doc.addPage()
+        yPosition = margin
+      }
+      
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('IDIOMAS', margin, yPosition)
+      yPosition += 6
+      doc.setLineWidth(0.5)
+      doc.line(margin, yPosition, pageWidth - margin, yPosition)
+      yPosition += 5
+      
+      doc.setFontSize(11)
+      doc.setFont('helvetica', 'bold')
+      doc.text('Português:', margin, yPosition)
+      doc.setFont('helvetica', 'normal')
+      doc.text('Nativo', margin + 30, yPosition)
+      yPosition += 6
+      
+      doc.setFont('helvetica', 'bold')
+      doc.text('Inglês:', margin, yPosition)
+      doc.setFont('helvetica', 'normal')
+      const englishText = 'Técnico - Capacidade de escrita e leitura de documentações técnicas'
+      const englishLines = doc.splitTextToSize(englishText, maxWidth - 30)
+      doc.text(englishLines, margin + 30, yPosition)
+      yPosition += (englishLines.length * 4) + 8
+      
+      if (yPosition > pageHeight - 30) {
+        doc.addPage()
+        yPosition = margin
+      }
+      
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('PROJETOS RELEVANTES', margin, yPosition)
+      yPosition += 6
+      doc.setLineWidth(0.5)
+      doc.line(margin, yPosition, pageWidth - margin, yPosition)
+      yPosition += 5
+      
+      const selectedProjects = [
+        {
+          name: 'Valk UI',
+          description: 'Biblioteca moderna de componentes UI para React com TypeScript. Inclui CLI interativo, suporte a dark mode, e componentes totalmente customizáveis.',
+          tech: 'React, TypeScript, Tailwind CSS, CLI'
+        },
+        {
+          name: 'Vendedor Gold - Império Cerveja',
+          description: 'Sistema completo de gestão para vendedores. App mobile em React Native com TypeScript, interface web em React 18, backend NestJS com TypeORM e PostgreSQL.',
+          tech: 'React Native, React 18, TypeScript, NestJS, TypeORM, PostgreSQL'
+        },
+        {
+          name: 'Parceiro Gold - Império Cerveja',
+          description: 'Plataforma para distribuidores com app mobile em React Native. Interface web em React 18 com Material-UI, backend Express e Fastify com MySQL.',
+          tech: 'React Native, React 18, TypeScript, Material-UI, Express, Fastify, MySQL'
+        },
+        {
+          name: 'LeoPlus',
+          description: 'Programa de fidelidade com parcerias. Frontend React 18 com TypeScript, Material-UI, Zustand para estado e React Query para sincronização.',
+          tech: 'React 18, TypeScript, Material-UI, Zustand, React Query'
+        },
+        {
+          name: 'Clube Pro Pintor - SW',
+          description: 'Sistema completo de gestão de cores e produtos. App mobile em Ionic, interface web em React 16 com Redux, backend Express com Sequelize e MySQL.',
+          tech: 'Ionic, React 16, Redux, Express, Sequelize, MySQL'
+        },
+        {
+          name: 'Experiências SW',
+          description: 'Plataforma de experiências e programas de fidelidade. Interface web em React 16 com Redux para gerenciamento de estado, backend Express com Sequelize e MySQL.',
+          tech: 'React 16, Redux, Express, Sequelize, MySQL'
+        }
+      ]
+      
+      selectedProjects.forEach((project) => {
+        if (yPosition > pageHeight - 30) {
+          doc.addPage()
+          yPosition = margin
+        }
+        
+        doc.setFontSize(11)
+        doc.setFont('helvetica', 'bold')
+        const projectNameLines = doc.splitTextToSize(project.name, maxWidth)
+        doc.text(projectNameLines, margin, yPosition)
+        yPosition += (projectNameLines.length * 4) + 2
+        
+        doc.setFontSize(10)
+        doc.setFont('helvetica', 'normal')
+        const descLines = doc.splitTextToSize(project.description, maxWidth)
+        doc.text(descLines, margin, yPosition)
+        yPosition += (descLines.length * 4) + 2
+        
+        doc.setFontSize(9)
+        doc.setFont('helvetica', 'italic')
+        const techLines = doc.splitTextToSize(`Tecnologias: ${project.tech}`, maxWidth)
+        doc.text(techLines, margin, yPosition)
+        yPosition += (techLines.length * 3) + 6
+      })
+      
+      doc.save('CV_Fernando_Forastieri.pdf')
     } catch (error) {
       console.error('Erro ao gerar PDF:', error)
     } finally {

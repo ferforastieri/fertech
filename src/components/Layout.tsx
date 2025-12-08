@@ -34,7 +34,6 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, [])
 
-  // Fechar menu ao pressionar ESC
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && mobileMenuOpen) {
