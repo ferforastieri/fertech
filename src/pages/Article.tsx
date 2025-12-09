@@ -25,6 +25,8 @@ export default function Article() {
     )
   }
 
+  const contentWithoutTitle = article.content.replace(/^#\s+.*$/m, '').trim()
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
@@ -54,7 +56,7 @@ export default function Article() {
           <Separator className="my-8" />
 
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <ReactMarkdown>{article.content}</ReactMarkdown>
+            <ReactMarkdown>{contentWithoutTitle}</ReactMarkdown>
           </div>
         </article>
       </div>

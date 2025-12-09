@@ -144,7 +144,7 @@ export default function Layout({ children }: LayoutProps) {
 
       <main className={cn(
         "flex-1 w-full overflow-x-hidden mx-auto max-w-6xl px-4 sm:px-6 py-8 md:px-8 md:py-10 lg:px-10",
-        "pt-24 md:pt-8 pb-20 md:pb-16"
+        "pt-14 md:pt-6 pb-20 md:pb-16"
       )}>
         {children}
       </main>

@@ -14,7 +14,7 @@ export const workArticles: Article[] = [
         title: "Design System: Construindo Consistência Visual em Projetos Frontend",
         category: "UI/UX",
         description: "Explorando como criar e manter um design system eficiente que garante consistência visual e acelera o desenvolvimento. Discutindo a importância de componentes reutilizáveis e documentação adequada.",
-        date: "15 de Janeiro, 2024",
+        date: "8 de Dezembro, 2025",
         readTime: "8 min",
         content: `
 # Design System: Construindo Consistência Visual em Projetos Frontend
@@ -85,7 +85,7 @@ O segredo está em começar simples, documentar bem e evoluir continuamente base
         title: "Acessibilidade Web: Além do Código",
         category: "UI/UX",
         description: "Reflexões sobre como desenvolver interfaces verdadeiramente acessíveis, considerando não apenas as diretrizes WCAG, mas também a experiência real dos usuários com diferentes necessidades.",
-        date: "22 de Janeiro, 2024",
+        date: "8 de Dezembro, 2022",
         readTime: "6 min",
         content: `
 # Acessibilidade Web: Além do Código
@@ -166,7 +166,7 @@ Quando você realmente entende as necessidades dos seus usuários, acessibilidad
         title: "Performance em React: Otimizações Práticas para Aplicações Reais",
         category: "Dev Frontend",
         description: "Estratégias práticas de otimização em React que realmente fazem diferença. Desde memoização até code splitting, abordando casos de uso reais e como medir o impacto.",
-        date: "05 de Fevereiro, 2024",
+        date: "8 de Dezembro, 2019",
         readTime: "10 min",
         content: `
 # Performance em React: Otimizações Práticas para Aplicações Reais
@@ -333,7 +333,7 @@ Lembre-se: a melhor otimização é a que você não precisa fazer porque seu c�
         title: "TypeScript Avançado: Tipos que Ajudam na Escalabilidade",
         category: "Dev Frontend",
         description: "Como usar tipos avançados do TypeScript para criar código mais seguro e escalável. Discutindo generics, utility types e padrões que facilitam a manutenção em projetos grandes.",
-        date: "18 de Fevereiro, 2024",
+        date: "8 de Dezembro, 2016",
         readTime: "12 min",
         content: `
 # TypeScript Avançado: Tipos que Ajudam na Escalabilidade
@@ -538,7 +538,7 @@ O objetivo final é ter código que fale por si mesmo, onde os tipos documentam 
         title: "Serverless: Quando Usar e Quando Evitar",
         category: "Servidor",
         description: "Uma análise honesta sobre arquitetura serverless, seus benefícios reais e armadilhas comuns. Quando serverless faz sentido e quando uma abordagem tradicional pode ser melhor.",
-        date: "10 de Março, 2024",
+        date: "8 de Dezembro, 2013",
         readTime: "9 min",
         content: `
 # Serverless: Quando Usar e Quando Evitar
@@ -692,7 +692,7 @@ A chave é entender seu caso de uso específico e escolher a arquitetura que mel
         title: "Monitoramento de Infraestrutura: O Que Realmente Importa",
         category: "Servidor",
         description: "Métricas que realmente importam ao monitorar servidores e aplicações. Discutindo como estabelecer alertas eficientes e evitar a sobrecarga de informação.",
-        date: "25 de Março, 2024",
+        date: "8 de Dezembro, 2010",
         readTime: "7 min",
         content: `
 # Monitoramento de Infraestrutura: O Que Realmente Importa
@@ -844,7 +844,7 @@ export const personalArticles: Article[] = [
         title: "Filosofia do Desenvolvimento: Por Que Código Limpo É Uma Questão Ética",
         category: "Filosofia",
         description: "Explorando a ideia de que escrever código legível e bem estruturado não é apenas uma questão técnica, mas uma responsabilidade ética. Como nosso código afeta outros desenvolvedores e usuários finais.",
-        date: "12 de Janeiro, 2024",
+        date: "8 de Dezembro, 2025",
         readTime: "5 min",
         content: `
 # Filosofia do Desenvolvimento: Por Que Código Limpo É Uma Questão Ética
@@ -973,7 +973,7 @@ No final, código limpo não é apenas sobre escrever código melhor. É sobre s
         title: "Aprendizado Contínuo: Aceitar que Não Sabemos Tudo",
         category: "Filosofia",
         description: "Reflexões sobre a importância de manter a humildade no aprendizado constante. Como aceitar que não sabemos tudo é o primeiro passo para realmente aprender algo novo.",
-        date: "28 de Janeiro, 2024",
+        date: "8 de Dezembro, 2022",
         readTime: "4 min",
         content: `
 # Aprendizado Contínuo: Aceitar que Não Sabemos Tudo
@@ -1117,7 +1117,7 @@ Lembre-se: o melhor desenvolvedor não é aquele que sabe tudo, mas aquele que s
         title: "Games Como Ferramenta de Aprendizado: Minha Jornada",
         category: "Jogos",
         description: "Como os jogos me ensinaram sobre resolução de problemas, trabalho em equipe e persistência. Uma reflexão pessoal sobre como minha paixão por games influenciou minha carreira em desenvolvimento.",
-        date: "08 de Fevereiro, 2024",
+        date: "8 de Dezembro, 2019",
         readTime: "6 min",
         content: `
 # Games Como Ferramenta de Aprendizado: Minha Jornada
@@ -1270,7 +1270,7 @@ E se você não joga, considere tentar. Não apenas pelos benefícios mencionado
         title: "Design de Jogos e UX: Aplicando Lições Aprendidas em Game Design",
         category: "Jogos",
         description: "Explorando como os princípios de game design podem melhorar a experiência do usuário em aplicações web. O que podemos aprender sobre feedback, progressão e engajamento dos jogos.",
-        date: "20 de Fevereiro, 2024",
+        date: "8 de Dezembro, 2016",
         readTime: "8 min",
         content: `
 # Design de Jogos e UX: Aplicando Lições Aprendidas em Game Design
