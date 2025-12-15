@@ -7,7 +7,7 @@ const currentProjects = [
   {
     title: 'Atacte',
     description:
-      'Aplicativo completo de segurança familiar desenvolvido para rodar em servidor pessoal. Após enfrentar problemas com Bitwarden, resolvi criar minha própria solução de segurança familiar. O projeto inclui gerenciamento de senhas com criptografia AES-256, autenticação 2FA/TOTP, notas seguras e rastreamento de localização familiar em tempo real. Interface web em Vue.js 3 e app mobile em React Native com Expo, incluindo rastreamento em background mesmo com dispositivo bloqueado através de serviço foreground nativo em Android Kotlin.',
+      'Aplicativo completo de segurança familiar desenvolvido para rodar em servidor pessoal. Após problemas com Bitwarden, resolvi criar minha própria solução. Inclui gerenciamento de senhas criptografadas, autenticação 2FA, notas seguras e rastreamento de localização familiar. Interface web em Vue.js 3 e app mobile em React Native com Expo, incluindo rastreamento em background com serviço nativo Android.',
     logo: '/logos/atacte.png',
     tags: ['Vue.js 3', 'React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma'],
   },
