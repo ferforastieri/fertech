@@ -24,7 +24,7 @@ const currentProjects = [
     title: 'Valk UI',
     description:
       'Biblioteca moderna de componentes UI para React com TypeScript. Inclui CLI interativo, suporte a dark mode, e componentes totalmente customizáveis.',
-    url: 'https://valkui.com.br',
+    url: 'https://valkui.vercel.app',
     logo: '/logos/valk-ui.png',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'CLI'],
   },
