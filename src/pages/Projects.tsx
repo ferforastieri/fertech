@@ -2,12 +2,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, Accordion } 
 import { Badge } from '@/components/ui/feedback'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 
+type Project = {
+  title: string
+  description: string
+  logo: string
+  tags: string[]
+  url?: string
+}
+
 // Projetos Atuais
 const currentProjects = [
   {
     title: 'Atacte',
     description:
-      'Aplicativo completo de segurança familiar desenvolvido para rodar em servidor pessoal. Após problemas com Bitwarden, resolvi criar minha própria solução. Inclui gerenciamento de senhas criptografadas, autenticação 2FA, notas seguras e rastreamento de localização familiar. Interface web em Vue.js 3 e app mobile em React Native com Expo, incluindo rastreamento em background com serviço nativo Android.',
+      'Aplicativo de segurança familiar para servidor pessoal. Criado após problemas com Bitwarden, oferece gerenciamento de senhas criptografadas, autenticação 2FA, notas seguras e rastreamento de localização familiar. Interface web em Vue.js 3 e app mobile em React Native com Expo.',
+    url: 'https://github.com/fernandoforastieri/atacte',
     logo: '/logos/atacte.png',
     tags: ['Vue.js 3', 'React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma'],
   },
@@ -161,7 +170,7 @@ const otherProjects = [
   },
 ]
 
-function ProjectCard({ project }: { project: typeof currentProjects[0] }) {
+function ProjectCard({ project }: { project: Project }) {
   const cardContent = (
     <Card className={`h-full transition-all duration-300 ${project.url ? 'hover:shadow-xl hover:-translate-y-2 cursor-pointer' : ''}`}>
       <CardHeader>
@@ -218,7 +227,7 @@ function ProjectCard({ project }: { project: typeof currentProjects[0] }) {
   return <div className="block">{cardContent}</div>
 }
 
-function ProjectSection({ projects }: { projects: typeof currentProjects }) {
+function ProjectSection({ projects }: { projects: Project[] }) {
   return (
     <div className="grid md:grid-cols-2 gap-8">
       {projects.map((project, index) => (
