@@ -16,7 +16,7 @@ const currentProjects = [
     title: 'Atacte',
     description:
       'Aplicativo de segurança familiar para servidor pessoal. Criado após problemas com Bitwarden, oferece gerenciamento de senhas criptografadas, autenticação 2FA, notas seguras e rastreamento de localização familiar. Interface web em Vue.js 3 e app mobile em React Native com Expo.',
-    url: 'https://github.com/fernandoforastieri/atacte',
+    url: 'https://github.com/ferforastieri/atacte',
     logo: '/logos/atacte.png',
     tags: ['Vue.js 3', 'React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma'],
   },
