@@ -5,19 +5,19 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 // Projetos Atuais
 const currentProjects = [
   {
+    title: 'Atacte',
+    description:
+      'Aplicativo completo de segurança familiar desenvolvido para rodar em servidor pessoal. Após enfrentar problemas com Bitwarden, resolvi criar minha própria solução de segurança familiar. O projeto inclui gerenciamento de senhas com criptografia AES-256, autenticação 2FA/TOTP, notas seguras e rastreamento de localização familiar em tempo real. Interface web em Vue.js 3 e app mobile em React Native com Expo, incluindo rastreamento em background mesmo com dispositivo bloqueado através de serviço foreground nativo em Android Kotlin.',
+    logo: '/logos/atacte.png',
+    tags: ['Vue.js 3', 'React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma'],
+  },
+  {
     title: 'Valk UI',
     description:
       'Biblioteca moderna de componentes UI para React com TypeScript. Inclui CLI interativo, suporte a dark mode, e componentes totalmente customizáveis.',
     url: 'https://valkui.com.br',
     logo: '/logos/valk-ui.png',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'CLI'],
-  },
-  {
-    title: 'Novo Projeto',
-    description:
-      'Projeto em desenvolvimento utilizando Next.js, Expo e React. Plataforma moderna com suporte multiplataforma.',
-    logo: '/logos/valk-ui.png',
-    tags: ['Next.js', 'Expo', 'React', 'TypeScript'],
   },
 ]
 
