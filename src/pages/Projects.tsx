@@ -1,6 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Accordion } from '@/components/ui/layout'
 import { Badge } from '@/components/ui/feedback'
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
+import { 
+  ArrowTopRightOnSquareIcon,
+  RocketLaunchIcon,
+  BuildingStorefrontIcon,
+  PaintBrushIcon,
+  BriefcaseIcon,
+} from '@heroicons/react/24/outline'
 
 type Project = {
   title: string
@@ -12,6 +18,14 @@ type Project = {
 
 // Projetos Atuais
 const currentProjects = [
+  {
+    title: 'FerTech',
+    description:
+      'Portfólio pessoal desenvolvido com React, TypeScript e Tailwind CSS. Interface moderna e responsiva com suporte a dark mode, apresentando projetos, artigos e experiência profissional. Totalmente open source e disponível no GitHub para quem se interessar em usar como base.',
+    url: 'https://github.com/ferforastieri/fertech-portfolio',
+    logo: '/logo.png',
+    tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'React Router'],
+  },
   {
     title: 'Atacte',
     description:
@@ -241,25 +255,53 @@ export default function Projects() {
   const accordionItems = [
     {
       value: 'current',
-      trigger: `Projetos Atuais (${currentProjects.length})`,
+      trigger: (
+        <div className="flex items-center gap-3">
+          <RocketLaunchIcon className="h-6 w-6 text-primary" />
+          <span className="text-lg font-semibold text-foreground">
+            Projetos Atuais ({currentProjects.length})
+          </span>
+        </div>
+      ),
       content: <ProjectSection projects={currentProjects} />,
       defaultOpen: true,
     },
     {
       value: 'imperio',
-      trigger: `Império Cerveja (Gold) (${imperioCervejaProjects.length})`,
+      trigger: (
+        <div className="flex items-center gap-3">
+          <BuildingStorefrontIcon className="h-6 w-6 text-primary" />
+          <span className="text-lg font-semibold text-foreground">
+            Império Cerveja (Gold) ({imperioCervejaProjects.length})
+          </span>
+        </div>
+      ),
       content: <ProjectSection projects={imperioCervejaProjects} />,
       defaultOpen: true,
     },
     {
       value: 'sherwin',
-      trigger: `Sherwin Williams (SW e Experiências) (${sherwinWilliamsProjects.length})`,
+      trigger: (
+        <div className="flex items-center gap-3">
+          <PaintBrushIcon className="h-6 w-6 text-primary" />
+          <span className="text-lg font-semibold text-foreground">
+            Sherwin Williams (SW e Experiências) ({sherwinWilliamsProjects.length})
+          </span>
+        </div>
+      ),
       content: <ProjectSection projects={sherwinWilliamsProjects} />,
       defaultOpen: true,
     },
     {
       value: 'others',
-      trigger: `Outros Projetos (${otherProjects.length})`,
+      trigger: (
+        <div className="flex items-center gap-3">
+          <BriefcaseIcon className="h-6 w-6 text-primary" />
+          <span className="text-lg font-semibold text-foreground">
+            Outros Projetos ({otherProjects.length})
+          </span>
+        </div>
+      ),
       content: <ProjectSection projects={otherProjects} />,
       defaultOpen: true,
     },

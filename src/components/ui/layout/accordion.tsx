@@ -47,15 +47,15 @@ const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
               <button
                 type="button"
                 onClick={() => toggleItem(item.value)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-accent transition-colors"
+                className="w-full flex items-center justify-between p-5 text-left hover:bg-accent transition-colors"
                 aria-expanded={isOpen}
               >
-                <span className="font-medium text-popover-foreground">
+                <div className="flex items-center gap-3">
                   {item.trigger}
-                </span>
+                </div>
                 <ChevronDownIcon
                   className={cn(
-                    'h-5 w-5 text-muted-foreground transition-transform duration-200',
+                    'h-5 w-5 text-muted-foreground transition-transform duration-200 flex-shrink-0',
                     isOpen && 'transform rotate-180'
                   )}
                 />

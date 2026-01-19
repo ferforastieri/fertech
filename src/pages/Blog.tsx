@@ -3,7 +3,11 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/la
 import { Accordion } from '@/components/ui/layout'
 import { Badge } from '@/components/ui/feedback'
 import { workArticles, personalArticles } from '@/data/articles'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { 
+  ArrowRightIcon,
+  BriefcaseIcon,
+  BookOpenIcon,
+} from '@heroicons/react/24/outline'
 
 export default function Blog() {
   const renderArticles = (articles: typeof workArticles) => (
@@ -46,13 +50,27 @@ export default function Blog() {
   const accordionItems = [
     {
       value: 'work',
-      trigger: `Artigos Profissionais (${workArticles.length})`,
+      trigger: (
+        <div className="flex items-center gap-3">
+          <BriefcaseIcon className="h-6 w-6 text-primary" />
+          <span className="text-lg font-semibold text-foreground">
+            Artigos Profissionais ({workArticles.length})
+          </span>
+        </div>
+      ),
       content: renderArticles(workArticles),
       defaultOpen: true,
     },
     {
       value: 'personal',
-      trigger: `Artigos Pessoais (${personalArticles.length})`,
+      trigger: (
+        <div className="flex items-center gap-3">
+          <BookOpenIcon className="h-6 w-6 text-primary" />
+          <span className="text-lg font-semibold text-foreground">
+            Artigos Pessoais ({personalArticles.length})
+          </span>
+        </div>
+      ),
       content: renderArticles(personalArticles),
       defaultOpen: true,
     },
