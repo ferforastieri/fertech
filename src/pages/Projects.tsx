@@ -22,7 +22,7 @@ const currentProjects = [
     title: 'FerTech',
     description:
       'Portfólio pessoal desenvolvido com React, TypeScript e Tailwind CSS. Interface moderna e responsiva com suporte a dark mode, apresentando projetos, artigos e experiência profissional. Totalmente open source e disponível no GitHub para quem se interessar em usar como base.',
-    url: 'https://github.com/ferforastieri/fertech-portfolio',
+    url: 'https://github.com/ferforastieri/fertech',
     logo: '/logo.png',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'React Router'],
   },
