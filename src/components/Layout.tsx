@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { 
   HomeIcon,
   DocumentTextIcon,
   BriefcaseIcon,
   UserIcon,
-  Bars3Icon,
-  XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ThemeToggle } from '@/components/ui/feedback'
 import { cn } from '@/components/lib'
@@ -17,9 +15,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
-  const navigate = useNavigate()
   const [isDark, setIsDark] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
@@ -34,23 +30,6 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, [])
 
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && mobileMenuOpen) {
-        setMobileMenuOpen(false)
-      }
-    }
-    
-    if (mobileMenuOpen) {
-      document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden'
-    }
-    
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
-    }
-  }, [mobileMenuOpen])
 
   const toggleTheme = () => {
     const newDark = !isDark
@@ -98,23 +77,19 @@ export default function Layout({ children }: LayoutProps) {
     },
   ]
 
-  const handleNavClick = (href: string) => {
-    navigate(href)
-    setMobileMenuOpen(false)
-  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-x-hidden w-full">
       {/* Mobile Header */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between h-16 px-4">
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="p-2 rounded-xl hover:bg-accent/50 transition-colors"
-            aria-label="Abrir menu"
-          >
-            <Bars3Icon className="h-6 w-6 text-foreground" />
-          </button>
+          <RouterLink to="/" className="flex items-center">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-8 w-8 object-contain"
+            />
+          </RouterLink>
           
           <div className="flex items-center gap-2">
             {socialLinks.map((social) => (
@@ -149,82 +124,6 @@ export default function Layout({ children }: LayoutProps) {
         {children}
       </main>
 
-      {/* Mobile Menu Drawer */}
-      {mobileMenuOpen && (
-        <>
-          <div 
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 md:hidden transition-opacity duration-200"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <div className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-card border-r border-border shadow-xl md:hidden">
-            <div className="flex flex-col h-full">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <h2 className="text-lg font-semibold text-foreground">Menu</h2>
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 rounded-xl hover:bg-accent/50 transition-colors"
-                  aria-label="Fechar menu"
-                >
-                  <XMarkIcon className="h-6 w-6 text-foreground" />
-                </button>
-              </div>
-
-              {/* Navigation Items */}
-              <nav className="flex-1 overflow-y-auto p-4">
-                <div className="space-y-2">
-                  {navigationItems.map((item) => {
-                    const Icon = item.icon
-                    const isActive = location.pathname === item.href
-                    return (
-                      <button
-                        key={item.href}
-                        onClick={() => handleNavClick(item.href)}
-                        className={cn(
-                          'w-full flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-200 text-left',
-                          isActive
-                            ? 'text-foreground bg-accent shadow-sm'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                        )}
-                      >
-                        <Icon className="h-6 w-6 flex-shrink-0" />
-                        <span className="text-base font-medium">{item.name}</span>
-                        {isActive && (
-                          <div className="ml-auto w-2 h-2 rounded-full bg-foreground" />
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-              </nav>
-
-              {/* Footer with Social Links */}
-              <div className="p-4 border-t border-border">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.name}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(
-                        'p-3 rounded-xl transition-all duration-200',
-                        'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                      )}
-                      aria-label={social.name}
-                    >
-                      {social.icon}
-                    </a>
-                  ))}
-                </div>
-                <div className="text-center text-sm text-muted-foreground">
-                  Fernando Forastieri Neto
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
 
       {/* Desktop Bottom Navigation */}
       <nav className="hidden md:flex fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
