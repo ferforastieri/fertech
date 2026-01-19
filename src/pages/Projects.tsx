@@ -21,15 +21,15 @@ const currentProjects = [
   {
     title: 'FerTech',
     description:
-      'Portfólio pessoal desenvolvido com React, TypeScript e Tailwind CSS. Interface moderna e responsiva com suporte a dark mode, apresentando projetos, artigos e experiência profissional. Totalmente open source e disponível no GitHub para quem se interessar em usar como base.',
+      'Este Site! Portfólio pessoal desenvolvido com React, TypeScript e Tailwind CSS. Interface moderna e responsiva com suporte a dark mode.',
     url: 'https://github.com/ferforastieri/fertech',
     logo: '/logo.png',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'React Router'],
   },
   {
-    title: 'Atacte',
+    title: 'Sentro',
     description:
-      'Aplicativo de segurança familiar para servidor pessoal. Criado após problemas com Bitwarden, oferece gerenciamento de senhas criptografadas, autenticação 2FA, notas seguras e rastreamento de localização familiar. Interface web em Vue.js 3 e app mobile em React Native com Expo.',
+      'Gerenciador de senhas e notas seguras para servidor pessoal. Criado após problemas com Bitwarden/Vaultwarden, oferece gerenciamento completo de senhas com criptografia AES-256, autenticação 2FA/TOTP, notas criptografadas, importação/exportação de dados e interface moderna. Interface web em Vue.js 3 e app mobile em React Native com Expo.',
     url: 'https://github.com/ferforastieri/atacte',
     logo: '/logos/atacte.png',
     tags: ['Vue.js 3', 'React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma'],
