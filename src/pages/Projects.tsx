@@ -29,9 +29,9 @@ const currentProjects = [
   {
     title: 'Sentro',
     description:
-      'Gerenciador de senhas e notas seguras para servidor pessoal. Criado após problemas com Bitwarden/Vaultwarden, oferece gerenciamento completo de senhas com criptografia AES-256, autenticação 2FA/TOTP, notas criptografadas, importação/exportação de dados e interface moderna. Interface web em Vue.js 3 e app mobile em React Native com Expo.',
+      'Gerenciador de senhas e notas seguras para servidor pessoal. Criptografia AES-256, 2FA/TOTP e interface moderna.',
     url: 'https://github.com/ferforastieri/atacte',
-    logo: '/logos/atacte.png',
+    logo: '/logos/sentro.png',
     tags: ['Vue.js 3', 'React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma'],
   },
   {
