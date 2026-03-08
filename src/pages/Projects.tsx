@@ -27,11 +27,11 @@ const currentProjects = [
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'React Router'],
   },
   {
-    title: 'Sentro',
+    title: 'Atacte',
     description:
       'Gerenciador de senhas e notas seguras para servidor pessoal. Criptografia AES-256, 2FA/TOTP e interface moderna.',
     url: 'https://github.com/ferforastieri/atacte',
-    logo: '/logos/sentro.png',
+    logo: '/logos/atacte.png',
     tags: ['Vue.js 3', 'React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma'],
   },
   {
