@@ -14,6 +14,7 @@ const AuroraBlog = lazy(() => import('./pages/aurora/AuroraBlog'))
 const AuroraProjects = lazy(() => import('./pages/aurora/AuroraProjects'))
 const AuroraResume = lazy(() => import('./pages/aurora/AuroraResume'))
 const AuroraArticle = lazy(() => import('./pages/aurora/AuroraArticle'))
+const AuroraPlayground = lazy(() => import('./pages/aurora/AuroraPlayground'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const ProtectedAdminRoute = lazy(() => import('./pages/admin/ProtectedAdminRoute'))
@@ -52,6 +53,7 @@ function App() {
         <Route path="blog/:slug" element={<AuroraArticle />} />
         <Route path="projects" element={<AuroraProjects />} />
         <Route path="resume" element={<AuroraResume />} />
+        <Route path="playground" element={<AuroraPlayground />} />
       </Route>
 
       <Route path="/admin/login" element={<LazyExperience><AdminLogin /></LazyExperience>} />

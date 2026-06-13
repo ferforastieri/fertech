@@ -6,6 +6,7 @@ import {
   ArrowsUpDownIcon,
   ArrowPathRoundedSquareIcon,
   BriefcaseIcon,
+  BeakerIcon,
   DocumentTextIcon,
   HomeIcon,
   ShareIcon,
@@ -28,6 +29,7 @@ const navItems = [
   { name: 'Blog', href: '/aurora/blog', icon: DocumentTextIcon },
   { name: 'Projetos', href: '/aurora/projects', icon: BriefcaseIcon },
   { name: 'Currículo', href: '/aurora/resume', icon: UserIcon },
+  { name: 'Playground', href: '/aurora/playground', icon: BeakerIcon },
 ]
 
 type AuroraNavPosition = 'top' | 'right' | 'bottom' | 'left'

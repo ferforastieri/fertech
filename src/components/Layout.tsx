@@ -6,8 +6,10 @@ import {
   BriefcaseIcon,
   UserIcon,
   ArrowPathRoundedSquareIcon,
+  BeakerIcon,
 } from '@heroicons/react/24/outline'
-import { ThemeToggle } from '@/components/ui/feedback'
+import { Dialog, ThemeToggle } from '@/components/ui/feedback'
+import { Button } from '@/components/ui/forms'
 import { cn } from '@/components/lib'
 import {
   ExperienceProvider,
@@ -25,6 +27,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
   const location = useLocation()
   const navigate = useNavigate()
   const [isDark, setIsDark] = useState(false)
+  const [isPlaygroundWarningOpen, setIsPlaygroundWarningOpen] = useState(false)
   const { data: profile } = useProfileContent()
 
   useEffect(() => {
@@ -59,11 +62,18 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
     { name: 'Blog', href: `${basePath}/blog`, icon: DocumentTextIcon },
     { name: 'Projetos', href: `${basePath}/projects`, icon: BriefcaseIcon },
     { name: 'Currículo', href: `${basePath}/resume`, icon: UserIcon },
+    { name: 'Playground', href: '/aurora/playground', icon: BeakerIcon, auroraOnly: true },
   ]
 
   const switchToAurora = () => {
     saveExperienceMode('aurora')
     navigate('/aurora')
+  }
+
+  const openPlayground = () => {
+    saveExperienceMode('aurora')
+    setIsPlaygroundWarningOpen(false)
+    navigate('/aurora/playground')
   }
 
 
@@ -138,6 +148,19 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
               {navigationItems.map((item) => {
                 const Icon = item.icon
                 const isActive = location.pathname === item.href
+                if ('auroraOnly' in item) {
+                  return (
+                    <button
+                      key={item.href}
+                      type="button"
+                      onClick={() => setIsPlaygroundWarningOpen(true)}
+                      className="flex items-center gap-3 rounded-xl px-4 py-3 text-muted-foreground transition-all duration-200 hover:bg-accent/50 hover:text-foreground"
+                    >
+                      <Icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="text-sm font-medium">{item.name}</span>
+                    </button>
+                  )
+                }
                 return (
                   <RouterLink
                     key={item.href}
@@ -206,6 +229,19 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
           {navigationItems.map((item) => {
             const Icon = item.icon
             const isActive = location.pathname === item.href
+            if ('auroraOnly' in item) {
+              return (
+                <button
+                  key={item.href}
+                  type="button"
+                  onClick={() => setIsPlaygroundWarningOpen(true)}
+                  className="relative flex max-w-[80px] flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-muted-foreground transition-all duration-200"
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="text-[10px] font-medium leading-tight text-center">{item.name}</span>
+                </button>
+              )
+            }
             return (
               <RouterLink
                 key={item.href}
@@ -227,6 +263,25 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
           })}
         </div>
       </nav>
+
+      <Dialog
+        isOpen={isPlaygroundWarningOpen}
+        onClose={() => setIsPlaygroundWarningOpen(false)}
+        title="Abrir Playground WebGL?"
+        size="sm"
+      >
+        <p className="leading-7 text-muted-foreground">
+          O playground faz parte da experiência Aurora. Você será levado ao modo imersivo para desenhar, combinar cores e controlar animações WebGL.
+        </p>
+        <div className="mt-6 flex justify-end gap-3">
+          <Button type="button" variant="ghost" onClick={() => setIsPlaygroundWarningOpen(false)}>
+            Cancelar
+          </Button>
+          <Button type="button" onClick={openPlayground}>
+            Ir para o Aurora
+          </Button>
+        </div>
+      </Dialog>
       </div>
     </ExperienceProvider>
   )
