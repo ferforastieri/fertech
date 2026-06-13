@@ -13,18 +13,22 @@ import { useProfileContent } from '@/api/profile/useProfileContent'
 import { useProjects } from '@/api/projects/useProjects'
 import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeContent'
 import { generateResumePdf } from '@/features/resume/generateResumePdf'
+import { useSiteContent } from '@/api/site/useSiteContent'
+import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 
 export default function Resume() {
   const [isGenerating, setIsGenerating] = useState(false)
   const profileQuery = useProfileContent()
   const projectsQuery = useProjects()
   const resumeQuery = useResumeContent()
+  const siteContentQuery = useSiteContent()
+  const copy = siteContentQuery.data
 
   const profile = profileQuery.data
   const projects = projectsQuery.data ?? []
   const resume = resumeQuery.data
-  const isLoading = profileQuery.isLoading || projectsQuery.isLoading || resumeQuery.isLoading
-  const hasError = profileQuery.isError || projectsQuery.isError || resumeQuery.isError
+  const isLoading = profileQuery.isLoading || projectsQuery.isLoading || resumeQuery.isLoading || siteContentQuery.isLoading
+  const hasError = profileQuery.isError || projectsQuery.isError || resumeQuery.isError || siteContentQuery.isError
 
   const handleDownloadPDF = async () => {
     if (!profile || !resume) return
@@ -33,8 +37,9 @@ export default function Resume() {
 
     try {
       await generateResumePdf({ profile, resume, projects })
+      if (copy) notifySuccess(copy.resume.pdfSuccess)
     } catch (error) {
-      console.error('Erro ao gerar PDF:', error)
+      notifyError(copy?.resume.pdfError ?? '', error)
     } finally {
       setIsGenerating(false)
     }
@@ -66,10 +71,10 @@ export default function Resume() {
     )
   }
 
-  if (hasError || !profile || !resume) {
+  if (hasError || !profile || !resume || !copy) {
     return (
       <div className="container mx-auto px-4 pt-4 pb-12">
-        <p className="text-center text-destructive">Não foi possível carregar o currículo.</p>
+        <p className="text-center text-destructive">{copy?.resume.error}</p>
       </div>
     )
   }
@@ -82,7 +87,7 @@ export default function Resume() {
       <div id="resume-content" className="mx-auto max-w-4xl space-y-12">
         <div className="text-center">
           <div className="mb-6 flex justify-center">
-            <img src={profile.logoUrl} alt="Logo FF" className="h-24 w-24 object-contain" />
+            <img src={profile.logoUrl} alt={copy.resume.logoAlt} className="h-24 w-24 object-contain" />
           </div>
           <h1 className="mb-4 text-5xl font-bold text-foreground">{profile.name}</h1>
           <p className="mb-6 text-xl text-foreground">{profile.role}</p>

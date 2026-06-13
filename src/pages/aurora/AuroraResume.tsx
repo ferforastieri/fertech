@@ -17,6 +17,8 @@ import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
 import { generateResumePdf } from '@/features/resume/generateResumePdf'
+import { useSiteContent } from '@/api/site/useSiteContent'
+import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -26,12 +28,14 @@ export default function AuroraResume() {
   const profileQuery = useProfileContent()
   const resumeQuery = useResumeContent()
   const projectsQuery = useProjects()
+  const siteContentQuery = useSiteContent()
+  const copy = siteContentQuery.data
 
   const profile = profileQuery.data
   const resume = resumeQuery.data
   const projects = projectsQuery.data ?? []
-  const isLoading = profileQuery.isLoading || resumeQuery.isLoading || projectsQuery.isLoading
-  const hasError = profileQuery.isError || resumeQuery.isError || projectsQuery.isError
+  const isLoading = profileQuery.isLoading || resumeQuery.isLoading || projectsQuery.isLoading || siteContentQuery.isLoading
+  const hasError = profileQuery.isError || resumeQuery.isError || projectsQuery.isError || siteContentQuery.isError
   const loadingTransition = useAuroraLoadingTransition(isLoading)
 
   useEffect(() => {
@@ -67,21 +71,22 @@ export default function AuroraResume() {
 
     try {
       await generateResumePdf({ profile, resume, projects })
+      if (copy) notifySuccess(copy.resume.pdfSuccess)
     } catch (error) {
-      console.error('Erro ao gerar PDF:', error)
+      notifyError(copy?.resume.pdfError ?? '', error)
     } finally {
       setIsGenerating(false)
     }
   }
 
   if (loadingTransition.visible) {
-    return <AuroraLoading label="Montando currículo" exiting={loadingTransition.exiting} />
+    return <AuroraLoading label={copy?.resume.loading ?? ''} exiting={loadingTransition.exiting} />
   }
 
-  if (hasError || !profile || !resume) {
+  if (hasError || !profile || !resume || !copy) {
     return (
       <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-10 md:pt-32">
-        <p className="text-center text-rose-500">Não foi possível carregar o currículo.</p>
+        <p className="text-center text-rose-500">{copy?.resume.error}</p>
       </div>
     )
   }
@@ -94,7 +99,7 @@ export default function AuroraResume() {
     <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-10 md:pt-32">
       <header className="resume-hero mb-14 text-center">
         <div className="mb-6 flex justify-center">
-          <img src={profile.logoUrl} alt="Logo FF" className="h-24 w-24 object-contain" />
+          <img src={profile.logoUrl} alt={copy.resume.logoAlt} className="h-24 w-24 object-contain" />
         </div>
         <h1 className="text-5xl font-bold text-[rgb(var(--aurora-text))] md:text-7xl">{profile.name}</h1>
         <p className="mx-auto mt-5 max-w-2xl text-xl text-[rgb(var(--aurora-muted))]">{profile.role}</p>

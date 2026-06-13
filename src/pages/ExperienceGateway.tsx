@@ -9,27 +9,12 @@ import {
   ExperienceMode,
   saveExperienceMode,
 } from '@/contexts/experience/ExperienceContext'
-
-const modes = [
-  {
-    id: 'classic' as const,
-    name: 'Tradicional',
-    audience: 'Recomendado para recrutadores',
-    description: 'Leitura objetiva, visual familiar e navegação direta para conhecer minha experiência, projetos e currículo.',
-    href: '/classic',
-  },
-  {
-    id: 'aurora' as const,
-    name: 'Modo Imersivo',
-    audience: 'Recomendado para quem quer explorar',
-    description: 'Uma experiência criativa e pessoal com WebGL, movimento, profundidade e navegação cinematográfica.',
-    href: '/aurora',
-  },
-]
+import { useSiteContent } from '@/api/site/useSiteContent'
 
 export default function ExperienceGateway() {
   const rootRef = useRef<HTMLDivElement>(null)
-  const [secondsUntilAurora, setSecondsUntilAurora] = useState(5)
+  const { data: siteContent } = useSiteContent()
+  const [secondsUntilAurora, setSecondsUntilAurora] = useState(0)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -57,9 +42,11 @@ export default function ExperienceGateway() {
   }, [navigate])
 
   useEffect(() => {
+    if (!siteContent) return
+    setSecondsUntilAurora(siteContent.gateway.redirectSeconds)
     const redirectTimeout = window.setTimeout(() => {
       navigate('/aurora')
-    }, 5000)
+    }, siteContent.gateway.redirectSeconds * 1000)
     const countdownInterval = window.setInterval(() => {
       setSecondsUntilAurora((current) => Math.max(0, current - 1))
     }, 1000)
@@ -68,12 +55,15 @@ export default function ExperienceGateway() {
       window.clearTimeout(redirectTimeout)
       window.clearInterval(countdownInterval)
     }
-  }, [navigate])
+  }, [navigate, siteContent])
 
   const chooseMode = (mode: ExperienceMode, href: string) => {
     saveExperienceMode(mode)
     navigate(href)
   }
+
+  if (!siteContent) return <div className="min-h-screen bg-[#040001]" />
+  const { gateway } = siteContent
 
   return (
     <div ref={rootRef} className="relative min-h-screen overflow-hidden bg-[#040001] px-4 py-8 text-white">
@@ -83,19 +73,19 @@ export default function ExperienceGateway() {
         <div className="mb-10 max-w-3xl">
           <div className="gateway-kicker mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm text-rose-200 backdrop-blur">
             <SparklesIcon className="h-4 w-4" />
-            Escolha como quer navegar
+            {gateway.kicker}
           </div>
           <h1 className="gateway-title overflow-hidden text-5xl font-bold leading-[0.95] text-white md:text-7xl">
-            <span className="block">Escolha como</span>
-            <span className="block text-rose-500">explorar.</span>
+            <span className="block">{gateway.titleLine1}</span>
+            <span className="block text-rose-500">{gateway.titleLine2}</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">
-            Este é meu portfólio pessoal e profissional. Se nenhuma opção for escolhida, a experiência imersiva começará em {secondsUntilAurora} segundos.
+            {gateway.descriptionTemplate.replace('{seconds}', String(secondsUntilAurora))}
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          {modes.map((mode) => (
+          {gateway.modes.map((mode) => (
             <button
               key={mode.id}
               type="button"

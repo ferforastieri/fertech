@@ -1,10 +1,10 @@
 import { motion } from 'motion/react'
 
 export function AuroraLoading({
-  label = 'Carregando',
+  label,
   exiting = false,
 }: {
-  label?: string
+  label: string
   exiting?: boolean
 }) {
   return (

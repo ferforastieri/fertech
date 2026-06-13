@@ -6,6 +6,7 @@ import { ArrowRightIcon, CodeBracketIcon, RocketLaunchIcon, SparklesIcon } from 
 import { useExperiencePath } from '@/contexts/experience/ExperienceContext'
 import { ProfileHighlight, useProfileContent } from '@/api/profile/useProfileContent'
 import { useHomeContent } from '@/api/home/useHomeContent'
+import { useSiteContent } from '@/api/site/useSiteContent'
 
 const highlightIcons = {
   code: CodeBracketIcon,
@@ -21,9 +22,10 @@ export default function Home() {
   const modePath = useExperiencePath()
   const profileQuery = useProfileContent()
   const homeQuery = useHomeContent()
+  const siteContentQuery = useSiteContent()
   const profileContent = profileQuery.data
   const homeContent = homeQuery.data
-  const isLoading = profileQuery.isLoading || homeQuery.isLoading
+  const isLoading = profileQuery.isLoading || homeQuery.isLoading || siteContentQuery.isLoading
 
   if (isLoading) {
     return (
@@ -59,10 +61,10 @@ export default function Home() {
     )
   }
 
-  if (profileQuery.error || homeQuery.error || !profileContent || !homeContent) {
+  if (profileQuery.error || homeQuery.error || siteContentQuery.error || !profileContent || !homeContent || !siteContentQuery.data) {
     return (
       <div className="container mx-auto px-4 pt-4 pb-12">
-        <div className="max-w-6xl mx-auto text-foreground">Nao foi possivel carregar o conteudo.</div>
+        <div className="max-w-6xl mx-auto text-foreground">{siteContentQuery.data?.common.contentLoadError}</div>
       </div>
     )
   }

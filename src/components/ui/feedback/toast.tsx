@@ -54,7 +54,7 @@ const Toast = forwardRef<HTMLDivElement, ToastProps>(
           <button
             onClick={onClose}
             className="flex-shrink-0 rounded-xl p-1 hover:bg-accent transition-colors"
-            aria-label="Close"
+            aria-label="Fechar"
           >
             <XMarkIcon className="h-4 w-4" />
           </button>
@@ -67,4 +67,3 @@ const Toast = forwardRef<HTMLDivElement, ToastProps>(
 Toast.displayName = 'Toast'
 
 export { Toast }
-

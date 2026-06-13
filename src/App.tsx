@@ -6,6 +6,7 @@ import Blog from './pages/Blog'
 import Projects from './pages/Projects'
 import Resume from './pages/Resume'
 import Article from './pages/Article'
+import ProjectDetail from './pages/ProjectDetail'
 
 const AuroraLayout = lazy(() => import('./components/aurora/AuroraLayout'))
 const ExperienceGateway = lazy(() => import('./pages/ExperienceGateway'))
@@ -15,6 +16,7 @@ const AuroraProjects = lazy(() => import('./pages/aurora/AuroraProjects'))
 const AuroraResume = lazy(() => import('./pages/aurora/AuroraResume'))
 const AuroraArticle = lazy(() => import('./pages/aurora/AuroraArticle'))
 const AuroraPlayground = lazy(() => import('./pages/aurora/AuroraPlayground'))
+const AuroraProjectDetail = lazy(() => import('./pages/aurora/AuroraProjectDetail'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const ProtectedAdminRoute = lazy(() => import('./pages/admin/ProtectedAdminRoute'))
@@ -40,11 +42,13 @@ function App() {
       <Route path="/classic/blog" element={<ClassicPage basePath="/classic"><Blog /></ClassicPage>} />
       <Route path="/classic/blog/:slug" element={<ClassicPage basePath="/classic"><Article /></ClassicPage>} />
       <Route path="/classic/projects" element={<ClassicPage basePath="/classic"><Projects /></ClassicPage>} />
+      <Route path="/classic/projects/:projectId" element={<ClassicPage basePath="/classic"><ProjectDetail /></ClassicPage>} />
       <Route path="/classic/resume" element={<ClassicPage basePath="/classic"><Resume /></ClassicPage>} />
 
       <Route path="/blog" element={<ClassicPage><Blog /></ClassicPage>} />
       <Route path="/blog/:slug" element={<ClassicPage><Article /></ClassicPage>} />
       <Route path="/projects" element={<ClassicPage><Projects /></ClassicPage>} />
+      <Route path="/projects/:projectId" element={<ClassicPage><ProjectDetail /></ClassicPage>} />
       <Route path="/resume" element={<ClassicPage><Resume /></ClassicPage>} />
 
       <Route path="/aurora" element={<LazyExperience><AuroraLayout /></LazyExperience>}>
@@ -52,6 +56,7 @@ function App() {
         <Route path="blog" element={<AuroraBlog />} />
         <Route path="blog/:slug" element={<AuroraArticle />} />
         <Route path="projects" element={<AuroraProjects />} />
+        <Route path="projects/:projectId" element={<AuroraProjectDetail />} />
         <Route path="resume" element={<AuroraResume />} />
         <Route path="playground" element={<AuroraPlayground />} />
       </Route>

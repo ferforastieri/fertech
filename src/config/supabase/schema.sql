@@ -15,15 +15,6 @@ create table if not exists public.profile (
 alter table public.profile add column if not exists logo_url text not null default '/logo.png';
 alter table public.profile add column if not exists social_links jsonb not null default '[]'::jsonb;
 
-update public.profile
-set social_links = '[
-  {"name":"Twitter","href":"https://x.com/viciofer","icon":"x"},
-  {"name":"GitHub","href":"https://github.com/ferforastieri","icon":"github"},
-  {"name":"LinkedIn","href":"https://linkedin.com/in/fernando-forastieri","icon":"linkedin"}
-]'::jsonb
-where id = 'main'
-  and (social_links is null or social_links = '[]'::jsonb);
-
 create table if not exists public.home_content (
   id text primary key,
   hero_eyebrow text not null,
@@ -50,6 +41,12 @@ create table if not exists public.home_content (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.site_content (
+  id text primary key,
+  content jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.project_groups (
   id text primary key,
   title text not null,
@@ -65,9 +62,17 @@ create table if not exists public.projects (
   logo text not null,
   tags text[] not null default '{}',
   url text,
+  project_url text,
+  site_url text,
+  architecture jsonb,
   sort_order integer not null default 0,
   updated_at timestamptz not null default now()
 );
+
+alter table public.projects add column if not exists project_url text;
+alter table public.projects add column if not exists site_url text;
+alter table public.projects add column if not exists architecture jsonb;
+update public.projects set site_url = url where site_url is null and url is not null;
 
 create table if not exists public.articles (
   slug text primary key,
@@ -164,6 +169,7 @@ alter table public.resume_education enable row level security;
 alter table public.resume_technologies enable row level security;
 alter table public.resume_settings enable row level security;
 alter table public.admin_users enable row level security;
+alter table public.site_content enable row level security;
 
 drop policy if exists "Public read profile" on public.profile;
 drop policy if exists "Public read home content" on public.home_content;
@@ -200,6 +206,8 @@ create policy "Public read resume settings" on public.resume_settings for select
 
 create policy "Authenticated write profile" on public.profile for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "Authenticated write home content" on public.home_content for all to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "Public read site content" on public.site_content for select to anon, authenticated using (true);
+create policy "Authenticated write site content" on public.site_content for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "Authenticated write project groups" on public.project_groups for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "Authenticated write projects" on public.projects for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "Authenticated write articles" on public.articles for all to authenticated using (public.is_admin()) with check (public.is_admin());

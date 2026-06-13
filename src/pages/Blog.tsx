@@ -8,15 +8,18 @@ import {
   BookOpenIcon,
 } from '@heroicons/react/24/outline'
 import { useExperiencePath } from '@/contexts/experience/ExperienceContext'
+import { useSiteContent } from '@/api/site/useSiteContent'
 
 export default function Blog() {
   const modePath = useExperiencePath()
+  const siteContentQuery = useSiteContent()
+  const copy = siteContentQuery.data
   const workArticlesQuery = useArticleList('work')
   const personalArticlesQuery = useArticleList('personal')
   const workArticles = workArticlesQuery.data ?? []
   const personalArticles = personalArticlesQuery.data ?? []
-  const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading
-  const hasError = workArticlesQuery.error || personalArticlesQuery.error
+  const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading || siteContentQuery.isLoading
+  const hasError = workArticlesQuery.error || personalArticlesQuery.error || siteContentQuery.error
 
   if (isLoading) {
     return (
@@ -55,10 +58,10 @@ export default function Blog() {
     )
   }
 
-  if (hasError) {
+  if (hasError || !copy) {
     return (
       <div className="container mx-auto px-4 pt-4 pb-12">
-        <div className="max-w-6xl mx-auto text-foreground">Nao foi possivel carregar os artigos.</div>
+        <div className="max-w-6xl mx-auto text-foreground">{copy?.blog.error}</div>
       </div>
     )
   }
@@ -85,7 +88,7 @@ export default function Blog() {
               {article.date}
             </span>
             <span className="text-sm text-muted-foreground">
-              • {article.readTime} de leitura
+              • {article.readTime} {copy.common.readTimeSuffix}
             </span>
           </div>
           <p className="text-base leading-relaxed text-foreground">
@@ -103,7 +106,7 @@ export default function Blog() {
         <div className="flex items-center gap-3">
           <BriefcaseIcon className="h-6 w-6 text-primary" />
           <span className="text-lg font-semibold text-foreground">
-            Artigos Profissionais ({workArticles.length})
+            {copy.blog.workTitle} ({workArticles.length})
           </span>
         </div>
       ),
@@ -116,7 +119,7 @@ export default function Blog() {
         <div className="flex items-center gap-3">
           <BookOpenIcon className="h-6 w-6 text-primary" />
           <span className="text-lg font-semibold text-foreground">
-            Artigos Pessoais ({personalArticles.length})
+            {copy.blog.personalTitle} ({personalArticles.length})
           </span>
         </div>
       ),
@@ -129,9 +132,9 @@ export default function Blog() {
     <div className="container mx-auto px-4 pt-4 pb-12">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4 text-foreground">Blog</h1>
+          <h1 className="text-5xl font-bold mb-4 text-foreground">{copy.blog.title}</h1>
           <p className="text-xl text-foreground max-w-2xl mx-auto">
-            Artigos sobre desenvolvimento, tecnologia e reflexões pessoais
+            {copy.blog.description}
           </p>
         </div>
 

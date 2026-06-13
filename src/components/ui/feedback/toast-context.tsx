@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react'
 import { Toast, ToastProps } from './toast'
+import { subscribeToNotifications } from './notifications'
 
 export interface ToastItem extends Omit<ToastProps, 'onClose'> {
   id: string
@@ -33,6 +34,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }, [])
+
+  useEffect(() => subscribeToNotifications(showToast), [showToast])
 
   return (
     <ToastContext.Provider value={{ toasts, showToast, removeToast }}>
@@ -76,4 +79,3 @@ export function useToast() {
   }
   return context
 }
-

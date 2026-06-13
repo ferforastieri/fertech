@@ -12,8 +12,10 @@ import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeConten
 import { supabase } from '@/config/supabase/client'
 import { formatTextList, parseTextList } from '@/features/admin/textList'
 import { useStoredTheme } from '@/hooks/useStoredTheme'
+import { useSiteContent } from '@/api/site/useSiteContent'
+import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 
-type AdminTab = 'profile' | 'home' | 'projects' | 'articles' | 'resume'
+type AdminTab = 'profile' | 'home' | 'content' | 'projects' | 'articles' | 'resume'
 
 type ProfileForm = {
   name: string
@@ -65,7 +67,9 @@ type ProjectForm = {
   description: string
   logo: string
   tags: string
-  url: string
+  projectUrl: string
+  siteUrl: string
+  architecture: string
   sortOrder: number
 }
 
@@ -118,6 +122,7 @@ type ExperienceForm = {
 const tabs: Array<{ id: AdminTab; label: string }> = [
   { id: 'profile', label: 'Perfil' },
   { id: 'home', label: 'Home' },
+  { id: 'content', label: 'Conteúdo do site' },
   { id: 'projects', label: 'Projetos' },
   { id: 'articles', label: 'Artigos' },
   { id: 'resume', label: 'Currículo' },
@@ -188,6 +193,8 @@ export default function AdminDashboard() {
   const workArticlesQuery = useArticleList('work')
   const personalArticlesQuery = useArticleList('personal')
   const resumeQuery = useResumeContent()
+  const siteContentQuery = useSiteContent()
+  const [siteContentForm, setSiteContentForm] = useState('')
 
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     name: '',
@@ -245,12 +252,17 @@ export default function AdminDashboard() {
     projectGroupsQuery.isLoading ||
     workArticlesQuery.isLoading ||
     personalArticlesQuery.isLoading ||
-    resumeQuery.isLoading
+    resumeQuery.isLoading ||
+    siteContentQuery.isLoading
 
   const articleQueries = useMemo(
     () => [...(workArticlesQuery.data ?? []), ...(personalArticlesQuery.data ?? [])],
     [workArticlesQuery.data, personalArticlesQuery.data],
   )
+
+  useEffect(() => {
+    if (siteContentQuery.data) setSiteContentForm(JSON.stringify(siteContentQuery.data, null, 2))
+  }, [siteContentQuery.data])
 
   useEffect(() => {
     if (!profileQuery.data) return
@@ -327,17 +339,31 @@ export default function AdminDashboard() {
       await callback()
       await invalidatePublicData()
       setStatus(successMessage)
+      notifySuccess(successMessage)
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Erro ao salvar.')
+      notifyError('Erro ao salvar no Supabase', error)
     } finally {
       setIsSaving(false)
     }
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      notifyError('Erro ao sair', error)
+      return
+    }
+    notifySuccess('Sessão encerrada.')
     navigate('/admin/login')
   }
+
+  const saveSiteContent = () =>
+    runSave(async () => {
+      const content = JSON.parse(siteContentForm)
+      const { error } = await supabase.from('site_content').upsert({ id: 'main', content })
+      if (error) throw error
+    }, 'Conteúdo do site salvo.')
 
   const uploadProjectLogo = async (groupIndex: number, projectIndex: number, file: File) => {
     setStatus('')
@@ -358,8 +384,10 @@ export default function AdminDashboard() {
       const { data } = supabase.storage.from('logos').getPublicUrl(path)
       updateProject(groupIndex, projectIndex, { logo: data.publicUrl }, projectGroupsForm, setProjectGroupsForm)
       setStatus('Logo enviada. Salve os projetos para persistir o caminho.')
+      notifySuccess('Logo enviada.', 'Salve os projetos para persistir o caminho.')
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Erro ao enviar logo.')
+      notifyError('Erro ao enviar logo', error)
     } finally {
       setUploadingLogo('')
     }
@@ -382,8 +410,10 @@ export default function AdminDashboard() {
       const { data } = supabase.storage.from('logos').getPublicUrl(path)
       setProfileForm((current) => ({ ...current, logoUrl: data.publicUrl }))
       setStatus('Logo do site enviada. Salve o perfil para persistir o caminho.')
+      notifySuccess('Logo do site enviada.', 'Salve o perfil para persistir o caminho.')
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Erro ao enviar logo do site.')
+      notifyError('Erro ao enviar logo do site', error)
     } finally {
       setUploadingLogo('')
     }
@@ -489,7 +519,10 @@ export default function AdminDashboard() {
           description: project.description,
           logo: project.logo,
           tags: parseTextList(project.tags),
-          url: project.url || null,
+          project_url: project.projectUrl || null,
+          site_url: project.siteUrl || null,
+          url: project.siteUrl || null,
+          architecture: project.architecture.trim() ? JSON.parse(project.architecture) : null,
           sort_order: projectIndex,
         })),
       )
@@ -805,10 +838,19 @@ export default function AdminDashboard() {
                                 />
                               </label>
                             </div>
-                            <Input label="URL" value={project.url} onChange={(event) => updateProject(groupIndex, projectIndex, { url: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
+                            <Input label="Link de Ver projeto" value={project.projectUrl} onChange={(event) => updateProject(groupIndex, projectIndex, { projectUrl: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
+                            <Input label="Link de Ver site" value={project.siteUrl} onChange={(event) => updateProject(groupIndex, projectIndex, { siteUrl: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
                             <Textarea label="Tags, uma por linha" value={project.tags} onChange={(value) => updateProject(groupIndex, projectIndex, { tags: value }, projectGroupsForm, setProjectGroupsForm)} rows={4} />
                             <div className="md:col-span-2">
                               <Textarea label="Descrição" value={project.description} onChange={(value) => updateProject(groupIndex, projectIndex, { description: value }, projectGroupsForm, setProjectGroupsForm)} rows={3} />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Textarea
+                                label="Arquitetura (JSON)"
+                                value={project.architecture}
+                                onChange={(value) => updateProject(groupIndex, projectIndex, { architecture: value }, projectGroupsForm, setProjectGroupsForm)}
+                                rows={12}
+                              />
                             </div>
                             <div className="flex justify-end md:col-span-2">
                               <Button type="button" variant="destructive" className="min-w-40" onClick={() => removeProject(groupIndex, projectIndex, projectGroupsForm, setProjectGroupsForm)}>
@@ -834,6 +876,20 @@ export default function AdminDashboard() {
                   </Button>
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveProjects}>
                     Salvar projetos
+                  </Button>
+                </div>
+              </AdminSection>
+            )}
+
+            {activeTab === 'content' && (
+              <AdminSection title="Conteúdo público do site">
+                <p className="mb-4 text-sm leading-6 text-muted-foreground">
+                  Este JSON controla navegação, gateway, Blog, Projetos, estados de tela, Playground e textos de arquitetura nos modos tradicional e Aurora.
+                </p>
+                <Textarea label="Conteúdo JSON" value={siteContentForm} onChange={setSiteContentForm} rows={36} />
+                <div className="mt-5 flex justify-end">
+                  <Button type="button" className="min-w-40" loading={isSaving} onClick={saveSiteContent}>
+                    Salvar conteúdo
                   </Button>
                 </div>
               </AdminSection>
@@ -972,7 +1028,9 @@ function mapProjectGroupToForm(group: ProjectGroup): ProjectGroupForm {
       description: project.description,
       logo: project.logo,
       tags: formatTextList(project.tags),
-      url: project.url ?? '',
+      projectUrl: project.projectUrl ?? '',
+      siteUrl: project.siteUrl ?? '',
+      architecture: project.architecture ? JSON.stringify(project.architecture, null, 2) : '',
       sortOrder: project.sortOrder,
     })),
   }
@@ -1009,7 +1067,9 @@ function createProjectForm(groupId: string, index: number): ProjectForm {
     description: '',
     logo: '',
     tags: '',
-    url: '',
+    projectUrl: '',
+    siteUrl: '',
+    architecture: '',
     sortOrder: index,
   }
 }

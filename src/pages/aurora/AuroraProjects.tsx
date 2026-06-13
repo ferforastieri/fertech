@@ -1,16 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowTopRightOnSquareIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { Link } from 'react-router-dom'
+import { ArrowRightIcon, ArrowTopRightOnSquareIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
+import { isExternalUrl, projectDetailPath } from '@/features/projects/projectRoutes'
+import { SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function ProjectRow({ project }: { project: Project }) {
-  const content = (
+function ProjectRow({ project, copy }: { project: Project; copy: SiteContent }) {
+  const detailUrl = project.projectUrl || projectDetailPath(project, true)
+
+  return (
     <article className="project-reveal py-10 transition duration-300 first:pt-4 last:pb-4">
       <div className="mb-4 flex items-start gap-4">
         <div className="grid h-16 w-16 flex-shrink-0 place-items-center rounded-2xl border border-white/12 bg-white/8">
@@ -18,7 +23,6 @@ function ProjectRow({ project }: { project: Project }) {
         </div>
         <div className="min-w-0">
           <h3 className="text-2xl font-bold text-white">{project.title}</h3>
-          {project.url && <ArrowTopRightOnSquareIcon className="mt-2 h-5 w-5 text-rose-500" />}
         </div>
       </div>
       <p className="max-w-4xl leading-7 text-white/68">{project.description}</p>
@@ -29,19 +33,27 @@ function ProjectRow({ project }: { project: Project }) {
           </span>
         ))}
       </div>
+      <div className="mt-6 flex flex-wrap gap-3">
+        {isExternalUrl(detailUrl) ? (
+          <a href={detailUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-rose-900 px-5 py-2.5 text-sm font-semibold text-white">
+            {copy.common.viewProject} <ArrowRightIcon className="h-4 w-4" />
+          </a>
+        ) : (
+          <Link to={detailUrl} className="inline-flex items-center gap-2 rounded-full bg-rose-900 px-5 py-2.5 text-sm font-semibold text-white">
+            {copy.common.viewProject} <ArrowRightIcon className="h-4 w-4" />
+          </Link>
+        )}
+        {project.siteUrl && (
+          <a href={project.siteUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/16 px-5 py-2.5 text-sm font-semibold text-white">
+            {copy.common.viewSite} <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+          </a>
+        )}
+      </div>
     </article>
-  )
-
-  return project.url ? (
-    <a href={project.url} target="_blank" rel="noopener noreferrer" className="block">
-      {content}
-    </a>
-  ) : (
-    <div>{content}</div>
   )
 }
 
-function ProjectGroupSection({ group }: { group: ProjectGroup }) {
+function ProjectGroupSection({ group, copy }: { group: ProjectGroup; copy: SiteContent }) {
   const [isOpen, setIsOpen] = useState(true)
 
   return (
@@ -54,7 +66,7 @@ function ProjectGroupSection({ group }: { group: ProjectGroup }) {
       >
         <span>
           <span className="block text-3xl font-bold text-white">{group.title}</span>
-          <span className="mt-1 block text-sm text-white/56">{group.projects.length} projetos</span>
+          <span className="mt-1 block text-sm text-white/56">{group.projects.length} {copy.common.projectsCountLabel}</span>
         </span>
         <ChevronDownIcon
           className={`h-5 w-5 shrink-0 text-rose-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
@@ -63,7 +75,7 @@ function ProjectGroupSection({ group }: { group: ProjectGroup }) {
       {isOpen && (
         <div className="mt-5 divide-y divide-white/10">
           {group.projects.map((project) => (
-            <ProjectRow key={project.title} project={project} />
+            <ProjectRow key={project.title} project={project} copy={copy} />
           ))}
         </div>
       )}
@@ -74,7 +86,9 @@ function ProjectGroupSection({ group }: { group: ProjectGroup }) {
 export default function AuroraProjects() {
   const rootRef = useRef<HTMLDivElement>(null)
   const { data: projectGroups, isLoading, error } = useProjectGroups()
-  const loadingTransition = useAuroraLoadingTransition(isLoading)
+  const siteContentQuery = useSiteContent()
+  const copy = siteContentQuery.data
+  const loadingTransition = useAuroraLoadingTransition(isLoading || siteContentQuery.isLoading)
 
   useEffect(() => {
     if (loadingTransition.visible || !rootRef.current) return
@@ -102,27 +116,27 @@ export default function AuroraProjects() {
   }, [loadingTransition.visible, projectGroups?.length])
 
   if (loadingTransition.visible) {
-    return <AuroraLoading label="Carregando projetos" exiting={loadingTransition.exiting} />
+    return <AuroraLoading label={copy?.projects.loading ?? ''} exiting={loadingTransition.exiting} />
   }
 
-  if (error || !projectGroups) {
-    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-32">Nao foi possivel carregar os projetos.</div>
+  if (error || !projectGroups || !copy) {
+    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-32">{copy?.projects.error}</div>
   }
 
   return (
     <AuroraPageReveal>
     <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-32">
       <header className="mb-14 max-w-3xl">
-        <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Portfólio técnico</p>
-        <h1 className="mt-4 text-5xl font-bold md:text-7xl">Meus Projetos</h1>
+        <p className="text-sm uppercase tracking-[0.32em] text-rose-500">{copy.projects.auroraEyebrow}</p>
+        <h1 className="mt-4 text-5xl font-bold md:text-7xl">{copy.projects.title}</h1>
         <p className="mt-6 text-lg leading-8 text-white/70">
-          Uma seleção dos produtos, empresas e projetos em que trabalhei e contribuí ao longo dos anos.
+          {copy.projects.description}
         </p>
       </header>
 
       <div className="space-y-10">
         {projectGroups.map((group) => (
-          <ProjectGroupSection key={group.id} group={group} />
+          <ProjectGroupSection key={group.id} group={group} copy={copy} />
         ))}
       </div>
     </div>

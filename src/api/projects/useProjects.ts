@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/config/supabase/client'
-import { Project } from './useProjectGroups'
+import { Project, ProjectArchitecture } from './useProjectGroups'
 
 type ProjectRow = {
   id: string
@@ -10,6 +10,9 @@ type ProjectRow = {
   logo: string
   tags: string[]
   url: string | null
+  project_url: string | null
+  site_url: string | null
+  architecture: ProjectArchitecture | null
   sort_order: number
 }
 
@@ -21,7 +24,9 @@ function mapProject(row: ProjectRow): Project {
     description: row.description,
     logo: row.logo,
     tags: row.tags ?? [],
-    url: row.url ?? undefined,
+    projectUrl: row.project_url ?? undefined,
+    siteUrl: row.site_url ?? row.url ?? undefined,
+    architecture: row.architecture ?? undefined,
     sortOrder: row.sort_order,
   }
 }
@@ -29,7 +34,7 @@ function mapProject(row: ProjectRow): Project {
 async function getProjects(): Promise<Project[]> {
   const { data, error } = await supabase
     .from('projects')
-    .select('id,group_id,title,description,logo,tags,url,sort_order')
+    .select('id,group_id,title,description,logo,tags,url,project_url,site_url,architecture,sort_order')
     .order('sort_order', { ascending: true })
 
   if (error) throw error

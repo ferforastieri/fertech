@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { motion } from 'motion/react'
 import {
   CircleStackIcon,
   CloudIcon,
@@ -7,55 +6,32 @@ import {
   FolderIcon,
   ServerStackIcon,
 } from '@heroicons/react/24/outline'
-import { projectArchitectures } from './architectureData'
+import { ProjectArchitecture } from '@/api/projects/useProjectGroups'
+import { SiteContent } from '@/api/site/useSiteContent'
 
-const layerMeta = [
-  { key: 'clients' as const, title: 'Experiências', icon: CodeBracketSquareIcon },
-  { key: 'services' as const, title: 'Serviços', icon: ServerStackIcon },
-  { key: 'platform' as const, title: 'Dados & Infra', icon: CloudIcon },
-]
-
-export function ArchitectureExplorer() {
-  const [selectedId, setSelectedId] = useState(projectArchitectures[0].id)
-  const selected = projectArchitectures.find((project) => project.id === selectedId) ?? projectArchitectures[0]
-
+export function ArchitectureExplorer({ architecture: selected, copy }: { architecture: ProjectArchitecture; copy: SiteContent['architecture'] }) {
+  const layerMeta = [
+    { key: 'clients' as const, title: copy.layerTitles[0], icon: CodeBracketSquareIcon },
+    { key: 'services' as const, title: copy.layerTitles[1], icon: ServerStackIcon },
+    { key: 'platform' as const, title: copy.layerTitles[2], icon: CloudIcon },
+  ]
   return (
-    <section className="relative bg-[#050106] px-4 pb-32 pt-24 text-white md:px-8">
+    <section className="relative border-t border-white/10 bg-[#050106] px-4 pb-24 pt-16 text-white md:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="max-w-3xl">
-          <p className="text-sm uppercase tracking-[0.28em] text-rose-400">Arquiteturas reais</p>
-          <h2 className="mt-4 text-4xl font-bold md:text-6xl">Sistemas que ajudei a construir.</h2>
+          <p className="text-sm uppercase tracking-[0.28em] text-rose-400">{copy.eyebrow}</p>
+          <h2 className="mt-4 text-4xl font-bold md:text-6xl">{copy.title}</h2>
           <p className="mt-5 text-lg leading-8 text-white/62">
-            Uma leitura visual das camadas, tecnologias e organização dos projetos Smart.
+            {copy.description}
           </p>
         </div>
 
-        <div className="mt-10 flex gap-2 overflow-x-auto pb-3">
-          {projectArchitectures.map((project) => (
-            <button
-              key={project.id}
-              type="button"
-              onClick={() => setSelectedId(project.id)}
-              className={`shrink-0 border px-4 py-3 text-sm font-semibold transition ${
-                selected.id === project.id
-                  ? 'border-white/50 bg-white text-black'
-                  : 'border-white/12 bg-white/[0.04] text-white/65 hover:border-white/30 hover:text-white'
-              }`}
-            >
-              {project.name}
-            </button>
-          ))}
-        </div>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selected.id}
-            initial={{ opacity: 0, y: 24, filter: 'blur(12px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -16, filter: 'blur(10px)' }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-8"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 24, filter: 'blur(12px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-10"
+        >
             <div className="flex flex-col gap-3 border-b border-white/12 pb-7 md:flex-row md:items-end md:justify-between">
               <div>
                 <h3 className="text-3xl font-bold" style={{ color: selected.accent }}>
@@ -65,7 +41,7 @@ export function ArchitectureExplorer() {
               </div>
               <span className="inline-flex items-center gap-2 text-sm text-white/48">
                 <CircleStackIcon className="h-5 w-5" />
-                Fluxo vivo entre camadas
+                {copy.flowLabel}
               </span>
             </div>
 
@@ -135,7 +111,7 @@ export function ArchitectureExplorer() {
             <div className="mt-10 border-t border-white/12 pt-8">
               <div className="mb-5 flex items-center gap-3">
                 <FolderIcon className="h-6 w-6" style={{ color: selected.accent }} />
-                <h4 className="text-xl font-bold">Organização do código</h4>
+                <h4 className="text-xl font-bold">{copy.foldersTitle}</h4>
               </div>
               <div className="grid gap-x-8 gap-y-3 font-mono text-sm md:grid-cols-2">
                 {selected.folders.map((folder, index) => (
@@ -152,8 +128,7 @@ export function ArchitectureExplorer() {
                 ))}
               </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   )

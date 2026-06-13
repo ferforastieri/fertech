@@ -23,14 +23,7 @@ import { cn } from '@/components/lib'
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { renderSocialIcon } from '@/features/profile/renderSocialIcon'
 import { AuroraLoading } from './AuroraLoading'
-
-const navItems = [
-  { name: 'Início', href: '/aurora', icon: HomeIcon },
-  { name: 'Blog', href: '/aurora/blog', icon: DocumentTextIcon },
-  { name: 'Projetos', href: '/aurora/projects', icon: BriefcaseIcon },
-  { name: 'Currículo', href: '/aurora/resume', icon: UserIcon },
-  { name: 'Playground', href: '/aurora/playground', icon: BeakerIcon },
-]
+import { useSiteContent } from '@/api/site/useSiteContent'
 
 type AuroraNavPosition = 'top' | 'right' | 'bottom' | 'left'
 
@@ -54,6 +47,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isSocialMenuOpen, setIsSocialMenuOpen] = useState(false)
   const { data: profile } = useProfileContent()
+  const { data: siteContent } = useSiteContent()
   const isVerticalNav = navPosition === 'left' || navPosition === 'right'
   const isMobileDrawer = isMobile && isVerticalNav
 
@@ -81,6 +75,16 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
 
     return () => mobileQuery.removeEventListener('change', handleMobileChange)
   }, [])
+
+  if (!siteContent) return null
+  const copy = siteContent.navigation
+  const navItems = [
+    { name: copy.home, href: '/aurora', icon: HomeIcon },
+    { name: copy.blog, href: '/aurora/blog', icon: DocumentTextIcon },
+    { name: copy.projects, href: '/aurora/projects', icon: BriefcaseIcon },
+    { name: copy.resume, href: '/aurora/resume', icon: UserIcon },
+    { name: copy.playground, href: '/aurora/playground', icon: BeakerIcon },
+  ]
 
   const toggleTheme = () => {
     const newDark = !isDark
@@ -141,9 +145,9 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
                 'flex h-8 w-8 items-center justify-center rounded-full transition sm:h-10 sm:w-10',
                 isDark ? 'text-white/72 hover:bg-white/10 hover:text-white' : 'text-[#140407] hover:bg-rose-950/10',
               )}
-              aria-label="Abrir redes sociais"
+              aria-label={copy.socialLinks}
               aria-expanded={isSocialMenuOpen}
-              title="Redes sociais"
+              title={copy.socialLinks}
             >
               <ShareIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
@@ -251,8 +255,8 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
               'flex h-8 w-8 items-center justify-center rounded-full transition sm:h-10 sm:w-10',
               isDark ? 'text-white/72 hover:bg-white/10 hover:text-white' : 'text-[#140407] hover:bg-rose-950/10',
             )}
-            aria-label="Trocar para modo tradicional"
-            title="Trocar para modo tradicional"
+            aria-label={copy.switchToClassic}
+            title={copy.switchToClassic}
           >
             <ArrowPathRoundedSquareIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
@@ -382,7 +386,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.22 }}
                     onClick={() => setIsDrawerOpen(false)}
-                    aria-label="Fechar navegação"
+                    aria-label={siteContent.common.closeNavigation}
                   />
                   <motion.aside
                     className={cn(
@@ -461,7 +465,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
             )}
           >
             {children ?? (
-              <Suspense fallback={<AuroraLoading label="Preparando página" />}>
+                <Suspense fallback={<AuroraLoading label={siteContent.common.loadingPage} />}>
                 <Outlet />
               </Suspense>
             )}

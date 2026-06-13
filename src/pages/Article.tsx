@@ -6,13 +6,16 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import ReactMarkdown from 'react-markdown'
 import { useExperiencePath } from '@/contexts/experience/ExperienceContext'
 import { useArticleBySlug } from '@/api/articles/useArticleBySlug'
+import { useSiteContent } from '@/api/site/useSiteContent'
 
 export default function Article() {
   const { slug } = useParams<{ slug: string }>()
   const modePath = useExperiencePath()
   const { data: article, isLoading } = useArticleBySlug(slug)
+  const siteContentQuery = useSiteContent()
+  const copy = siteContentQuery.data
 
-  if (isLoading) {
+  if (isLoading || siteContentQuery.isLoading) {
     return (
       <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="mx-auto max-w-4xl">
@@ -37,14 +40,14 @@ export default function Article() {
     )
   }
 
-  if (!article) {
+  if (!article || !copy) {
     return (
       <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl font-bold mb-4 text-foreground">Artigo não encontrado</h1>
+          <h1 className="text-3xl font-bold mb-4 text-foreground">{copy?.blog.notFoundTitle}</h1>
           <Link to={modePath('/blog')}>
             <Button>
-              Voltar para Blog
+              {copy?.blog.backToBlog}
             </Button>
           </Link>
         </div>
@@ -60,7 +63,7 @@ export default function Article() {
         <Link to={modePath('/blog')}>
           <Button variant="ghost" className="mb-8 group">
             <ArrowLeftIcon className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            Voltar para Artigos
+            {copy.blog.backToArticles}
           </Button>
         </Link>
 
@@ -71,7 +74,7 @@ export default function Article() {
                 {article.category}
               </Badge>
               <span className="text-sm text-muted-foreground">
-                {article.readTime} de leitura
+                {article.readTime} {copy.common.readTimeSuffix}
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">{article.title}</h1>

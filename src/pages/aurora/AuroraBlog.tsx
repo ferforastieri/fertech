@@ -5,13 +5,18 @@ import { Article, useArticleList } from '@/api/articles/useArticleList'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
+import { useSiteContent } from '@/api/site/useSiteContent'
 
 function ArticleList({
   title,
   articles,
+  countLabel,
+  readTimeSuffix,
 }: {
   title: string
   articles: Article[]
+  countLabel: string
+  readTimeSuffix: string
 }) {
   const [isOpen, setIsOpen] = useState(true)
 
@@ -25,7 +30,7 @@ function ArticleList({
       >
         <span>
           <span className="block text-2xl font-bold text-white">{title}</span>
-          <span className="mt-1 block text-sm text-white/60">{articles.length} artigos</span>
+          <span className="mt-1 block text-sm text-white/60">{articles.length} {countLabel}</span>
         </span>
         <ChevronDownIcon
           className={`h-5 w-5 shrink-0 text-rose-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
@@ -42,7 +47,7 @@ function ArticleList({
               <div className="mb-3 flex flex-wrap gap-3 text-sm text-white/50">
                 <span>{article.category}</span>
                 <span>{article.date}</span>
-                <span>{article.readTime} de leitura</span>
+                <span>{article.readTime} {readTimeSuffix}</span>
               </div>
               <h3 className="text-2xl font-bold text-white group-hover:text-rose-400">{article.title}</h3>
               <p className="mt-3 max-w-3xl leading-7 text-white/68">{article.description}</p>
@@ -57,34 +62,36 @@ function ArticleList({
 export default function AuroraBlog() {
   const workArticlesQuery = useArticleList('work')
   const personalArticlesQuery = useArticleList('personal')
+  const siteContentQuery = useSiteContent()
+  const copy = siteContentQuery.data
   const workArticles = workArticlesQuery.data ?? []
   const personalArticles = personalArticlesQuery.data ?? []
-  const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading
-  const hasError = workArticlesQuery.error || personalArticlesQuery.error
+  const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading || siteContentQuery.isLoading
+  const hasError = workArticlesQuery.error || personalArticlesQuery.error || siteContentQuery.error
   const loadingTransition = useAuroraLoadingTransition(isLoading)
 
   if (loadingTransition.visible) {
-    return <AuroraLoading label="Sincronizando artigos" exiting={loadingTransition.exiting} />
+    return <AuroraLoading label={copy?.blog.loading ?? ''} exiting={loadingTransition.exiting} />
   }
 
-  if (hasError) {
-    return <div className="mx-auto max-w-5xl px-4 pb-24 pt-10 text-white md:pt-32">Nao foi possivel carregar os artigos.</div>
+  if (hasError || !copy) {
+    return <div className="mx-auto max-w-5xl px-4 pb-24 pt-10 text-white md:pt-32">{copy?.blog.error}</div>
   }
 
   return (
     <AuroraPageReveal>
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-10 text-white md:pt-32">
       <header className="mb-12 max-w-3xl">
-        <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Artigos e ideias</p>
-        <h1 className="mt-4 text-5xl font-bold md:text-7xl">Blog</h1>
+        <p className="text-sm uppercase tracking-[0.32em] text-rose-500">{copy.blog.auroraEyebrow}</p>
+        <h1 className="mt-4 text-5xl font-bold md:text-7xl">{copy.blog.title}</h1>
         <p className="mt-6 text-lg leading-8 text-white/70">
-          Artigos sobre desenvolvimento, tecnologia e reflexões pessoais.
+          {copy.blog.description}
         </p>
       </header>
 
       <div className="space-y-6">
-        <ArticleList title="Artigos Profissionais" articles={workArticles} />
-        <ArticleList title="Artigos Pessoais" articles={personalArticles} />
+        <ArticleList title={copy.blog.workTitle} articles={workArticles} countLabel={copy.common.articlesCountLabel} readTimeSuffix={copy.common.readTimeSuffix} />
+        <ArticleList title={copy.blog.personalTitle} articles={personalArticles} countLabel={copy.common.articlesCountLabel} readTimeSuffix={copy.common.readTimeSuffix} />
       </div>
     </div>
     </AuroraPageReveal>

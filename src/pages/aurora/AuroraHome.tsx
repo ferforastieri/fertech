@@ -11,6 +11,7 @@ import { useHomeContent } from '@/api/home/useHomeContent'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
+import { useSiteContent } from '@/api/site/useSiteContent'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -31,9 +32,10 @@ export default function AuroraHome() {
   const projectsQuery = useProjects()
   const workArticlesQuery = useArticleList('work')
   const homeQuery = useHomeContent()
+  const siteContentQuery = useSiteContent()
   const profileContent = profileQuery.data
   const homeContent = homeQuery.data
-  const isLoading = profileQuery.isLoading || projectGroupsQuery.isLoading || projectsQuery.isLoading || workArticlesQuery.isLoading || homeQuery.isLoading
+  const isLoading = profileQuery.isLoading || projectGroupsQuery.isLoading || projectsQuery.isLoading || workArticlesQuery.isLoading || homeQuery.isLoading || siteContentQuery.isLoading
   const projectGroups = projectGroupsQuery.data
   const allProjects = projectsQuery.data
   const workArticles = workArticlesQuery.data
@@ -76,11 +78,11 @@ export default function AuroraHome() {
   }, [loadingTransition.visible, profileContent?.name, homeContent?.heroHeadline, projectGroups?.length, allProjects?.length, workArticles?.length])
 
   if (loadingTransition.visible) {
-    return <AuroraLoading label="Inicializando experiência" exiting={loadingTransition.exiting} />
+    return <AuroraLoading label={siteContentQuery.data?.common.homeLoading ?? ''} exiting={loadingTransition.exiting} />
   }
 
-  if (profileQuery.error || projectGroupsQuery.error || projectsQuery.error || workArticlesQuery.error || homeQuery.error || !profileContent || !homeContent || !projectGroups || !allProjects || !workArticles) {
-    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-24">Nao foi possivel carregar o conteudo.</div>
+  if (profileQuery.error || projectGroupsQuery.error || projectsQuery.error || workArticlesQuery.error || homeQuery.error || siteContentQuery.error || !profileContent || !homeContent || !projectGroups || !allProjects || !workArticles || !siteContentQuery.data) {
+    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-24">{siteContentQuery.data?.common.contentLoadError}</div>
   }
 
   return (

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/layout
 import { supabase } from '@/config/supabase/client'
 import { useAdminSession } from '@/api/admin/useAdminSession'
 import { useStoredTheme } from '@/hooks/useStoredTheme'
+import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 
 export default function AdminLogin() {
   const navigate = useNavigate()
@@ -34,9 +35,11 @@ export default function AdminLogin() {
 
     if (loginError) {
       setError(loginError.message)
+      notifyError('Erro ao entrar no painel', loginError)
       return
     }
 
+    notifySuccess('Login realizado com sucesso.')
     navigate('/admin')
   }
 

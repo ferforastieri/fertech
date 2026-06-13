@@ -17,6 +17,7 @@ import {
 } from '@/contexts/experience/ExperienceContext'
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { renderSocialIcon } from '@/features/profile/renderSocialIcon'
+import { useSiteContent } from '@/api/site/useSiteContent'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -29,6 +30,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
   const [isDark, setIsDark] = useState(false)
   const [isPlaygroundWarningOpen, setIsPlaygroundWarningOpen] = useState(false)
   const { data: profile } = useProfileContent()
+  const { data: siteContent } = useSiteContent()
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
@@ -57,12 +59,14 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
     }
   }
 
+  if (!siteContent) return null
+  const copy = siteContent.navigation
   const navigationItems = [
-    { name: 'Início', href: basePath || '/', icon: HomeIcon },
-    { name: 'Blog', href: `${basePath}/blog`, icon: DocumentTextIcon },
-    { name: 'Projetos', href: `${basePath}/projects`, icon: BriefcaseIcon },
-    { name: 'Currículo', href: `${basePath}/resume`, icon: UserIcon },
-    { name: 'Playground', href: '/aurora/playground', icon: BeakerIcon, auroraOnly: true },
+    { name: copy.home, href: basePath || '/', icon: HomeIcon },
+    { name: copy.blog, href: `${basePath}/blog`, icon: DocumentTextIcon },
+    { name: copy.projects, href: `${basePath}/projects`, icon: BriefcaseIcon },
+    { name: copy.resume, href: `${basePath}/resume`, icon: UserIcon },
+    { name: copy.playground, href: '/aurora/playground', icon: BeakerIcon, auroraOnly: true },
   ]
 
   const switchToAurora = () => {
@@ -122,8 +126,8 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
                 'p-2 rounded-xl transition-all duration-200',
                 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
               )}
-              aria-label="Trocar para modo imersivo"
-              title="Trocar para modo imersivo"
+              aria-label={copy.switchToAurora}
+              title={copy.switchToAurora}
             >
               <ArrowPathRoundedSquareIcon className="h-5 w-5" />
             </button>
@@ -213,8 +217,8 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
                   'p-2 rounded-xl transition-all duration-200',
                   'text-muted-foreground hover:text-foreground hover:bg-accent/50'
                 )}
-                aria-label="Trocar para modo imersivo"
-                title="Trocar para modo imersivo"
+                aria-label={copy.switchToAurora}
+                title={copy.switchToAurora}
               >
                 <ArrowPathRoundedSquareIcon className="h-5 w-5" />
               </button>
@@ -267,18 +271,18 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
       <Dialog
         isOpen={isPlaygroundWarningOpen}
         onClose={() => setIsPlaygroundWarningOpen(false)}
-        title="Abrir Playground WebGL?"
+        title={copy.playgroundDialogTitle}
         size="sm"
       >
         <p className="leading-7 text-muted-foreground">
-          O playground faz parte da experiência Aurora. Você será levado ao modo imersivo para desenhar, combinar cores e controlar animações WebGL.
+          {copy.playgroundDialogDescription}
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <Button type="button" variant="ghost" onClick={() => setIsPlaygroundWarningOpen(false)}>
-            Cancelar
+            {copy.cancel}
           </Button>
           <Button type="button" onClick={openPlayground}>
-            Ir para o Aurora
+            {copy.goToAurora}
           </Button>
         </div>
       </Dialog>
