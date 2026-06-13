@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import AuroraPointerEffects from '@/components/aurora/AuroraPointerEffects'
 import AuroraScene from '@/components/aurora/AuroraScene'
 import {
   EXPERIENCE_STORAGE_KEY,
@@ -13,19 +14,22 @@ const modes = [
   {
     id: 'classic' as const,
     name: 'Tradicional',
-    description: 'O portfólio atual, direto, limpo e familiar.',
+    audience: 'Recomendado para recrutadores',
+    description: 'Leitura objetiva, visual familiar e navegação direta para conhecer minha experiência, projetos e currículo.',
     href: '/classic',
   },
   {
     id: 'aurora' as const,
     name: 'Modo Imersivo',
-    description: 'As mesmas informações em uma experiência imersiva com WebGL, scroll narrativo e navegação flutuante.',
+    audience: 'Recomendado para quem quer explorar',
+    description: 'Uma experiência criativa e pessoal com WebGL, movimento, profundidade e navegação cinematográfica.',
     href: '/aurora',
   },
 ]
 
 export default function ExperienceGateway() {
   const rootRef = useRef<HTMLDivElement>(null)
+  const [secondsUntilAurora, setSecondsUntilAurora] = useState(5)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -52,6 +56,20 @@ export default function ExperienceGateway() {
     return () => ctx.revert()
   }, [navigate])
 
+  useEffect(() => {
+    const redirectTimeout = window.setTimeout(() => {
+      navigate('/aurora')
+    }, 5000)
+    const countdownInterval = window.setInterval(() => {
+      setSecondsUntilAurora((current) => Math.max(0, current - 1))
+    }, 1000)
+
+    return () => {
+      window.clearTimeout(redirectTimeout)
+      window.clearInterval(countdownInterval)
+    }
+  }, [navigate])
+
   const chooseMode = (mode: ExperienceMode, href: string) => {
     saveExperienceMode(mode)
     navigate(href)
@@ -59,7 +77,8 @@ export default function ExperienceGateway() {
 
   return (
     <div ref={rootRef} className="relative min-h-screen overflow-hidden bg-[#040001] px-4 py-8 text-white">
-      <AuroraScene />
+      <AuroraScene interactiveShip />
+      <AuroraPointerEffects />
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col justify-center">
         <div className="mb-10 max-w-3xl">
           <div className="gateway-kicker mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm text-rose-200 backdrop-blur">
@@ -67,11 +86,11 @@ export default function ExperienceGateway() {
             Escolha como quer navegar
           </div>
           <h1 className="gateway-title overflow-hidden text-5xl font-bold leading-[0.95] text-white md:text-7xl">
-            <span className="block">FerTech em</span>
-            <span className="block text-rose-500">dois modos.</span>
+            <span className="block">Escolha como</span>
+            <span className="block text-rose-500">explorar.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">
-            O conteúdo continua o mesmo. Você escolhe entre a leitura tradicional ou uma versão imersiva com movimento, profundidade e uma navegação mais cinematográfica.
+            Este é meu portfólio pessoal e profissional. Se nenhuma opção for escolhida, a experiência imersiva começará em {secondsUntilAurora} segundos.
           </p>
         </div>
 
@@ -83,11 +102,11 @@ export default function ExperienceGateway() {
               onClick={() => chooseMode(mode.id, mode.href)}
               className="gateway-card group min-h-[220px] rounded-[2rem] border border-white/12 bg-white/[0.08] p-7 text-left shadow-2xl shadow-black/30 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-rose-700/60 hover:bg-white/[0.12]"
             >
-              <span className="mb-10 inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-white/68">
-                {mode.id === 'classic' ? 'Atual' : 'Novo'}
-              </span>
               <div className="flex items-end justify-between gap-4">
                 <div>
+                  <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-rose-300">
+                    {mode.audience}
+                  </p>
                   <h2 className="text-3xl font-bold text-white">{mode.name}</h2>
                   <p className="mt-3 max-w-md text-base leading-7 text-white/68">{mode.description}</p>
                 </div>
