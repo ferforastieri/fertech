@@ -10,6 +10,84 @@ export interface Article {
 
 export const workArticles: Article[] = [
     {
+        slug: "design-systems-patterns-e-arquitetura-humana",
+        title: "Design Systems, Patterns e Arquitetura Humana",
+        category: "Design System",
+        description: "Como uso design systems e patterns para criar produtos consistentes, escaláveis e intuitivos, combinando velocidade de IA com decisões humanas de arquitetura e UX.",
+        date: "13 de Junho, 2026",
+        readTime: "7 min",
+        content: `
+# Design Systems, Patterns e Arquitetura Humana
+
+Design system, para mim, não é só uma biblioteca de botões bonitos. É uma forma de organizar decisões. Quando um produto cresce, cada tela nova carrega uma pergunta: vamos resolver isso como parte de um sistema ou como mais uma exceção?
+
+Eu prefiro sistema.
+
+## O Que Eu Uso na Prática
+
+No dia a dia, costumo pensar em três camadas:
+
+- **Tokens de design**: cores, espaçamentos, tipografia, radius, sombras e estados.
+- **Componentes base**: botões, inputs, cards, modais, navegação, badges, tabelas e feedbacks.
+- **Patterns de produto**: formulários, filtros, listagens, dashboards, empty states, onboarding, permissões e fluxos de erro.
+
+Os componentes resolvem a interface. Os patterns resolvem comportamento. Sem os dois, o produto até parece consistente por fora, mas fica frágil por dentro.
+
+## Patterns Que Valorizo
+
+Gosto especialmente de patterns que deixam o usuário seguro:
+
+1. **Feedback imediato**
+Toda ação importante precisa responder rápido: loading, sucesso, erro ou estado intermediário.
+
+2. **Estados previsíveis**
+Botão desabilitado, campo inválido, lista vazia, item carregando e erro de rede precisam ter visual e texto consistentes.
+
+3. **Fluxos recuperáveis**
+Erro bom não é só vermelho na tela. Ele explica o que aconteceu e como continuar.
+
+4. **Densidade com leitura**
+Ferramentas internas e sistemas operacionais precisam mostrar bastante informação sem virar ruído.
+
+5. **APIs de componente simples**
+Um bom componente não obriga todo mundo a reaprender a usá-lo. Ele precisa ter boas defaults e aceitar customização onde faz sentido.
+
+## IA Acelera, Mas Não Decide Tudo
+
+Hoje a IA faz muita coisa muito rápido. Ela ajuda a escrever código, montar variações, sugerir estrutura e acelerar refactors. Isso é ótimo.
+
+Mas ainda existe uma parte que depende de tato humano:
+
+- perceber quando uma interface parece simples, mas esconde uma decisão complexa;
+- entender quando um pattern ajuda ou atrapalha;
+- escolher consistência sem engessar o produto;
+- pensar na manutenção de quem vai mexer depois;
+- transformar regra de negócio em fluxo intuitivo.
+
+IA entrega velocidade. Arquitetura boa entrega direção.
+
+## Design System Também É Infra
+
+Um design system bem cuidado se conecta com infraestrutura de frontend:
+
+- versionamento;
+- documentação;
+- build;
+- testes visuais;
+- acessibilidade;
+- contratos de componente;
+- governança de breaking changes.
+
+Quando isso funciona, times ganham confiança. Uma alteração visual deixa de ser uma aventura e passa a ser uma mudança rastreável.
+
+## O Ponto
+
+Meu foco como fullstack não é escolher entre backend, frontend, infra ou UX. É conectar essas partes.
+
+Design systems e patterns são onde essa conexão aparece com clareza: eles juntam arquitetura, produto, experiência e manutenção. E é justamente aí que o tato humano ainda faz diferença.
+        `.trim()
+    },
+    {
         slug: "design-system-construindo-consistencia-visual",
         title: "Design System: Construindo Consistência Visual em Projetos Frontend",
         category: "UI/UX",
@@ -1493,4 +1571,3 @@ export function generateSlug(title: string): string {
 }
 
 export const allArticles = [...workArticles, ...personalArticles];
-

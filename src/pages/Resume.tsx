@@ -9,65 +9,7 @@ import {
   CalendarIcon,
   ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline'
-
-const technologies = [
-  'JavaScript', 'TypeScript', 'PostgreSQL', 'Node', 'Express', 'React', 'NextJS',
-  'Redux', 'NoSQL', 'MongoDB', 'Git', 'Java', 'Spring Boot', 'Jest',
-  'Testes Unitários', 'Desenvolvimento Web', 'Desenvolvimento de APIs',
-  'RESTful', 'Websockets', 'Docker', 'Frontend', 'Backend', 'Full-Stack',
-]
-
-const experiences = [
-  {
-    company: 'Smart S.A',
-    position: 'Desenvolvedor Junior',
-    location: 'Sorocaba, SP, Brasil',
-    period: '06/2023 - Atual',
-    responsibilities: [
-      'Desenvolvimento de sistemas e aplicações internas utilizando React, Redux e Express',
-      'Design e implementação de funcionalidades, realizando testes e garantindo conformidade',
-      'Colaboração com equipe para melhorar desempenho e implementar melhores práticas',
-    ],
-  },
-  {
-    company: '4iNet Operadora',
-    position: 'Técnico de Redes',
-    location: 'Sorocaba, SP, Brasil',
-    period: '01/2023 - 07/2023',
-    responsibilities: [
-      'Gerenciamento e configuração de redes locais e sistemas de comunicação',
-      'Instalação e manutenção de equipamentos de rede',
-      'Suporte técnico a clientes e equipe interna',
-    ],
-  },
-  {
-    company: 'Get Ninjas',
-    position: 'Técnico em Informática',
-    location: 'Brasil, SP',
-    period: '01/2015 - 12/2023',
-    responsibilities: [
-      'Suporte técnico para equipamentos e sistemas',
-      'Configuração e manutenção de redes locais',
-      'Implementação de medidas de segurança',
-      'Criação e manutenção de documentação técnica',
-    ],
-  },
-]
-
-const education = [
-  {
-    institution: 'Centro Universitário Facens',
-    course: 'Bacharelado em Engenharia da Computação',
-    location: 'Sorocaba, São Paulo',
-    period: '01/2017 - 12/2022',
-  },
-  {
-    institution: 'Universidade Paulista UNIP',
-    course: 'Bacharelado em Análise e Desenvolvimento de Sistemas',
-    location: 'Sorocaba, São Paulo',
-    period: '01/2019 - 12/2022',
-  },
-]
+import { education, experiences, resumeTechnologies } from '@/data/resume'
 
 export default function Resume() {
   const [isGenerating, setIsGenerating] = useState(false)
@@ -97,7 +39,7 @@ export default function Resume() {
       
       doc.setFontSize(12)
       doc.setFont('helvetica', 'normal')
-      doc.text('Desenvolvedor Fullstack | Frontend & UX', pageWidth / 2, yPosition, { align: 'center' })
+      doc.text('Desenvolvedor Fullstack | Design Systems, Infra & UX', pageWidth / 2, yPosition, { align: 'center' })
       yPosition += 6
       
       doc.setFontSize(10)
@@ -116,7 +58,7 @@ export default function Resume() {
       
       doc.setFontSize(10)
       doc.setFont('helvetica', 'normal')
-      const aboutText = 'Desenvolvedor Fullstack especializado em frontend e experiência do usuário, com experiência no desenvolvimento de aplicações web utilizando React, TypeScript, Node.js e tecnologias modernas. Possui conhecimento em inglês técnico para escrita de código e documentações. Sempre em busca de novos desafios e mantém-se atualizado com tecnologias emergentes.'
+      const aboutText = 'Desenvolvedor Fullstack com foco em design systems, infraestrutura e arquitetura de produtos digitais. Apaixonado por frontend e UX, valorizo o tato humano para criar experiências intuitivas, consistentes e fáceis de evoluir. A IA acelera muito o trabalho, mas decisões de arquitetura, fluxo e experiência ainda dependem de contexto, sensibilidade e clareza.'
       const aboutLines = doc.splitTextToSize(aboutText, maxWidth)
       doc.text(aboutLines, margin, yPosition)
       yPosition += (aboutLines.length * 4) + 8
@@ -209,7 +151,7 @@ export default function Resume() {
       
       doc.setFontSize(10)
       doc.setFont('helvetica', 'normal')
-      const skillsText = technologies.join(' • ')
+      const skillsText = resumeTechnologies.join(' • ')
       const skillsLines = doc.splitTextToSize(skillsText, maxWidth)
       doc.text(skillsLines, margin, yPosition)
       yPosition += (skillsLines.length * 4) + 8
@@ -335,7 +277,7 @@ export default function Resume() {
           </div>
           <h1 className="text-5xl font-bold mb-4 text-foreground">Fernando Forastieri Neto</h1>
           <p className="text-xl text-foreground mb-6">
-            Desenvolvedor Fullstack focado em frontend e experiência do usuário
+            Desenvolvedor Fullstack com foco em design systems, infraestrutura e UX
           </p>
           <Button 
             size="lg" 
@@ -355,17 +297,18 @@ export default function Resume() {
           <h2 className="text-3xl font-bold mb-6 text-foreground">Sobre</h2>
           <div className="space-y-4 text-foreground">
             <p>
-              Tenho experiência no desenvolvimento de aplicativos há um ano, e também experiência 
-              em eletrônica e manutenção a dois anos, com o objetivo de solucionar problemas cotidianos.
+              Tenho experiência no desenvolvimento de aplicativos, produtos web e sistemas internos,
+              além de vivência com eletrônica, manutenção, infraestrutura e redes para solucionar
+              problemas cotidianos de ponta a ponta.
             </p>
             <p>
-              Também tenho experiência completa em hardware, desde a parte de manutenção, como também 
-              infraestrutura, redes e etc.
+              Atuo como desenvolvedor fullstack com foco em design systems, infraestrutura e arquitetura,
+              mantendo uma paixão especial por frontend e UX.
             </p>
             <p>
-              Estou sempre em busca de novos desafios e me mantenho atualizado, constantemente estudando 
-              e explorando novas tecnologias que possam trazer benefícios. Gosto de escrever artigos, 
-              tanto para meu próprio estudo quanto para auxiliar outros desenvolvedores.
+              Estou sempre em busca de novos desafios e me mantenho atualizado, explorando novas
+              tecnologias e usando IA como aceleradora. Ainda assim, acredito que o tato humano segue
+              essencial para decisões de arquitetura, consistência visual e experiências intuitivas.
             </p>
             <p>
               Tenho conhecimento de inglês técnico, o que me permite escrever código em inglês com 
@@ -452,7 +395,7 @@ export default function Resume() {
         <section>
           <h2 className="text-3xl font-bold mb-6 text-foreground">Habilidades Técnicas</h2>
           <div className="flex flex-wrap gap-2">
-            {technologies.map((tech) => (
+              {resumeTechnologies.map((tech) => (
               <Badge key={tech} variant="secondary" className="text-sm px-3 py-1">
                 {tech}
               </Badge>

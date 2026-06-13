@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/forms'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { allArticles } from '@/data/articles'
 import ReactMarkdown from 'react-markdown'
+import { useExperiencePath } from '@/lib/experience'
 
 export default function Article() {
   const { slug } = useParams<{ slug: string }>()
+  const modePath = useExperiencePath()
   const article = allArticles.find((a) => a.slug === slug)
 
   if (!article) {
@@ -15,7 +17,7 @@ export default function Article() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl font-bold mb-4 text-foreground">Artigo não encontrado</h1>
-          <Link to="/blog">
+          <Link to={modePath('/blog')}>
             <Button>
               Voltar para Blog
             </Button>
@@ -30,7 +32,7 @@ export default function Article() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
-        <Link to="/blog">
+        <Link to={modePath('/blog')}>
           <Button variant="ghost" className="mb-8 group">
             <ArrowLeftIcon className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             Voltar para Artigos

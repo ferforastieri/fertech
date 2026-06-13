@@ -5,15 +5,18 @@ import {
   DocumentTextIcon,
   BriefcaseIcon,
   UserIcon,
+  ArrowPathRoundedSquareIcon,
 } from '@heroicons/react/24/outline'
 import { ThemeToggle } from '@/components/ui/feedback'
 import { cn } from '@/components/lib'
+import { ExperienceProvider, saveExperienceMode } from '@/lib/experience'
 
 interface LayoutProps {
   children: React.ReactNode
+  basePath?: string
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children, basePath = '' }: LayoutProps) {
   const location = useLocation()
   const [isDark, setIsDark] = useState(false)
 
@@ -44,10 +47,10 @@ export default function Layout({ children }: LayoutProps) {
   }
 
   const navigationItems = [
-    { name: 'Início', href: '/', icon: HomeIcon },
-    { name: 'Blog', href: '/blog', icon: DocumentTextIcon },
-    { name: 'Projetos', href: '/projects', icon: BriefcaseIcon },
-    { name: 'Currículo', href: '/resume', icon: UserIcon },
+    { name: 'Início', href: basePath || '/', icon: HomeIcon },
+    { name: 'Blog', href: `${basePath}/blog`, icon: DocumentTextIcon },
+    { name: 'Projetos', href: `${basePath}/projects`, icon: BriefcaseIcon },
+    { name: 'Currículo', href: `${basePath}/resume`, icon: UserIcon },
   ]
 
 
@@ -77,9 +80,15 @@ export default function Layout({ children }: LayoutProps) {
     },
   ]
 
+  const switchToAurora = () => {
+    saveExperienceMode('aurora')
+    window.location.href = '/aurora'
+  }
+
 
   return (
-    <div className="min-h-screen bg-background flex flex-col overflow-x-hidden w-full">
+    <ExperienceProvider mode="classic">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden w-full">
       {/* Mobile Header */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between h-16 px-4">
@@ -113,6 +122,18 @@ export default function Layout({ children }: LayoutProps) {
               variant="ghost"
               size="sm"
             />
+            <button
+              type="button"
+              onClick={switchToAurora}
+              className={cn(
+                'p-2 rounded-xl transition-all duration-200',
+                'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+              )}
+              aria-label="Trocar para modo imersivo"
+              title="Trocar para modo imersivo"
+            >
+              <ArrowPathRoundedSquareIcon className="h-5 w-5" />
+            </button>
           </div>
         </div>
       </header>
@@ -179,6 +200,18 @@ export default function Layout({ children }: LayoutProps) {
                 variant="ghost"
                 size="sm"
               />
+              <button
+                type="button"
+                onClick={switchToAurora}
+                className={cn(
+                  'p-2 rounded-xl transition-all duration-200',
+                  'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                )}
+                aria-label="Trocar para modo imersivo"
+                title="Trocar para modo imersivo"
+              >
+                <ArrowPathRoundedSquareIcon className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
@@ -211,6 +244,7 @@ export default function Layout({ children }: LayoutProps) {
           })}
         </div>
       </nav>
-    </div>
+      </div>
+    </ExperienceProvider>
   )
 }
