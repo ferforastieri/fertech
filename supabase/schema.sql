@@ -4,11 +4,25 @@ create table if not exists public.profile (
   role text not null,
   intro text not null,
   contact_url text not null,
+  logo_url text not null default '/logo.png',
+  social_links jsonb not null default '[]'::jsonb,
   technologies text[] not null default '{}',
   about_paragraphs text[] not null default '{}',
   highlights jsonb not null default '[]'::jsonb,
   updated_at timestamptz not null default now()
 );
+
+alter table public.profile add column if not exists logo_url text not null default '/logo.png';
+alter table public.profile add column if not exists social_links jsonb not null default '[]'::jsonb;
+
+update public.profile
+set social_links = '[
+  {"name":"Twitter","href":"https://x.com/viciofer","icon":"x"},
+  {"name":"GitHub","href":"https://github.com/ferforastieri","icon":"github"},
+  {"name":"LinkedIn","href":"https://linkedin.com/in/fernando-forastieri","icon":"linkedin"}
+]'::jsonb
+where id = 'main'
+  and (social_links is null or social_links = '[]'::jsonb);
 
 create table if not exists public.project_groups (
   id text primary key,

@@ -28,8 +28,13 @@ export default function AuroraResume() {
   const hasError = profileQuery.isError || resumeQuery.isError
 
   useEffect(() => {
+    if (isLoading) return
+
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
+      mm.add('(prefers-reduced-motion: reduce)', () => {
+        gsap.set('.resume-hero, .resume-reveal', { opacity: 1, y: 0 })
+      })
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         gsap.fromTo('.resume-hero', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
         ScrollTrigger.batch('.resume-reveal', {
@@ -42,7 +47,7 @@ export default function AuroraResume() {
     }, rootRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [isLoading, profile?.name, resume?.experiences.length, resume?.education.length])
 
   const handleDownloadPDF = async () => {
     if (!profile || !resume) return
@@ -178,7 +183,7 @@ export default function AuroraResume() {
     <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-32">
       <header className="resume-hero mb-14 text-center">
         <div className="mb-6 flex justify-center">
-          <img src="/logo.png" alt="Logo FF" className="h-24 w-24 object-contain" />
+          <img src={profile.logoUrl} alt="Logo FF" className="h-24 w-24 object-contain" />
         </div>
         <h1 className="text-5xl font-bold text-[rgb(var(--aurora-text))] md:text-7xl">{profile.name}</h1>
         <p className="mx-auto mt-5 max-w-2xl text-xl text-[rgb(var(--aurora-muted))]">{profile.role}</p>

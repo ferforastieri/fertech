@@ -20,7 +20,7 @@ export default function Blog() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 space-y-4 text-center">
             <Skeleton className="mx-auto h-14 w-40" />
@@ -57,7 +57,7 @@ export default function Blog() {
 
   if (hasError) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="max-w-6xl mx-auto text-foreground">Nao foi possivel carregar os artigos.</div>
       </div>
     )
@@ -126,7 +126,7 @@ export default function Blog() {
   ]
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 pt-4 pb-12">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-4 text-foreground">Blog</h1>

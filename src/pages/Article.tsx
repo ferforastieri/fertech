@@ -14,7 +14,7 @@ export default function Article() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="mx-auto max-w-4xl">
           <Skeleton className="mb-8 h-10 w-44 rounded-lg" />
           <div className="mb-8 space-y-4">
@@ -39,7 +39,7 @@ export default function Article() {
 
   if (!article) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl font-bold mb-4 text-foreground">Artigo não encontrado</h1>
           <Link to={modePath('/blog')}>
@@ -55,7 +55,7 @@ export default function Article() {
   const contentWithoutTitle = article.content.replace(/^#\s+.*$/m, '').trim()
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 pt-4 pb-12">
       <div className="max-w-4xl mx-auto">
         <Link to={modePath('/blog')}>
           <Button variant="ghost" className="mb-8 group">

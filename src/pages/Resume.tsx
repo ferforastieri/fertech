@@ -68,9 +68,10 @@ export default function Resume() {
       yPosition += 6
 
       doc.setFontSize(10)
-      doc.text('LinkedIn: linkedin.com/in/fernando-forastieri | GitHub: github.com/ferforastieri', pageWidth / 2, yPosition, { align: 'center' })
+      const socialText = profile.socialLinks.map((social) => `${social.name}: ${social.href.replace(/^https?:\/\//, '')}`).join(' | ')
+      doc.text(socialText || profile.contactUrl, pageWidth / 2, yPosition, { align: 'center' })
       yPosition += 5
-      doc.text('Twitter: @viciofer | Sorocaba, SP - Brasil', pageWidth / 2, yPosition, { align: 'center' })
+      doc.text('Sorocaba, SP - Brasil', pageWidth / 2, yPosition, { align: 'center' })
       yPosition += 10
 
       sectionTitle('RESUMO PROFISSIONAL')
@@ -192,7 +193,7 @@ export default function Resume() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="mx-auto max-w-4xl space-y-12">
           <div className="space-y-5 text-center">
             <Skeleton className="mx-auto h-24 w-24 rounded-full" />
@@ -218,18 +219,18 @@ export default function Resume() {
 
   if (hasError || !profile || !resume) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <p className="text-center text-destructive">Não foi possível carregar o currículo.</p>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 pt-4 pb-12">
       <div id="resume-content" className="mx-auto max-w-4xl space-y-12">
         <div className="text-center">
           <div className="mb-6 flex justify-center">
-            <img src="/logo.png" alt="Logo FF" className="h-24 w-24 object-contain" />
+            <img src={profile.logoUrl} alt="Logo FF" className="h-24 w-24 object-contain" />
           </div>
           <h1 className="mb-4 text-5xl font-bold text-foreground">{profile.name}</h1>
           <p className="mb-6 text-xl text-foreground">{profile.role}</p>

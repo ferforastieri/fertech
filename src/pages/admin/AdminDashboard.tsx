@@ -19,6 +19,8 @@ type ProfileForm = {
   role: string
   intro: string
   contactUrl: string
+  logoUrl: string
+  socialLinks: string
   technologies: string
   aboutParagraphs: string
   highlights: string
@@ -157,6 +159,8 @@ export default function AdminDashboard() {
     role: '',
     intro: '',
     contactUrl: '',
+    logoUrl: '',
+    socialLinks: '',
     technologies: '',
     aboutParagraphs: '',
     highlights: '',
@@ -188,6 +192,10 @@ export default function AdminDashboard() {
       role: profileQuery.data.role,
       intro: profileQuery.data.intro,
       contactUrl: profileQuery.data.contactUrl,
+      logoUrl: profileQuery.data.logoUrl,
+      socialLinks: profileQuery.data.socialLinks
+        .map((social) => `${social.name}|${social.href}|${social.icon}`)
+        .join('\n'),
       technologies: formatTextList(profileQuery.data.technologies),
       aboutParagraphs: formatTextList(profileQuery.data.aboutParagraphs),
       highlights: profileQuery.data.highlights
@@ -272,6 +280,30 @@ export default function AdminDashboard() {
     }
   }
 
+  const uploadSiteLogo = async (file: File) => {
+    setStatus('')
+    setUploadingLogo('site')
+
+    try {
+      const extension = file.name.split('.').pop() || 'png'
+      const path = `site/logo-${Date.now()}.${extension}`
+      const { error } = await supabase.storage.from('logos').upload(path, file, {
+        cacheControl: '31536000',
+        upsert: true,
+      })
+
+      if (error) throw error
+
+      const { data } = supabase.storage.from('logos').getPublicUrl(path)
+      setProfileForm((current) => ({ ...current, logoUrl: data.publicUrl }))
+      setStatus('Logo do site enviada. Salve o perfil para persistir o caminho.')
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Erro ao enviar logo do site.')
+    } finally {
+      setUploadingLogo('')
+    }
+  }
+
   const saveProfile = () =>
     runSave(async () => {
       const highlights = profileForm.highlights
@@ -286,6 +318,18 @@ export default function AdminDashboard() {
             description: description.trim(),
           }
         })
+      const socialLinks = profileForm.socialLinks
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [name = '', href = '', icon = 'link'] = line.split('|')
+          return {
+            name: name.trim(),
+            href: href.trim(),
+            icon: icon.trim(),
+          }
+        })
 
       const { error } = await supabase.from('profile').upsert({
         id: 'main',
@@ -293,6 +337,8 @@ export default function AdminDashboard() {
         role: profileForm.role,
         intro: profileForm.intro,
         contact_url: profileForm.contactUrl,
+        logo_url: profileForm.logoUrl,
+        social_links: socialLinks,
         technologies: parseTextList(profileForm.technologies),
         about_paragraphs: parseTextList(profileForm.aboutParagraphs),
         highlights,
@@ -473,6 +519,28 @@ export default function AdminDashboard() {
                   <Input label="Cargo" value={profileForm.role} onChange={(event) => setProfileForm({ ...profileForm, role: event.target.value })} />
                   <Input label="Contato" value={profileForm.contactUrl} onChange={(event) => setProfileForm({ ...profileForm, contactUrl: event.target.value })} />
                   <Input label="Intro" value={profileForm.intro} onChange={(event) => setProfileForm({ ...profileForm, intro: event.target.value })} />
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-[1fr_auto]">
+                  <Input label="Logo do site" value={profileForm.logoUrl} onChange={(event) => setProfileForm({ ...profileForm, logoUrl: event.target.value })} />
+                  <label className="self-end">
+                    <span className="sr-only">Enviar logo do site</span>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      className="block h-10 rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground"
+                      disabled={uploadingLogo === 'site'}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0]
+                        if (file) {
+                          void uploadSiteLogo(file)
+                        }
+                        event.target.value = ''
+                      }}
+                    />
+                  </label>
+                </div>
+                <div className="mt-4">
+                  <Textarea label="Redes sociais: nome|url|icone (x, github, linkedin ou link)" value={profileForm.socialLinks} onChange={(value) => setProfileForm({ ...profileForm, socialLinks: value })} rows={4} />
                 </div>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                   <Textarea label="Tecnologias, uma por linha" value={profileForm.technologies} onChange={(value) => setProfileForm({ ...profileForm, technologies: value })} rows={8} />
@@ -725,7 +793,7 @@ function createProjectForm(groupId: string, index: number): ProjectForm {
     groupId,
     title: '',
     description: '',
-    logo: '/logo.png',
+    logo: '',
     tags: '',
     url: '',
     sortOrder: index,

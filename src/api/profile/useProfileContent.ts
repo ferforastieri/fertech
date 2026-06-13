@@ -7,11 +7,19 @@ export type ProfileHighlight = {
   description: string
 }
 
-type ProfileContent = {
+export type SocialLink = {
+  name: string
+  href: string
+  icon: 'x' | 'github' | 'linkedin' | 'link'
+}
+
+export type ProfileContent = {
   name: string
   role: string
   intro: string
   contactUrl: string
+  logoUrl: string
+  socialLinks: SocialLink[]
   technologies: string[]
   aboutParagraphs: string[]
   highlights: ProfileHighlight[]
@@ -23,6 +31,8 @@ type ProfileRow = {
   role: string
   intro: string
   contact_url: string
+  logo_url: string
+  social_links: SocialLink[]
   technologies: string[]
   about_paragraphs: string[]
   highlights: ProfileHighlight[]
@@ -34,6 +44,8 @@ function mapProfile(row: ProfileRow): ProfileContent {
     role: row.role,
     intro: row.intro,
     contactUrl: row.contact_url,
+    logoUrl: row.logo_url,
+    socialLinks: row.social_links,
     technologies: row.technologies ?? [],
     aboutParagraphs: row.about_paragraphs ?? [],
     highlights: row.highlights ?? [],
@@ -43,7 +55,7 @@ function mapProfile(row: ProfileRow): ProfileContent {
 async function getProfileContent(): Promise<ProfileContent> {
   const { data, error } = await supabase
     .from('profile')
-    .select('id,name,role,intro,contact_url,technologies,about_paragraphs,highlights')
+    .select('id,name,role,intro,contact_url,logo_url,social_links,technologies,about_paragraphs,highlights')
     .eq('id', 'main')
     .single()
 

@@ -44,8 +44,13 @@ export default function AuroraProjects() {
   const { data: projectGroups, isLoading, error } = useProjectGroups()
 
   useEffect(() => {
+    if (isLoading) return
+
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
+      mm.add('(prefers-reduced-motion: reduce)', () => {
+        gsap.set('.project-reveal', { opacity: 1, y: 0 })
+      })
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         ScrollTrigger.batch('.project-reveal', {
           start: 'top 88%',
@@ -57,7 +62,7 @@ export default function AuroraProjects() {
     }, rootRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [isLoading, projectGroups?.length])
 
   if (isLoading) {
     return <AuroraLoading label="Carregando projetos" />

@@ -22,7 +22,7 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="mx-auto max-w-6xl space-y-12">
           <section className="space-y-5">
             <Skeleton className="h-14 w-full max-w-xl" />
@@ -56,14 +56,14 @@ export default function Home() {
 
   if (error || !profileContent) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="max-w-6xl mx-auto text-foreground">Nao foi possivel carregar o conteudo.</div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 pt-4 pb-12">
       <div className="max-w-6xl mx-auto space-y-12">
         <section>
           <div className="max-w-6xl mx-auto">
@@ -162,7 +162,7 @@ export default function Home() {
             <CardContent className="p-12 text-center">
               <h2 className="text-3xl font-bold mb-4 text-foreground">Vamos Conversar?</h2>
               <p className="text-lg text-foreground mb-8 max-w-2xl mx-auto">
-                Quer trabalhar junto ou tem alguma dúvida? Me envie uma mensagem no Twitter!
+                Quer trabalhar junto ou tem alguma dúvida? Me envie uma mensagem.
               </p>
               <a
                 href={profileContent.contactUrl}

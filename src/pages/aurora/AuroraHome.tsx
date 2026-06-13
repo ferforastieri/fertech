@@ -43,11 +43,14 @@ export default function AuroraHome() {
   const projectsQuery = useProjects()
   const workArticlesQuery = useArticles('work')
   const profileContent = profileQuery.data
-  const projectGroups = projectGroupsQuery.data ?? []
-  const allProjects = projectsQuery.data ?? []
-  const workArticles = workArticlesQuery.data ?? []
+  const isLoading = profileQuery.isLoading || projectGroupsQuery.isLoading || projectsQuery.isLoading || workArticlesQuery.isLoading
+  const projectGroups = projectGroupsQuery.data
+  const allProjects = projectsQuery.data
+  const workArticles = workArticlesQuery.data
 
   useEffect(() => {
+    if (isLoading) return
+
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
       mm.add('(prefers-reduced-motion: reduce)', () => {
@@ -75,13 +78,13 @@ export default function AuroraHome() {
     }, rootRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [isLoading, profileContent?.name, projectGroups?.length, allProjects?.length, workArticles?.length])
 
-  if (profileQuery.isLoading || projectGroupsQuery.isLoading || projectsQuery.isLoading || workArticlesQuery.isLoading) {
+  if (isLoading) {
     return <AuroraLoading label="Inicializando experiência" />
   }
 
-  if (profileQuery.error || projectGroupsQuery.error || projectsQuery.error || workArticlesQuery.error || !profileContent) {
+  if (profileQuery.error || projectGroupsQuery.error || projectsQuery.error || workArticlesQuery.error || !profileContent || !projectGroups || !allProjects || !workArticles) {
     return <div className="mx-auto max-w-6xl px-4 pb-24 pt-24 text-white sm:pt-28">Nao foi possivel carregar o conteudo.</div>
   }
 

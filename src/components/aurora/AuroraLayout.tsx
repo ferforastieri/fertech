@@ -2,18 +2,21 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import {
+  ArrowsRightLeftIcon,
+  ArrowsUpDownIcon,
   ArrowPathRoundedSquareIcon,
   BriefcaseIcon,
   DocumentTextIcon,
   HomeIcon,
   UserIcon,
-  ViewColumnsIcon,
 } from '@heroicons/react/24/outline'
 import { ThemeToggle } from '@/components/ui/feedback'
 import { ExperienceProvider, saveExperienceMode } from '@/lib/experience'
 import AuroraScene from './AuroraScene'
 import AuroraPointerEffects from './AuroraPointerEffects'
 import { cn } from '@/components/lib'
+import { useProfileContent } from '@/api/profile/useProfileContent'
+import { renderSocialIcon } from '@/lib/social-icons'
 
 const navItems = [
   { name: 'Início', href: '/aurora', icon: HomeIcon },
@@ -42,6 +45,7 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
   const [navPosition, setNavPosition] = useState<AuroraNavPosition>(getDefaultNavPosition)
   const [isMobile, setIsMobile] = useState(getIsMobile)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const { data: profile } = useProfileContent()
   const isVerticalNav = navPosition === 'left' || navPosition === 'right'
   const isMobileDrawer = isMobile && isVerticalNav
 
@@ -122,6 +126,24 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
     const itemAnimate = { opacity: 1, x: 0, y: 0, scale: 1, rotateX: 0, filter: 'blur(0px)' }
 
     const actions = [
+      ...(profile?.socialLinks ?? []).map((social) => ({
+        key: `social-${social.name}`,
+        node: (
+          <a
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              'flex h-10 w-10 items-center justify-center rounded-full transition',
+              isDark ? 'text-white/72 hover:bg-white/10 hover:text-white' : 'text-[#140407] hover:bg-rose-950/10',
+            )}
+            aria-label={social.name}
+            title={social.name}
+          >
+            {renderSocialIcon(social)}
+          </a>
+        ),
+      })),
       {
         key: 'theme',
         node: (
@@ -147,7 +169,7 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
             aria-label={`Mover navegação, posição atual ${navPositionLabel}`}
             title={`Mover navegação (${navPositionLabel})`}
           >
-            <ViewColumnsIcon className={cn('h-5 w-5 transition-transform', isVerticalNav && 'rotate-90')} />
+            {isVerticalNav ? <ArrowsRightLeftIcon className="h-5 w-5" /> : <ArrowsUpDownIcon className="h-5 w-5" />}
           </button>
         ),
       },
@@ -186,7 +208,7 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
               isDark ? 'text-white' : 'text-[#140407]',
             )}
           >
-            <img src="/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
+            {profile && <img src={profile.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />}
           </Link>
         </motion.div>
 
@@ -272,7 +294,7 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
               transition={{ type: 'spring', stiffness: 520, damping: 28 }}
               aria-label={`Abrir navegação ${navPositionLabel}`}
             >
-              <ViewColumnsIcon className={cn('h-5 w-5', navPosition === 'left' ? 'rotate-180' : '')} />
+              <ArrowsRightLeftIcon className="h-5 w-5" />
             </motion.button>
 
             <AnimatePresence>

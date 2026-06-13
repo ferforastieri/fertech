@@ -60,7 +60,7 @@ export default function Projects() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 space-y-4 text-center">
             <Skeleton className="mx-auto h-14 w-72" />
@@ -100,14 +100,14 @@ export default function Projects() {
 
   if (error || !projectGroups) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-4 pb-12">
         <div className="mx-auto max-w-6xl text-foreground">Nao foi possivel carregar os projetos.</div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 pt-4 pb-12">
       <div className="mx-auto max-w-6xl">
         <div className="mb-16 text-center">
           <h1 className="mb-4 text-5xl font-bold text-foreground">Meus Projetos</h1>
