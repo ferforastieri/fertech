@@ -154,7 +154,7 @@ export default function AuroraHome() {
         })}
       </section>
 
-      <section className="aurora-reveal grid gap-10 py-12 opacity-0 translate-y-8 lg:grid-cols-[0.75fr_1.25fr]">
+      <section className="grid gap-10 py-12 lg:grid-cols-[0.75fr_1.25fr]">
         <div>
           <p className="text-sm uppercase tracking-[0.32em] text-rose-500">{homeContent.auroraAboutEyebrow}</p>
           <h2 className="mt-4 text-4xl font-bold">{homeContent.auroraAboutTitle}</h2>
