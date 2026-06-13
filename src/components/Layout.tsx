@@ -119,7 +119,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
 
       <main className={cn(
         "flex-1 w-full overflow-x-hidden mx-auto max-w-6xl px-4 sm:px-6 md:px-8 lg:px-10",
-        "pt-16 md:pt-0 pb-20 md:pb-16"
+        "pt-20 md:pt-4 pb-20 md:pb-16"
       )}>
         {children}
       </main>

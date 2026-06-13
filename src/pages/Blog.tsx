@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Accordion } from '@/components/ui/layout'
 import { Badge, Skeleton } from '@/components/ui/feedback'
-import { Article, useArticles } from '@/api/articles/useArticles'
+import { Article, useArticleList } from '@/api/articles/useArticleList'
 import { 
   ArrowRightIcon,
   BriefcaseIcon,
@@ -11,8 +11,8 @@ import { useExperiencePath } from '@/lib/experience'
 
 export default function Blog() {
   const modePath = useExperiencePath()
-  const workArticlesQuery = useArticles('work')
-  const personalArticlesQuery = useArticles('personal')
+  const workArticlesQuery = useArticleList('work')
+  const personalArticlesQuery = useArticleList('personal')
   const workArticles = workArticlesQuery.data ?? []
   const personalArticles = personalArticlesQuery.data ?? []
   const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading

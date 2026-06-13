@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
-import { Article, useArticles } from '@/api/articles/useArticles'
+import { Article, useArticleList } from '@/api/articles/useArticleList'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 
 function ArticleList({
@@ -53,8 +53,8 @@ function ArticleList({
 }
 
 export default function AuroraBlog() {
-  const workArticlesQuery = useArticles('work')
-  const personalArticlesQuery = useArticles('personal')
+  const workArticlesQuery = useArticleList('work')
+  const personalArticlesQuery = useArticleList('personal')
   const workArticles = workArticlesQuery.data ?? []
   const personalArticles = personalArticlesQuery.data ?? []
   const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading
@@ -71,7 +71,7 @@ export default function AuroraBlog() {
   return (
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-32 text-white">
       <header className="mb-12 max-w-3xl">
-        <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Blog</p>
+        <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Artigos e ideias</p>
         <h1 className="mt-4 text-5xl font-bold md:text-7xl">Blog</h1>
         <p className="mt-6 text-lg leading-8 text-white/70">
           Artigos sobre desenvolvimento, tecnologia e reflexões pessoais.

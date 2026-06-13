@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/forms'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import ReactMarkdown from 'react-markdown'
 import { useExperiencePath } from '@/lib/experience'
-import { useArticle } from '@/api/articles/useArticle'
+import { useArticleBySlug } from '@/api/articles/useArticleBySlug'
 
 export default function Article() {
   const { slug } = useParams<{ slug: string }>()
   const modePath = useExperiencePath()
-  const { data: article, isLoading } = useArticle(slug)
+  const { data: article, isLoading } = useArticleBySlug(slug)
 
   if (isLoading) {
     return (

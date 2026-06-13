@@ -75,7 +75,7 @@ export default function AuroraProjects() {
   return (
     <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-32 text-white">
       <header className="mb-14 max-w-3xl">
-        <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Projetos</p>
+        <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Portfólio técnico</p>
         <h1 className="mt-4 text-5xl font-bold md:text-7xl">Meus Projetos</h1>
         <p className="mt-6 text-lg leading-8 text-white/70">
           Uma seleção dos produtos, empresas e projetos em que trabalhei e contribuí ao longo dos anos.

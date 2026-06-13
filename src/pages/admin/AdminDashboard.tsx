@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeftIcon, ArrowPathIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { Badge, ThemeToggle } from '@/components/ui/feedback'
 import { Button, Input } from '@/components/ui/forms'
-import { Article, ArticleKind, useArticles } from '@/api/articles/useArticles'
+import { Article, ArticleKind, useArticleList } from '@/api/articles/useArticleList'
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { useResumeContent } from '@/api/resume/useResumeContent'
@@ -131,7 +131,7 @@ function AdminSection({
 }) {
   return (
     <section className="space-y-5">
-      <div className="border-b border-border pb-3">
+      <div className="pb-1">
         <h2 className="text-2xl font-bold text-foreground">{title}</h2>
       </div>
       <div>{children}</div>
@@ -150,8 +150,8 @@ export default function AdminDashboard() {
 
   const profileQuery = useProfileContent()
   const projectGroupsQuery = useProjectGroups()
-  const workArticlesQuery = useArticles('work')
-  const personalArticlesQuery = useArticles('personal')
+  const workArticlesQuery = useArticleList('work')
+  const personalArticlesQuery = useArticleList('personal')
   const resumeQuery = useResumeContent()
 
   const [profileForm, setProfileForm] = useState<ProfileForm>({
@@ -549,7 +549,7 @@ export default function AdminDashboard() {
                 <div className="mt-4">
                   <Textarea label="Destaques: icon|titulo|descrição" value={profileForm.highlights} onChange={(value) => setProfileForm({ ...profileForm, highlights: value })} rows={5} />
                 </div>
-                <div className="mt-5 flex justify-end border-t border-border pt-5">
+                <div className="mt-5 flex justify-end">
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveProfile}>
                     Salvar perfil
                   </Button>
@@ -608,7 +608,7 @@ export default function AdminDashboard() {
                             <div className="md:col-span-2">
                               <Textarea label="Descrição" value={project.description} onChange={(value) => updateProject(groupIndex, projectIndex, { description: value }, projectGroupsForm, setProjectGroupsForm)} rows={3} />
                             </div>
-                            <div className="flex justify-end border-t border-border/70 pt-3 md:col-span-2">
+                            <div className="flex justify-end md:col-span-2">
                               <Button type="button" variant="destructive" className="min-w-40" onClick={() => removeProject(groupIndex, projectIndex, projectGroupsForm, setProjectGroupsForm)}>
                                 Remover projeto
                               </Button>
@@ -625,7 +625,7 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 flex flex-wrap justify-end gap-3 border-t border-border pt-5">
+                <div className="mt-5 flex flex-wrap justify-end gap-3">
                   <Button type="button" variant="outline" className="min-w-52" onClick={() => setProjectGroupsForm([...projectGroupsForm, createProjectGroupForm(projectGroupsForm.length)])}>
                     <PlusIcon className="mr-2 h-4 w-4" />
                     Adicionar empresa/grupo
@@ -664,7 +664,7 @@ export default function AdminDashboard() {
                       <div className="md:col-span-2">
                         <Textarea label="Conteúdo Markdown" value={article.content} onChange={(value) => updateArticle(index, { content: value }, articleForms, setArticleForms)} rows={12} />
                       </div>
-                      <div className="flex justify-end border-t border-border/70 pt-3 md:col-span-2">
+                      <div className="flex justify-end md:col-span-2">
                         <Button type="button" variant="destructive" className="min-w-40" onClick={() => setArticleForms(articleForms.filter((_, itemIndex) => itemIndex !== index))}>
                           Remover artigo
                         </Button>
@@ -672,7 +672,7 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 flex flex-wrap justify-end gap-3 border-t border-border pt-5">
+                <div className="mt-5 flex flex-wrap justify-end gap-3">
                   <Button type="button" variant="outline" className="min-w-44" onClick={() => setArticleForms([...articleForms, createArticleForm(articleForms.length)])}>
                     <PlusIcon className="mr-2 h-4 w-4" />
                     Adicionar artigo
@@ -695,7 +695,7 @@ export default function AdminDashboard() {
                       <Input label="Curso" value={item.course} onChange={(event) => updateEducation(index, { course: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Local" value={item.location} onChange={(event) => updateEducation(index, { location: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Período" value={item.period} onChange={(event) => updateEducation(index, { period: event.target.value }, resumeForm, setResumeForm)} />
-                      <div className="flex justify-end border-t border-border/70 pt-3 md:col-span-2">
+                      <div className="flex justify-end md:col-span-2">
                         <Button type="button" variant="destructive" className="min-w-40" onClick={() => setResumeForm({ ...resumeForm, education: resumeForm.education.filter((_, itemIndex) => itemIndex !== index) })}>
                           Remover educação
                         </Button>
@@ -720,7 +720,7 @@ export default function AdminDashboard() {
                       <Input label="Período" value={experience.period} onChange={(event) => updateExperience(index, { period: event.target.value }, resumeForm, setResumeForm)} />
                       <Textarea label="Timeline: cargo|período" value={experience.roles} onChange={(value) => updateExperience(index, { roles: value }, resumeForm, setResumeForm)} rows={4} />
                       <Textarea label="Responsabilidades, uma por linha" value={experience.responsibilities} onChange={(value) => updateExperience(index, { responsibilities: value }, resumeForm, setResumeForm)} rows={5} />
-                      <div className="flex justify-end border-t border-border/70 pt-3 md:col-span-2">
+                      <div className="flex justify-end md:col-span-2">
                         <Button type="button" variant="destructive" className="min-w-44" onClick={() => setResumeForm({ ...resumeForm, experiences: resumeForm.experiences.filter((_, itemIndex) => itemIndex !== index) })}>
                           Remover experiência
                         </Button>
@@ -728,7 +728,7 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 flex flex-wrap justify-end gap-3 border-t border-border pt-5">
+                <div className="mt-5 flex flex-wrap justify-end gap-3">
                   <Button type="button" variant="outline" className="min-w-48" onClick={() => setResumeForm({ ...resumeForm, experiences: [...resumeForm.experiences, createExperienceForm(resumeForm.experiences.length)] })}>
                     <PlusIcon className="mr-2 h-4 w-4" />
                     Adicionar experiência

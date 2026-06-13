@@ -16,6 +16,14 @@ function getHighlightIcon(highlight: ProfileHighlight) {
   return highlightIcons[highlight.icon] ?? SparklesIcon
 }
 
+const softSkills = ['Comunicação clara', 'Arquitetura com contexto', 'Senso de produto', 'UX intuitiva']
+
+const personalSignals = [
+  'Gosto de transformar ideias confusas em interfaces simples de usar.',
+  'Sou fullstack, com foco em design systems, infra e arquitetura de produto.',
+  'Tenho um carinho especial por frontend e UX porque é ali que tecnologia encontra pessoas.',
+]
+
 export default function Home() {
   const modePath = useExperiencePath()
   const { data: profileContent, isLoading, error } = useProfileContent()
@@ -142,18 +150,42 @@ export default function Home() {
         </section>
 
         <section>
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold mb-6 text-center text-foreground">Capacidades Técnicas</h2>
-            <div className="flex flex-wrap gap-3 justify-center">
-              {profileContent.technologies.map((tech) => (
-                <Badge key={tech} variant="secondary" className="text-base px-4 py-2">
-                  {tech}
-                </Badge>
-              ))}
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold mb-5 text-center text-foreground">Stack, soft skills e jeito de trabalhar</h2>
+            <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+              <Card>
+                <CardContent className="p-5">
+                  <h3 className="text-xl font-semibold text-foreground">Stack técnica</h3>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {profileContent.technologies.map((tech) => (
+                      <Badge key={tech} variant="secondary" className="px-3 py-1.5 text-sm">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                  <p className="text-sm text-muted-foreground italic mt-4">
+                    Possuo inglês avançado com capacidade de escrita e fala.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-5">
+                  <h3 className="text-xl font-semibold text-foreground">Além do código</h3>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {softSkills.map((skill) => (
+                      <Badge key={skill} variant="outline" className="px-3 py-1.5 text-sm">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="mt-4 space-y-2 text-sm text-foreground">
+                    {personalSignals.slice(0, 2).map((signal) => (
+                      <p key={signal}>{signal}</p>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <p className="text-sm text-muted-foreground italic text-center mt-6">
-              Possuo inglês avançado com capacidade de escrita e fala.
-            </p>
           </div>
         </section>
 

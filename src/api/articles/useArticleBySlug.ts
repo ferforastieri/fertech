@@ -1,19 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/config/supabase'
-
-export type ArticleKind = 'work' | 'personal'
-
-export type Article = {
-  slug: string
-  title: string
-  category: string
-  description: string
-  date: string
-  readTime: string
-  content: string
-  kind: ArticleKind
-  sortOrder: number
-}
+import { Article, ArticleKind } from './useArticleList'
 
 type ArticleRow = {
   slug: string
@@ -41,26 +28,22 @@ function mapArticle(row: ArticleRow): Article {
   }
 }
 
-async function getArticles(kind?: ArticleKind): Promise<Article[]> {
-  let query = supabase
+async function getArticleBySlug(slug: string): Promise<Article | null> {
+  const { data, error } = await supabase
     .from('articles')
     .select('slug,title,category,description,date,read_time,content,kind,sort_order')
-    .order('sort_order', { ascending: true })
-
-  if (kind) {
-    query = query.eq('kind', kind)
-  }
-
-  const { data, error } = await query
+    .eq('slug', slug)
+    .maybeSingle()
 
   if (error) throw error
 
-  return ((data ?? []) as ArticleRow[]).map(mapArticle)
+  return data ? mapArticle(data as ArticleRow) : null
 }
 
-export function useArticles(kind?: ArticleKind) {
+export function useArticleBySlug(slug: string | undefined) {
   return useQuery({
-    queryKey: ['articles', 'list', kind ?? 'all'],
-    queryFn: () => getArticles(kind),
+    queryKey: ['articles', 'detail', slug ?? ''],
+    queryFn: () => getArticleBySlug(slug ?? ''),
+    enabled: Boolean(slug),
   })
 }
