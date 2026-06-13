@@ -11,7 +11,11 @@ if (!result.success) {
   throw new Error(`Configuracao de ambiente invalida: ${result.error.message}`)
 }
 
+function getSupabaseProjectUrl(value: string) {
+  return new URL(value).origin
+}
+
 export const env = {
-  supabaseUrl: result.data.VITE_SUPABASE_URL,
+  supabaseUrl: getSupabaseProjectUrl(result.data.VITE_SUPABASE_URL),
   supabaseAnonKey: result.data.VITE_SUPABASE_ANON_KEY,
 }

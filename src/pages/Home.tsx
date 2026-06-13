@@ -1,13 +1,66 @@
 import { Link } from 'react-router-dom'
-import { StatusBadge, Badge } from '@/components/ui/feedback'
+import { StatusBadge, Badge, Skeleton } from '@/components/ui/feedback'
 import { Button } from '@/components/ui/forms'
 import { Card, CardContent } from '@/components/ui/layout'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
-import { aboutParagraphs, highlights, profile, technologies } from '@/data/profile'
+import { ArrowRightIcon, CodeBracketIcon, RocketLaunchIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { useExperiencePath } from '@/lib/experience'
+import { ProfileHighlight, useProfileContent } from '@/api/profile/useProfileContent'
+
+const highlightIcons = {
+  code: CodeBracketIcon,
+  rocket: RocketLaunchIcon,
+  sparkles: SparklesIcon,
+}
+
+function getHighlightIcon(highlight: ProfileHighlight) {
+  return highlightIcons[highlight.icon]
+}
 
 export default function Home() {
   const modePath = useExperiencePath()
+  const { data: profileContent, isLoading, error } = useProfileContent()
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="mx-auto max-w-6xl space-y-12">
+          <section className="space-y-5">
+            <Skeleton className="h-14 w-full max-w-xl" />
+            <Skeleton className="h-8 w-full max-w-md" />
+            <Skeleton className="h-6 w-full max-w-3xl" />
+            <div className="flex flex-wrap gap-2">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <Skeleton key={index} className="h-8 w-24 rounded-full" />
+              ))}
+            </div>
+            <div className="flex gap-4">
+              <Skeleton className="h-12 w-36 rounded-lg" />
+              <Skeleton className="h-12 w-32 rounded-lg" />
+            </div>
+          </section>
+          <section className="space-y-4">
+            <Skeleton className="mx-auto h-10 w-56" />
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-11/12" />
+            <Skeleton className="h-5 w-10/12" />
+          </section>
+          <section className="grid gap-6 md:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-44 rounded-lg" />
+            ))}
+          </section>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !profileContent) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto text-foreground">Nao foi possivel carregar o conteudo.</div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -15,16 +68,16 @@ export default function Home() {
         <section>
           <div className="max-w-6xl mx-auto">
             <h1 className="text-5xl md:text-6xl font-bold mb-4 text-center md:text-left text-foreground">
-              {profile.name}
+              {profileContent.name}
             </h1>
             <p className="text-xl md:text-2xl text-foreground mb-6 text-center md:text-left">
-              {profile.role}
+              {profileContent.role}
             </p>
             <p className="text-lg text-foreground mb-8 text-center md:text-left">
-              {profile.intro}
+              {profileContent.intro}
             </p>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-8">
-              {technologies.map((tech) => (
+              {profileContent.technologies.map((tech) => (
                 <StatusBadge
                   key={tech}
                   status="active"
@@ -55,7 +108,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl font-bold mb-6 text-center text-foreground">Sobre Mim</h2>
             <div className="space-y-4 text-lg text-foreground">
-              {aboutParagraphs.map((paragraph) => (
+              {profileContent.aboutParagraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
@@ -66,21 +119,24 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl font-bold mb-8 text-center text-foreground">O Que Me Diferencia</h2>
             <div className="grid md:grid-cols-3 gap-6">
-              {highlights.map((highlight) => (
-                <Card key={highlight.title} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="p-3 rounded-lg bg-primary">
-                        <highlight.icon className="h-6 w-6 text-primary-foreground" />
+              {profileContent.highlights.map((highlight) => {
+                const Icon = getHighlightIcon(highlight)
+                return (
+                  <Card key={highlight.title} className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="p-3 rounded-lg bg-primary">
+                          <Icon className="h-6 w-6 text-primary-foreground" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-foreground">{highlight.title}</h3>
                       </div>
-                      <h3 className="text-xl font-semibold text-foreground">{highlight.title}</h3>
-                    </div>
-                    <p className="text-foreground">
-                      {highlight.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+                      <p className="text-foreground">
+                        {highlight.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           </div>
         </section>
@@ -89,7 +145,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-bold mb-6 text-center text-foreground">Capacidades Técnicas</h2>
             <div className="flex flex-wrap gap-3 justify-center">
-              {technologies.map((tech) => (
+              {profileContent.technologies.map((tech) => (
                 <Badge key={tech} variant="secondary" className="text-base px-4 py-2">
                   {tech}
                 </Badge>
@@ -109,7 +165,7 @@ export default function Home() {
                 Quer trabalhar junto ou tem alguma dúvida? Me envie uma mensagem no Twitter!
               </p>
               <a
-                href={profile.contactUrl}
+                href={profileContent.contactUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >

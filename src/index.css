@@ -292,3 +292,24 @@
     scale: 0.25;
   }
 }
+
+@keyframes aurora-nav-flight {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+@keyframes aurora-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
+
+  50% {
+    transform: translate3d(-10px, -8px, 0) rotate(3deg);
+  }
+}

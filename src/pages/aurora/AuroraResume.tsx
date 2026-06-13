@@ -10,21 +10,22 @@ import {
   MapPinIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
-import { education, experiences, resumeTechnologies } from '@/data/resume'
-import { profile } from '@/data/profile'
+import { useProfileContent } from '@/api/profile/useProfileContent'
+import { useResumeContent } from '@/api/resume/useResumeContent'
+import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const aboutParagraphs = [
-  'Tenho experiência no desenvolvimento de aplicativos, produtos web e sistemas internos, além de vivência com eletrônica, manutenção, infraestrutura e redes para solucionar problemas cotidianos de ponta a ponta.',
-  'Atuo como desenvolvedor fullstack com foco em design systems, infraestrutura e arquitetura, mantendo uma paixão especial por frontend e UX.',
-  'Estou sempre em busca de novos desafios e me mantenho atualizado, explorando novas tecnologias e usando IA como aceleradora. Ainda assim, acredito que o tato humano segue essencial para decisões de arquitetura, consistência visual e experiências intuitivas.',
-  'Tenho conhecimento de inglês técnico, o que me permite escrever código em inglês com facilidade, além de ler e redigir documentações técnicas no idioma.',
-]
 
 export default function AuroraResume() {
   const rootRef = useRef<HTMLDivElement>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const profileQuery = useProfileContent()
+  const resumeQuery = useResumeContent()
+
+  const profile = profileQuery.data
+  const resume = resumeQuery.data
+  const isLoading = profileQuery.isLoading || resumeQuery.isLoading
+  const hasError = profileQuery.isError || resumeQuery.isError
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -44,6 +45,8 @@ export default function AuroraResume() {
   }, [])
 
   const handleDownloadPDF = async () => {
+    if (!profile || !resume) return
+
     setIsGenerating(true)
 
     try {
@@ -75,17 +78,17 @@ export default function AuroraResume() {
 
       doc.setFontSize(20)
       doc.setFont('helvetica', 'bold')
-      doc.text('FERNANDO FORASTIERI NETO', pageWidth / 2, yPosition, { align: 'center' })
+      doc.text(profile.name.toUpperCase(), pageWidth / 2, yPosition, { align: 'center' })
       yPosition += 8
       doc.setFontSize(12)
       doc.setFont('helvetica', 'normal')
-      doc.text('Desenvolvedor Fullstack | Design Systems, Infra & UX', pageWidth / 2, yPosition, { align: 'center' })
+      doc.text(profile.role, pageWidth / 2, yPosition, { align: 'center' })
       yPosition += 8
 
       sectionTitle('RESUMO PROFISSIONAL')
       doc.setFontSize(10)
       doc.setFont('helvetica', 'normal')
-      aboutParagraphs.forEach((paragraph) => {
+      profile.aboutParagraphs.forEach((paragraph) => {
         ensureSpace(18)
         const lines = doc.splitTextToSize(paragraph, maxWidth)
         doc.text(lines, margin, yPosition)
@@ -93,7 +96,7 @@ export default function AuroraResume() {
       })
 
       sectionTitle('EXPERIÊNCIA PROFISSIONAL')
-      experiences.forEach((experience) => {
+      resume.experiences.forEach((experience) => {
         ensureSpace(34)
         doc.setFontSize(12)
         doc.setFont('helvetica', 'bold')
@@ -105,18 +108,16 @@ export default function AuroraResume() {
         doc.setFont('helvetica', 'italic')
         doc.text(`${experience.company} | ${experience.location}`, margin, yPosition)
         yPosition += 6
-        if (experience.roles) {
-          experience.roles.forEach((role) => {
-            ensureSpace(12)
-            doc.setFontSize(10)
-            doc.setFont('helvetica', 'bold')
-            doc.text(`• ${role.position}`, margin + 4, yPosition)
-            doc.setFont('helvetica', 'normal')
-            doc.text(role.period, pageWidth - margin, yPosition, { align: 'right' })
-            yPosition += 5
-          })
-          yPosition += 2
-        }
+        experience.roles?.forEach((role) => {
+          ensureSpace(12)
+          doc.setFontSize(10)
+          doc.setFont('helvetica', 'bold')
+          doc.text(`• ${role.position}`, margin + 4, yPosition)
+          doc.setFont('helvetica', 'normal')
+          doc.text(role.period, pageWidth - margin, yPosition, { align: 'right' })
+          yPosition += 5
+        })
+        if (experience.roles?.length) yPosition += 2
         doc.setFont('helvetica', 'normal')
         experience.responsibilities.forEach((responsibility) => {
           ensureSpace(14)
@@ -128,7 +129,7 @@ export default function AuroraResume() {
       })
 
       sectionTitle('FORMAÇÃO ACADÊMICA')
-      education.forEach((item) => {
+      resume.education.forEach((item) => {
         ensureSpace(18)
         doc.setFontSize(11)
         doc.setFont('helvetica', 'bold')
@@ -143,7 +144,7 @@ export default function AuroraResume() {
       sectionTitle('HABILIDADES TÉCNICAS')
       doc.setFontSize(10)
       doc.setFont('helvetica', 'normal')
-      const skillLines = doc.splitTextToSize(resumeTechnologies.join(' • '), maxWidth)
+      const skillLines = doc.splitTextToSize(resume.technologies.join(' • '), maxWidth)
       doc.text(skillLines, margin, yPosition)
       yPosition += skillLines.length * 4 + 8
 
@@ -161,14 +162,26 @@ export default function AuroraResume() {
     }
   }
 
+  if (isLoading) {
+    return <AuroraLoading label="Montando currículo" />
+  }
+
+  if (hasError || !profile || !resume) {
+    return (
+      <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-32">
+        <p className="text-center text-rose-500">Não foi possível carregar o currículo.</p>
+      </div>
+    )
+  }
+
   return (
     <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-32">
       <header className="resume-hero mb-14 text-center">
         <div className="mb-6 flex justify-center">
           <img src="/logo.png" alt="Logo FF" className="h-24 w-24 object-contain" />
         </div>
-        <h1 className="text-5xl font-bold text-white md:text-7xl">{profile.name}</h1>
-        <p className="mx-auto mt-5 max-w-2xl text-xl text-white/72">{profile.role}</p>
+        <h1 className="text-5xl font-bold text-[rgb(var(--aurora-text))] md:text-7xl">{profile.name}</h1>
+        <p className="mx-auto mt-5 max-w-2xl text-xl text-[rgb(var(--aurora-muted))]">{profile.role}</p>
         <button
           type="button"
           onClick={handleDownloadPDF}
@@ -180,26 +193,26 @@ export default function AuroraResume() {
         </button>
       </header>
 
-      <section className="resume-reveal mb-12 rounded-[1.75rem] border border-white/12 bg-white/[0.07] p-6 opacity-0 translate-y-8 backdrop-blur">
-        <h2 className="text-3xl font-bold text-white">Sobre</h2>
-        <div className="mt-6 space-y-4 text-white/72">
-          {aboutParagraphs.map((paragraph) => (
+      <section className="resume-reveal mb-12 translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
+        <h2 className="text-3xl font-bold text-[rgb(var(--aurora-text))]">Sobre</h2>
+        <div className="mt-6 space-y-4 text-[rgb(var(--aurora-muted))]">
+          {profile.aboutParagraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>
       </section>
 
-      <section className="resume-reveal mb-12 opacity-0 translate-y-8">
-        <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold text-white">
+      <section className="resume-reveal mb-12 translate-y-8 opacity-0">
+        <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold text-[rgb(var(--aurora-text))]">
           <AcademicCapIcon className="h-8 w-8 text-rose-500" />
           Educação
         </h2>
         <div className="space-y-4">
-          {education.map((item) => (
-            <article key={item.course} className="rounded-[1.5rem] border border-white/12 bg-white/[0.07] p-6 backdrop-blur">
-              <h3 className="text-xl font-bold text-white">{item.course}</h3>
+          {resume.education.map((item) => (
+            <article key={item.id} className="rounded-[1.5rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 backdrop-blur">
+              <h3 className="text-xl font-bold text-[rgb(var(--aurora-text))]">{item.course}</h3>
               <p className="mt-2 text-rose-500">{item.institution}</p>
-              <div className="mt-4 flex flex-wrap gap-4 text-sm text-white/60">
+              <div className="mt-4 flex flex-wrap gap-4 text-sm text-[rgb(var(--aurora-muted))]">
                 <span className="inline-flex items-center gap-1">
                   <MapPinIcon className="h-4 w-4" />
                   {item.location}
@@ -214,42 +227,42 @@ export default function AuroraResume() {
         </div>
       </section>
 
-      <section className="resume-reveal mb-12 opacity-0 translate-y-8">
-        <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold text-white">
+      <section className="resume-reveal mb-12 translate-y-8 opacity-0">
+        <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold text-[rgb(var(--aurora-text))]">
           <BriefcaseIcon className="h-8 w-8 text-rose-500" />
           Experiência Profissional
         </h2>
         <div className="space-y-4">
-          {experiences.map((experience) => (
-            <article key={`${experience.company}-${experience.position}`} className="rounded-[1.5rem] border border-white/12 bg-white/[0.07] p-6 backdrop-blur">
+          {resume.experiences.map((experience) => (
+            <article key={experience.id} className="rounded-[1.5rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 backdrop-blur">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-xl font-bold text-white">{experience.position}</h3>
+                  <h3 className="text-xl font-bold text-[rgb(var(--aurora-text))]">{experience.position}</h3>
                   <p className="mt-1 text-rose-500">{experience.company}</p>
                 </div>
-                <span className="inline-flex items-center gap-1 rounded-full border border-white/10 px-3 py-1 text-sm text-white/60">
+                <span className="inline-flex items-center gap-1 rounded-full border border-[rgb(var(--aurora-border))] px-3 py-1 text-sm text-[rgb(var(--aurora-muted))]">
                   <CalendarIcon className="h-4 w-4" />
                   {experience.period}
                 </span>
               </div>
-              <p className="mt-3 inline-flex items-center gap-1 text-sm text-white/56">
+              <p className="mt-3 inline-flex items-center gap-1 text-sm text-[rgb(var(--aurora-muted))]">
                 <MapPinIcon className="h-4 w-4" />
                 {experience.location}
               </p>
               {experience.roles && (
-                <div className="mt-5 space-y-3 border-l border-white/12 pl-4">
+                <div className="mt-5 space-y-3 border-l border-[rgb(var(--aurora-border))] pl-4">
                   {experience.roles.map((role) => (
-                    <div key={`${experience.company}-${role.position}`} className="relative">
+                    <div key={`${experience.id}-${role.position}`} className="relative">
                       <span className="absolute -left-[1.35rem] top-1.5 h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_16px_rgba(244,63,94,0.55)]" />
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <h4 className="font-semibold text-white">{role.position}</h4>
-                        <span className="text-sm text-white/56">{role.period}</span>
+                        <h4 className="font-semibold text-[rgb(var(--aurora-text))]">{role.position}</h4>
+                        <span className="text-sm text-[rgb(var(--aurora-muted))]">{role.period}</span>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-              <ul className="mt-5 space-y-3 text-white/72">
+              <ul className="mt-5 space-y-3 text-[rgb(var(--aurora-muted))]">
                 {experience.responsibilities.map((responsibility) => (
                   <li key={responsibility} className="flex items-start gap-2">
                     <span className="mt-1.5 text-rose-500">•</span>
@@ -262,33 +275,33 @@ export default function AuroraResume() {
         </div>
       </section>
 
-      <section className="resume-reveal mb-12 rounded-[1.75rem] border border-white/12 bg-white/[0.07] p-6 opacity-0 translate-y-8 backdrop-blur">
-        <h2 className="flex items-center gap-3 text-3xl font-bold text-white">
+      <section className="resume-reveal mb-12 translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
+        <h2 className="flex items-center gap-3 text-3xl font-bold text-[rgb(var(--aurora-text))]">
           <WrenchScrewdriverIcon className="h-8 w-8 text-rose-500" />
           Habilidades Técnicas
         </h2>
         <div className="mt-6 flex flex-wrap gap-2">
-          {resumeTechnologies.map((tech) => (
-            <span key={tech} className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-sm text-white/72">
+          {resume.technologies.map((tech) => (
+            <span key={tech} className="rounded-full border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-surface))] px-3 py-1 text-sm text-[rgb(var(--aurora-muted))]">
               {tech}
             </span>
           ))}
         </div>
       </section>
 
-      <section className="resume-reveal rounded-[1.75rem] border border-white/12 bg-white/[0.07] p-6 opacity-0 translate-y-8 backdrop-blur">
-        <h2 className="flex items-center gap-3 text-3xl font-bold text-white">
+      <section className="resume-reveal translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
+        <h2 className="flex items-center gap-3 text-3xl font-bold text-[rgb(var(--aurora-text))]">
           <LanguageIcon className="h-8 w-8 text-rose-500" />
           Idiomas
         </h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <div>
-            <p className="text-lg font-semibold text-white">Português</p>
-            <p className="text-sm text-white/60">Nativo</p>
+            <p className="text-lg font-semibold text-[rgb(var(--aurora-text))]">Português</p>
+            <p className="text-sm text-[rgb(var(--aurora-muted))]">Nativo</p>
           </div>
           <div>
-            <p className="text-lg font-semibold text-white">Inglês</p>
-            <p className="text-sm text-white/60">Inglês técnico - Capacidade de escrita e leitura de documentações técnicas</p>
+            <p className="text-lg font-semibold text-[rgb(var(--aurora-text))]">Inglês</p>
+            <p className="text-sm text-[rgb(var(--aurora-muted))]">Inglês técnico - Capacidade de escrita e leitura de documentações técnicas</p>
           </div>
         </div>
       </section>

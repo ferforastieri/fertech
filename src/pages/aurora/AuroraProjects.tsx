@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
-import { projectGroups, Project } from '@/data/projects'
+import { Project, useProjectGroups } from '@/api/projects/useProjectGroups'
+import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -40,6 +41,7 @@ function ProjectRow({ project }: { project: Project }) {
 
 export default function AuroraProjects() {
   const rootRef = useRef<HTMLDivElement>(null)
+  const { data: projectGroups, isLoading, error } = useProjectGroups()
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -56,6 +58,14 @@ export default function AuroraProjects() {
 
     return () => ctx.revert()
   }, [])
+
+  if (isLoading) {
+    return <AuroraLoading label="Carregando projetos" />
+  }
+
+  if (error || !projectGroups) {
+    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-32 text-white">Nao foi possivel carregar os projetos.</div>
+  }
 
   return (
     <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-32 text-white">

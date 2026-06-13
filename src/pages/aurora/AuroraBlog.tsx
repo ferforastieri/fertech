@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
-import { personalArticles, workArticles } from '@/data/articles'
+import { Article, useArticles } from '@/api/articles/useArticles'
+import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 
 function ArticleList({
   title,
   articles,
 }: {
   title: string
-  articles: typeof workArticles
+  articles: Article[]
 }) {
   const [isOpen, setIsOpen] = useState(true)
 
@@ -52,6 +53,21 @@ function ArticleList({
 }
 
 export default function AuroraBlog() {
+  const workArticlesQuery = useArticles('work')
+  const personalArticlesQuery = useArticles('personal')
+  const workArticles = workArticlesQuery.data ?? []
+  const personalArticles = personalArticlesQuery.data ?? []
+  const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading
+  const hasError = workArticlesQuery.error || personalArticlesQuery.error
+
+  if (isLoading) {
+    return <AuroraLoading label="Sincronizando artigos" />
+  }
+
+  if (hasError) {
+    return <div className="mx-auto max-w-5xl px-4 pb-24 pt-32 text-white">Nao foi possivel carregar os artigos.</div>
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-32 text-white">
       <header className="mb-12 max-w-3xl">

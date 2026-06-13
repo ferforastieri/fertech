@@ -1,16 +1,41 @@
 import { useParams, Link } from 'react-router-dom'
 import { Separator } from '@/components/ui/layout'
-import { Badge } from '@/components/ui/feedback'
+import { Badge, Skeleton } from '@/components/ui/feedback'
 import { Button } from '@/components/ui/forms'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
-import { allArticles } from '@/data/articles'
 import ReactMarkdown from 'react-markdown'
 import { useExperiencePath } from '@/lib/experience'
+import { useArticle } from '@/api/articles/useArticle'
 
 export default function Article() {
   const { slug } = useParams<{ slug: string }>()
   const modePath = useExperiencePath()
-  const article = allArticles.find((a) => a.slug === slug)
+  const { data: article, isLoading } = useArticle(slug)
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="mx-auto max-w-4xl">
+          <Skeleton className="mb-8 h-10 w-44 rounded-lg" />
+          <div className="mb-8 space-y-4">
+            <div className="flex gap-3">
+              <Skeleton className="h-6 w-24 rounded-full" />
+              <Skeleton className="h-6 w-28" />
+            </div>
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-4/5" />
+            <Skeleton className="h-5 w-36" />
+          </div>
+          <Skeleton className="my-8 h-px w-full" />
+          <div className="space-y-4">
+            {Array.from({ length: 9 }).map((_, index) => (
+              <Skeleton key={index} className={`h-5 ${index % 3 === 0 ? 'w-11/12' : 'w-full'}`} />
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!article) {
     return (

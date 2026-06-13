@@ -1,11 +1,16 @@
 import { Link, useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
-import { allArticles } from '@/data/articles'
+import { useArticle } from '@/api/articles/useArticle'
+import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 
 export default function AuroraArticle() {
   const { slug } = useParams<{ slug: string }>()
-  const article = allArticles.find((item) => item.slug === slug)
+  const { data: article, isLoading } = useArticle(slug)
+
+  if (isLoading) {
+    return <AuroraLoading label="Renderizando artigo" />
+  }
 
   if (!article) {
     return (

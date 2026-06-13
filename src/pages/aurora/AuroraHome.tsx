@@ -2,12 +2,24 @@ import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
-import { aboutParagraphs, highlights, profile } from '@/data/profile'
-import { allProjects, projectGroups } from '@/data/projects'
-import { workArticles } from '@/data/articles'
+import { ArrowRightIcon, CodeBracketIcon, RocketLaunchIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { ProfileHighlight, useProfileContent } from '@/api/profile/useProfileContent'
+import { useProjectGroups } from '@/api/projects/useProjectGroups'
+import { useProjects } from '@/api/projects/useProjects'
+import { useArticles } from '@/api/articles/useArticles'
+import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 
 gsap.registerPlugin(ScrollTrigger)
+
+const highlightIcons = {
+  code: CodeBracketIcon,
+  rocket: RocketLaunchIcon,
+  sparkles: SparklesIcon,
+}
+
+function getHighlightIcon(highlight: ProfileHighlight) {
+  return highlightIcons[highlight.icon]
+}
 
 const stackGroups = [
   {
@@ -26,6 +38,14 @@ const stackGroups = [
 
 export default function AuroraHome() {
   const rootRef = useRef<HTMLDivElement>(null)
+  const profileQuery = useProfileContent()
+  const projectGroupsQuery = useProjectGroups()
+  const projectsQuery = useProjects()
+  const workArticlesQuery = useArticles('work')
+  const profileContent = profileQuery.data
+  const projectGroups = projectGroupsQuery.data ?? []
+  const allProjects = projectsQuery.data ?? []
+  const workArticles = workArticlesQuery.data ?? []
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -57,6 +77,14 @@ export default function AuroraHome() {
     return () => ctx.revert()
   }, [])
 
+  if (profileQuery.isLoading || projectGroupsQuery.isLoading || projectsQuery.isLoading || workArticlesQuery.isLoading) {
+    return <AuroraLoading label="Inicializando experiência" />
+  }
+
+  if (profileQuery.error || projectGroupsQuery.error || projectsQuery.error || workArticlesQuery.error || !profileContent) {
+    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-24 text-white sm:pt-28">Nao foi possivel carregar o conteudo.</div>
+  }
+
   return (
     <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-24 text-white sm:pt-28">
       <section className="aurora-hero grid items-start gap-10 pt-8 pb-8 lg:grid-cols-[1.05fr_0.95fr]">
@@ -65,10 +93,10 @@ export default function AuroraHome() {
             Desenvolvedor Fullstack | Design Systems, Infra & UX
           </p>
           <h1 className="overflow-hidden text-5xl font-bold leading-[0.95] md:text-7xl">
-            <span className="aurora-hero-line block">{profile.name}</span>
+            <span className="aurora-hero-line block">{profileContent.name}</span>
             <span className="aurora-hero-line block text-rose-500">Arquitetura, infra e UX.</span>
           </h1>
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-white/72">{profile.intro}</p>
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-white/72">{profileContent.intro}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/aurora/projects" className="inline-flex items-center rounded-full bg-rose-900 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5">
               Ver projetos
@@ -105,13 +133,16 @@ export default function AuroraHome() {
       </section>
 
       <section className="grid gap-5 py-6 md:grid-cols-3">
-        {highlights.map((highlight) => (
-          <article key={highlight.title} className="aurora-highlight-card rounded-[1.75rem] border border-white/12 bg-white/[0.07] p-6 opacity-0 translate-y-8 backdrop-blur">
-            <highlight.icon className="mb-7 h-8 w-8 text-rose-500" />
-            <h2 className="text-2xl font-bold">{highlight.title}</h2>
-            <p className="mt-4 leading-7 text-white/68">{highlight.description}</p>
-          </article>
-        ))}
+        {profileContent.highlights.map((highlight) => {
+          const Icon = getHighlightIcon(highlight)
+          return (
+            <article key={highlight.title} className="aurora-highlight-card rounded-[1.75rem] border border-white/12 bg-white/[0.07] p-6 opacity-0 translate-y-8 backdrop-blur">
+              <Icon className="mb-7 h-8 w-8 text-rose-500" />
+              <h2 className="text-2xl font-bold">{highlight.title}</h2>
+              <p className="mt-4 leading-7 text-white/68">{highlight.description}</p>
+            </article>
+          )
+        })}
       </section>
 
       <section className="aurora-reveal grid gap-10 py-12 opacity-0 translate-y-8 lg:grid-cols-[0.75fr_1.25fr]">
@@ -120,7 +151,7 @@ export default function AuroraHome() {
           <h2 className="mt-4 text-4xl font-bold">Leveza também é arquitetura.</h2>
         </div>
         <div className="space-y-5 text-lg leading-8 text-white/72">
-          {aboutParagraphs.map((paragraph) => (
+          {profileContent.aboutParagraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Accordion } from '@/components/ui/layout'
-import { Badge } from '@/components/ui/feedback'
-import { workArticles, personalArticles } from '@/data/articles'
+import { Badge, Skeleton } from '@/components/ui/feedback'
+import { Article, useArticles } from '@/api/articles/useArticles'
 import { 
   ArrowRightIcon,
   BriefcaseIcon,
@@ -11,8 +11,59 @@ import { useExperiencePath } from '@/lib/experience'
 
 export default function Blog() {
   const modePath = useExperiencePath()
+  const workArticlesQuery = useArticles('work')
+  const personalArticlesQuery = useArticles('personal')
+  const workArticles = workArticlesQuery.data ?? []
+  const personalArticles = personalArticlesQuery.data ?? []
+  const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading
+  const hasError = workArticlesQuery.error || personalArticlesQuery.error
 
-  const renderArticles = (articles: typeof workArticles) => (
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-16 space-y-4 text-center">
+            <Skeleton className="mx-auto h-14 w-40" />
+            <Skeleton className="mx-auto h-6 w-full max-w-2xl" />
+          </div>
+          <div className="space-y-4">
+            {Array.from({ length: 2 }).map((_, sectionIndex) => (
+              <div key={sectionIndex} className="rounded-lg border border-border p-5">
+                <div className="mb-5 flex items-center gap-3">
+                  <Skeleton className="h-6 w-6 rounded-full" />
+                  <Skeleton className="h-7 w-64" />
+                </div>
+                <div className="space-y-5">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="space-y-3 border-t border-border pt-5 first:border-t-0 first:pt-0">
+                      <Skeleton className="h-7 w-3/4" />
+                      <div className="flex gap-3">
+                        <Skeleton className="h-6 w-20 rounded-full" />
+                        <Skeleton className="h-5 w-28" />
+                        <Skeleton className="h-5 w-24" />
+                      </div>
+                      <Skeleton className="h-5 w-full" />
+                      <Skeleton className="h-5 w-10/12" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (hasError) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto text-foreground">Nao foi possivel carregar os artigos.</div>
+      </div>
+    )
+  }
+
+  const renderArticles = (articles: Article[]) => (
     <div className="divide-y divide-border">
       {articles.map((article) => (
         <Link
