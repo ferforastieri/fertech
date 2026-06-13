@@ -77,7 +77,7 @@ export default function AuroraProjects() {
   const loadingTransition = useAuroraLoadingTransition(isLoading)
 
   useEffect(() => {
-    if (isLoading) return
+    if (loadingTransition.visible || !rootRef.current) return
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
@@ -93,9 +93,13 @@ export default function AuroraProjects() {
       })
       return () => mm.revert()
     }, rootRef)
+    const refreshFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh())
 
-    return () => ctx.revert()
-  }, [isLoading, projectGroups?.length])
+    return () => {
+      window.cancelAnimationFrame(refreshFrame)
+      ctx.revert()
+    }
+  }, [loadingTransition.visible, projectGroups?.length])
 
   if (loadingTransition.visible) {
     return <AuroraLoading label="Carregando projetos" exiting={loadingTransition.exiting} />

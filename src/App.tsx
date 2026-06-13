@@ -22,10 +22,6 @@ function ClassicPage({ children, basePath = '' }: { children: React.ReactNode; b
   return <Layout basePath={basePath}>{children}</Layout>
 }
 
-function AuroraPage({ children }: { children: React.ReactNode }) {
-  return <AuroraLayout>{children}</AuroraLayout>
-}
-
 function LazyExperience({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#040001]" />}>
@@ -50,11 +46,13 @@ function App() {
       <Route path="/projects" element={<ClassicPage><Projects /></ClassicPage>} />
       <Route path="/resume" element={<ClassicPage><Resume /></ClassicPage>} />
 
-      <Route path="/aurora" element={<LazyExperience><AuroraPage><AuroraHome /></AuroraPage></LazyExperience>} />
-      <Route path="/aurora/blog" element={<LazyExperience><AuroraPage><AuroraBlog /></AuroraPage></LazyExperience>} />
-      <Route path="/aurora/blog/:slug" element={<LazyExperience><AuroraPage><AuroraArticle /></AuroraPage></LazyExperience>} />
-      <Route path="/aurora/projects" element={<LazyExperience><AuroraPage><AuroraProjects /></AuroraPage></LazyExperience>} />
-      <Route path="/aurora/resume" element={<LazyExperience><AuroraPage><AuroraResume /></AuroraPage></LazyExperience>} />
+      <Route path="/aurora" element={<LazyExperience><AuroraLayout /></LazyExperience>}>
+        <Route index element={<AuroraHome />} />
+        <Route path="blog" element={<AuroraBlog />} />
+        <Route path="blog/:slug" element={<AuroraArticle />} />
+        <Route path="projects" element={<AuroraProjects />} />
+        <Route path="resume" element={<AuroraResume />} />
+      </Route>
 
       <Route path="/admin/login" element={<LazyExperience><AdminLogin /></LazyExperience>} />
       <Route path="/admin" element={<LazyExperience><ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute></LazyExperience>} />

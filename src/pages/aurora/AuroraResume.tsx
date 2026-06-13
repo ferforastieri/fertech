@@ -35,7 +35,7 @@ export default function AuroraResume() {
   const loadingTransition = useAuroraLoadingTransition(isLoading)
 
   useEffect(() => {
-    if (isLoading) return
+    if (loadingTransition.visible || !rootRef.current) return
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
@@ -52,9 +52,13 @@ export default function AuroraResume() {
       })
       return () => mm.revert()
     }, rootRef)
+    const refreshFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh())
 
-    return () => ctx.revert()
-  }, [isLoading, profile?.name, resume?.experiences.length, resume?.education.length])
+    return () => {
+      window.cancelAnimationFrame(refreshFrame)
+      ctx.revert()
+    }
+  }, [loadingTransition.visible, profile?.name, resume?.experiences.length, resume?.education.length])
 
   const handleDownloadPDF = async () => {
     if (!profile || !resume) return

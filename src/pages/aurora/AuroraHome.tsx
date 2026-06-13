@@ -40,7 +40,7 @@ export default function AuroraHome() {
   const loadingTransition = useAuroraLoadingTransition(isLoading)
 
   useEffect(() => {
-    if (isLoading) return
+    if (loadingTransition.visible || !rootRef.current) return
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
@@ -67,9 +67,13 @@ export default function AuroraHome() {
       })
       return () => mm.revert()
     }, rootRef)
+    const refreshFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh())
 
-    return () => ctx.revert()
-  }, [isLoading, profileContent?.name, homeContent?.heroHeadline, projectGroups?.length, allProjects?.length, workArticles?.length])
+    return () => {
+      window.cancelAnimationFrame(refreshFrame)
+      ctx.revert()
+    }
+  }, [loadingTransition.visible, profileContent?.name, homeContent?.heroHeadline, projectGroups?.length, allProjects?.length, workArticles?.length])
 
   if (loadingTransition.visible) {
     return <AuroraLoading label="Inicializando experiência" exiting={loadingTransition.exiting} />

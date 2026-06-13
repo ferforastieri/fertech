@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Suspense, useEffect, useState } from 'react'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   ArrowsRightLeftIcon,
@@ -21,6 +21,7 @@ import AuroraPointerEffects from './AuroraPointerEffects'
 import { cn } from '@/components/lib'
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { renderSocialIcon } from '@/features/profile/renderSocialIcon'
+import { AuroraLoading } from './AuroraLoading'
 
 const navItems = [
   { name: 'Início', href: '/aurora', icon: HomeIcon },
@@ -42,7 +43,7 @@ function getDefaultNavPosition(): AuroraNavPosition {
   return getIsMobile() ? 'bottom' : 'top'
 }
 
-export default function AuroraLayout({ children }: { children: React.ReactNode }) {
+export default function AuroraLayout({ children }: { children?: React.ReactNode }) {
   const location = useLocation()
   const navigate = useNavigate()
   const [isDark, setIsDark] = useState(true)
@@ -457,7 +458,11 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
               navPosition === 'bottom' && 'pb-20',
             )}
           >
-            {children}
+            {children ?? (
+              <Suspense fallback={<AuroraLoading label="Preparando página" />}>
+                <Outlet />
+              </Suspense>
+            )}
           </motion.main>
         </AnimatePresence>
       </div>
