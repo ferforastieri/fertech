@@ -147,13 +147,20 @@ export default function Home() {
         </section>
 
         <section>
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl font-bold mb-6 text-center text-foreground">{homeContent.classicCapabilitiesTitle}</h2>
-            <div className="flex flex-wrap gap-3 justify-center">
-              {profileContent.technologies.map((tech) => (
-                <Badge key={tech} variant="secondary" className="text-base px-4 py-2">
-                  {tech}
-                </Badge>
+            <div className="divide-y divide-border">
+              {homeContent.stackGroups.map((group) => (
+                <div key={group.title} className="grid gap-3 py-4 first:pt-0 last:pb-0 md:grid-cols-[10rem_1fr] md:items-center">
+                  <h3 className="font-semibold text-foreground">{group.title}</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {group.items.map((item) => (
+                      <Badge key={item} variant="secondary" className="px-3 py-1.5 text-sm">
+                        {item}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
             <p className="text-sm text-muted-foreground italic text-center mt-6">
