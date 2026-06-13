@@ -65,11 +65,11 @@ export default function AuroraBlog() {
   }
 
   if (hasError) {
-    return <div className="mx-auto max-w-5xl px-4 pb-24 pt-32 text-white">Nao foi possivel carregar os artigos.</div>
+    return <div className="mx-auto max-w-5xl px-4 pb-24 pt-10 text-white md:pt-32">Nao foi possivel carregar os artigos.</div>
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-24 pt-32 text-white">
+    <div className="mx-auto max-w-5xl px-4 pb-24 pt-10 text-white md:pt-32">
       <header className="mb-12 max-w-3xl">
         <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Artigos e ideias</p>
         <h1 className="mt-4 text-5xl font-bold md:text-7xl">Blog</h1>

@@ -14,7 +14,7 @@ export default function AuroraArticle() {
 
   if (!article) {
     return (
-      <div className="mx-auto max-w-4xl px-4 pb-24 pt-32 text-center text-white">
+      <div className="mx-auto max-w-4xl px-4 pb-24 pt-10 text-center text-white md:pt-32">
         <h1 className="text-4xl font-bold">Artigo não encontrado</h1>
         <Link to="/aurora/blog" className="mt-8 inline-flex rounded-full bg-rose-900 px-5 py-3 font-semibold text-white">
           Voltar para Blog
@@ -26,7 +26,7 @@ export default function AuroraArticle() {
   const contentWithoutTitle = article.content.replace(/^#\s+.*$/m, '').trim()
 
   return (
-    <article className="mx-auto max-w-4xl px-4 pb-24 pt-32 text-white">
+    <article className="mx-auto max-w-4xl px-4 pb-24 pt-10 text-white md:pt-32">
       <Link to="/aurora/blog" className="mb-10 inline-flex items-center rounded-full border border-white/12 bg-white/8 px-4 py-2 text-white/78 backdrop-blur transition hover:bg-white/14">
         <ArrowLeftIcon className="mr-2 h-4 w-4" />
         Voltar para artigos

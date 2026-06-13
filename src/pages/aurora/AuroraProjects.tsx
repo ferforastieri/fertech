@@ -1,15 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
-import { Project, useProjectGroups } from '@/api/projects/useProjectGroups'
+import { ArrowTopRightOnSquareIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 
 gsap.registerPlugin(ScrollTrigger)
 
 function ProjectRow({ project }: { project: Project }) {
   const content = (
-    <article className="project-reveal py-10 opacity-0 translate-y-8 transition duration-300 first:pt-4 last:pb-4">
+    <article className="project-reveal py-10 transition duration-300 first:pt-4 last:pb-4">
       <div className="mb-4 flex items-start gap-4">
         <div className="grid h-16 w-16 flex-shrink-0 place-items-center rounded-2xl border border-white/12 bg-white/8">
           <img src={project.logo} alt={project.title} className="h-full w-full object-contain p-2" />
@@ -36,6 +36,36 @@ function ProjectRow({ project }: { project: Project }) {
     </a>
   ) : (
     <div>{content}</div>
+  )
+}
+
+function ProjectGroupSection({ group }: { group: ProjectGroup }) {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <section className="rounded-[1.5rem] border border-white/12 bg-white/[0.07] p-6 backdrop-blur">
+      <button
+        type="button"
+        onClick={() => setIsOpen((value) => !value)}
+        className="flex w-full items-center justify-between gap-4 text-left"
+        aria-expanded={isOpen}
+      >
+        <span>
+          <span className="block text-3xl font-bold text-white">{group.title}</span>
+          <span className="mt-1 block text-sm text-white/56">{group.projects.length} projetos</span>
+        </span>
+        <ChevronDownIcon
+          className={`h-5 w-5 shrink-0 text-rose-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {isOpen && (
+        <div className="mt-5 divide-y divide-white/10">
+          {group.projects.map((project) => (
+            <ProjectRow key={project.title} project={project} />
+          ))}
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -69,11 +99,11 @@ export default function AuroraProjects() {
   }
 
   if (error || !projectGroups) {
-    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-32 text-white">Nao foi possivel carregar os projetos.</div>
+    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-32">Nao foi possivel carregar os projetos.</div>
   }
 
   return (
-    <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-32 text-white">
+    <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-32">
       <header className="mb-14 max-w-3xl">
         <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Portfólio técnico</p>
         <h1 className="mt-4 text-5xl font-bold md:text-7xl">Meus Projetos</h1>
@@ -84,17 +114,7 @@ export default function AuroraProjects() {
 
       <div className="space-y-10">
         {projectGroups.map((group) => (
-          <section key={group.id} className="rounded-[1.5rem] border border-white/12 bg-white/[0.07] p-6 backdrop-blur">
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
-              <h2 className="text-3xl font-bold text-white">{group.title}</h2>
-              <span className="text-sm text-white/56">{group.projects.length} projetos</span>
-            </div>
-            <div className="divide-y divide-white/10">
-              {group.projects.map((project) => (
-                <ProjectRow key={project.title} project={project} />
-              ))}
-            </div>
-          </section>
+          <ProjectGroupSection key={group.id} group={group} />
         ))}
       </div>
     </div>

@@ -6,7 +6,8 @@ import { ArrowRightIcon, CodeBracketIcon, RocketLaunchIcon, SparklesIcon } from 
 import { ProfileHighlight, useProfileContent } from '@/api/profile/useProfileContent'
 import { useProjectGroups } from '@/api/projects/useProjectGroups'
 import { useProjects } from '@/api/projects/useProjects'
-import { useArticles } from '@/api/articles/useArticles'
+import { useArticleList } from '@/api/articles/useArticleList'
+import { useHomeContent } from '@/api/home/useHomeContent'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -21,29 +22,16 @@ function getHighlightIcon(highlight: ProfileHighlight) {
   return highlightIcons[highlight.icon] ?? SparklesIcon
 }
 
-const stackGroups = [
-  {
-    title: 'Interface',
-    items: ['React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind CSS'],
-  },
-  {
-    title: 'Backend',
-    items: ['Node.js', 'NestJS', 'PostgreSQL', 'MongoDB'],
-  },
-  {
-    title: 'Infra',
-    items: ['Docker', 'AWS'],
-  },
-]
-
 export default function AuroraHome() {
   const rootRef = useRef<HTMLDivElement>(null)
   const profileQuery = useProfileContent()
   const projectGroupsQuery = useProjectGroups()
   const projectsQuery = useProjects()
-  const workArticlesQuery = useArticles('work')
+  const workArticlesQuery = useArticleList('work')
+  const homeQuery = useHomeContent()
   const profileContent = profileQuery.data
-  const isLoading = profileQuery.isLoading || projectGroupsQuery.isLoading || projectsQuery.isLoading || workArticlesQuery.isLoading
+  const homeContent = homeQuery.data
+  const isLoading = profileQuery.isLoading || projectGroupsQuery.isLoading || projectsQuery.isLoading || workArticlesQuery.isLoading || homeQuery.isLoading
   const projectGroups = projectGroupsQuery.data
   const allProjects = projectsQuery.data
   const workArticles = workArticlesQuery.data
@@ -78,43 +66,53 @@ export default function AuroraHome() {
     }, rootRef)
 
     return () => ctx.revert()
-  }, [isLoading, profileContent?.name, projectGroups?.length, allProjects?.length, workArticles?.length])
+  }, [isLoading, profileContent?.name, homeContent?.heroHeadline, projectGroups?.length, allProjects?.length, workArticles?.length])
 
   if (isLoading) {
     return <AuroraLoading label="Inicializando experiência" />
   }
 
-  if (profileQuery.error || projectGroupsQuery.error || projectsQuery.error || workArticlesQuery.error || !profileContent || !projectGroups || !allProjects || !workArticles) {
-    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-24 text-white sm:pt-28">Nao foi possivel carregar o conteudo.</div>
+  if (profileQuery.error || projectGroupsQuery.error || projectsQuery.error || workArticlesQuery.error || homeQuery.error || !profileContent || !homeContent || !projectGroups || !allProjects || !workArticles) {
+    return <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-24">Nao foi possivel carregar o conteudo.</div>
   }
 
   return (
-    <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-24 text-white sm:pt-28">
-      <section className="aurora-hero grid items-start gap-10 pt-8 pb-8 lg:grid-cols-[1.05fr_0.95fr]">
+    <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-24">
+      <section className="aurora-hero grid items-start gap-10 pb-8 pt-0 md:pt-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <p className="aurora-role-kicker mb-5 inline-flex rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm text-rose-200 backdrop-blur">
-            Desenvolvedor Fullstack | Design Systems, Infra & UX
+            {homeContent.heroEyebrow}
           </p>
           <h1 className="overflow-hidden text-5xl font-bold leading-[0.95] md:text-7xl">
             <span className="aurora-hero-line block">{profileContent.name}</span>
-            <span className="aurora-hero-line block text-rose-500">Arquitetura, infra e UX.</span>
+            <span className="aurora-hero-line block text-rose-500">{homeContent.heroHeadline}</span>
           </h1>
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-white/72">{profileContent.intro}</p>
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-white/72">
+            {homeContent.heroDescription}
+          </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/aurora/projects" className="inline-flex items-center rounded-full bg-rose-900 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5">
-              Ver projetos
+              {homeContent.projectsButtonLabel}
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Link>
             <Link to="/aurora/resume" className="aurora-outline-action inline-flex items-center rounded-full border border-white/15 bg-white/8 px-5 py-3 font-semibold text-white backdrop-blur transition hover:bg-white/14">
-              Currículo
+              {homeContent.resumeButtonLabel}
             </Link>
+            <a
+              href={profileContent.contactUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="aurora-outline-action inline-flex items-center rounded-full border border-white/15 bg-white/8 px-5 py-3 font-semibold text-white backdrop-blur transition hover:bg-white/14"
+            >
+              {homeContent.contactButtonLabel}
+            </a>
           </div>
         </div>
         <div className="aurora-orbit relative overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.14] p-5 shadow-2xl shadow-rose-950/45 backdrop-blur-xl">
           <span className="aurora-stack-scan pointer-events-none absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-gradient-to-r from-transparent via-rose-500/15 to-transparent" />
-          <div className="space-y-4">
-            {stackGroups.map((group) => (
-              <div key={group.title} className="aurora-stack-group rounded-2xl border border-white/10 bg-black/20 p-3">
+          <div className="divide-y divide-white/10">
+            {homeContent.stackGroups.map((group) => (
+              <div key={group.title} className="aurora-stack-group py-4 first:pt-0 last:pb-0">
                 <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
                   <span className="relative h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_14px_rgba(159,18,57,0.8)]">
                     <span className="aurora-stack-pulse absolute inset-0 rounded-full bg-rose-500" />
@@ -150,8 +148,8 @@ export default function AuroraHome() {
 
       <section className="aurora-reveal grid gap-10 py-12 opacity-0 translate-y-8 lg:grid-cols-[0.75fr_1.25fr]">
         <div>
-          <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Sobre</p>
-          <h2 className="mt-4 text-4xl font-bold">Leveza também é arquitetura.</h2>
+          <p className="text-sm uppercase tracking-[0.32em] text-rose-500">{homeContent.auroraAboutEyebrow}</p>
+          <h2 className="mt-4 text-4xl font-bold">{homeContent.auroraAboutTitle}</h2>
         </div>
         <div className="space-y-5 text-lg leading-8 text-white/72">
           {profileContent.aboutParagraphs.map((paragraph) => (
@@ -163,11 +161,11 @@ export default function AuroraHome() {
       <section className="py-12">
         <div className="aurora-reveal mb-8 flex flex-col justify-between gap-4 opacity-0 translate-y-8 md:flex-row md:items-end">
           <div>
-            <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Projetos</p>
-            <h2 className="mt-4 text-4xl font-bold">Projetos e entregas.</h2>
+            <p className="text-sm uppercase tracking-[0.32em] text-rose-500">{homeContent.projectsEyebrow}</p>
+            <h2 className="mt-4 text-4xl font-bold">{homeContent.projectsTitle}</h2>
           </div>
           <Link to="/aurora/projects" className="inline-flex items-center text-rose-400">
-            Explorar tudo
+            {homeContent.projectsLinkLabel}
             <ArrowRightIcon className="ml-2 h-5 w-5" />
           </Link>
         </div>
@@ -180,15 +178,15 @@ export default function AuroraHome() {
           ))}
           <div className="aurora-reveal rounded-[1.5rem] border border-white/12 bg-white/[0.07] p-5 opacity-0 translate-y-8 backdrop-blur md:col-span-4">
             <span className="text-4xl font-bold text-rose-500">{allProjects.length}</span>
-            <h3 className="mt-4 font-semibold">Projetos mapeados no total</h3>
+            <h3 className="mt-4 font-semibold">{homeContent.projectsTotalLabel}</h3>
           </div>
         </div>
       </section>
 
       <section className="py-12">
         <div className="aurora-reveal mb-8 opacity-0 translate-y-8">
-          <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Blog</p>
-          <h2 className="mt-4 text-4xl font-bold">Ideias em movimento.</h2>
+          <p className="text-sm uppercase tracking-[0.32em] text-rose-500">{homeContent.blogEyebrow}</p>
+          <h2 className="mt-4 text-4xl font-bold">{homeContent.blogTitle}</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {workArticles.slice(0, 2).map((article) => (
@@ -198,6 +196,25 @@ export default function AuroraHome() {
               <p className="mt-4 leading-7 text-white/68">{article.description}</p>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section className="aurora-reveal py-12 opacity-0 translate-y-8">
+        <div className="rounded-[1.75rem] border border-white/12 bg-white/[0.08] p-8 text-center backdrop-blur md:p-12">
+          <h2 className="text-3xl font-bold text-white">{homeContent.contactTitle}</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-white/72">
+            {homeContent.contactDescription}
+          </p>
+          <a
+            href={profileContent.contactUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center rounded-full bg-rose-900 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5"
+          >
+            <span className="mr-2">X</span>
+            {homeContent.contactButtonLabel}
+            <ArrowRightIcon className="ml-2 h-5 w-5" />
+          </a>
         </div>
       </section>
     </div>

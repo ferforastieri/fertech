@@ -24,6 +24,32 @@ set social_links = '[
 where id = 'main'
   and (social_links is null or social_links = '[]'::jsonb);
 
+create table if not exists public.home_content (
+  id text primary key,
+  hero_eyebrow text not null,
+  hero_headline text not null,
+  hero_description text not null,
+  projects_button_label text not null,
+  resume_button_label text not null,
+  contact_button_label text not null,
+  stack_groups jsonb not null,
+  classic_about_title text not null,
+  classic_highlights_title text not null,
+  classic_capabilities_title text not null,
+  language_note text not null,
+  aurora_about_eyebrow text not null,
+  aurora_about_title text not null,
+  projects_eyebrow text not null,
+  projects_title text not null,
+  projects_link_label text not null,
+  projects_total_label text not null,
+  blog_eyebrow text not null,
+  blog_title text not null,
+  contact_title text not null,
+  contact_description text not null,
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.project_groups (
   id text primary key,
   title text not null,
@@ -115,6 +141,7 @@ revoke all on function public.is_admin() from public;
 grant execute on function public.is_admin() to authenticated;
 
 alter table public.profile enable row level security;
+alter table public.home_content enable row level security;
 alter table public.project_groups enable row level security;
 alter table public.projects enable row level security;
 alter table public.articles enable row level security;
@@ -125,6 +152,7 @@ alter table public.resume_technologies enable row level security;
 alter table public.admin_users enable row level security;
 
 drop policy if exists "Public read profile" on public.profile;
+drop policy if exists "Public read home content" on public.home_content;
 drop policy if exists "Public read project groups" on public.project_groups;
 drop policy if exists "Public read projects" on public.projects;
 drop policy if exists "Public read articles" on public.articles;
@@ -133,6 +161,7 @@ drop policy if exists "Public read resume roles" on public.resume_roles;
 drop policy if exists "Public read resume education" on public.resume_education;
 drop policy if exists "Public read resume technologies" on public.resume_technologies;
 drop policy if exists "Authenticated write profile" on public.profile;
+drop policy if exists "Authenticated write home content" on public.home_content;
 drop policy if exists "Authenticated write project groups" on public.project_groups;
 drop policy if exists "Authenticated write projects" on public.projects;
 drop policy if exists "Authenticated write articles" on public.articles;
@@ -143,6 +172,7 @@ drop policy if exists "Authenticated write resume technologies" on public.resume
 drop policy if exists "Admin users can read admin list" on public.admin_users;
 
 create policy "Public read profile" on public.profile for select using (true);
+create policy "Public read home content" on public.home_content for select using (true);
 create policy "Public read project groups" on public.project_groups for select using (true);
 create policy "Public read projects" on public.projects for select using (true);
 create policy "Public read articles" on public.articles for select using (true);
@@ -152,6 +182,7 @@ create policy "Public read resume education" on public.resume_education for sele
 create policy "Public read resume technologies" on public.resume_technologies for select using (true);
 
 create policy "Authenticated write profile" on public.profile for all to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "Authenticated write home content" on public.home_content for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "Authenticated write project groups" on public.project_groups for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "Authenticated write projects" on public.projects for all to authenticated using (public.is_admin()) with check (public.is_admin());
 create policy "Authenticated write articles" on public.articles for all to authenticated using (public.is_admin()) with check (public.is_admin());

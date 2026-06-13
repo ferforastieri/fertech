@@ -8,6 +8,7 @@ import {
   BriefcaseIcon,
   DocumentTextIcon,
   HomeIcon,
+  ShareIcon,
   UserIcon,
 } from '@heroicons/react/24/outline'
 import { ThemeToggle } from '@/components/ui/feedback'
@@ -45,6 +46,7 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
   const [navPosition, setNavPosition] = useState<AuroraNavPosition>(getDefaultNavPosition)
   const [isMobile, setIsMobile] = useState(getIsMobile)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [isSocialMenuOpen, setIsSocialMenuOpen] = useState(false)
   const { data: profile } = useProfileContent()
   const isVerticalNav = navPosition === 'left' || navPosition === 'right'
   const isMobileDrawer = isMobile && isVerticalNav
@@ -73,12 +75,6 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
 
     return () => mobileQuery.removeEventListener('change', handleMobileChange)
   }, [])
-
-  useEffect(() => {
-    if (isMobileDrawer) {
-      setIsDrawerOpen(false)
-    }
-  }, [location.pathname, isMobileDrawer])
 
   const toggleTheme = () => {
     const newDark = !isDark
@@ -125,9 +121,66 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
         : { opacity: 0, y: navPosition === 'bottom' ? 14 : -14, scale: 0.94, rotateX: -18, filter: 'blur(8px)' }
     const itemAnimate = { opacity: 1, x: 0, y: 0, scale: 1, rotateX: 0, filter: 'blur(0px)' }
 
-    const actions = [
+  const actions = [
+      {
+        key: 'mobile-socials',
+        hideOnMobileBar: false,
+        mobileBarOnly: true,
+        node: (
+          <>
+            <button
+              type="button"
+              onClick={() => setIsSocialMenuOpen((value) => !value)}
+              className={cn(
+                'flex h-8 w-8 items-center justify-center rounded-full transition sm:h-10 sm:w-10',
+                isDark ? 'text-white/72 hover:bg-white/10 hover:text-white' : 'text-[#140407] hover:bg-rose-950/10',
+              )}
+              aria-label="Abrir redes sociais"
+              aria-expanded={isSocialMenuOpen}
+              title="Redes sociais"
+            >
+              <ShareIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+            </button>
+            <AnimatePresence>
+              {isSocialMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: navPosition === 'bottom' ? 10 : -10, scale: 0.92 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: navPosition === 'bottom' ? 10 : -10, scale: 0.92 }}
+                  transition={{ duration: 0.2 }}
+                  className={cn(
+                    'absolute right-2 z-50 flex items-center gap-1 rounded-full border p-1.5 shadow-2xl backdrop-blur-xl sm:hidden',
+                    navPosition === 'bottom' ? 'bottom-[calc(100%+0.5rem)]' : 'top-[calc(100%+0.5rem)]',
+                    isDark ? 'border-rose-900/45 bg-black/85' : 'border-rose-900/25 bg-white/95',
+                  )}
+                >
+                  {profile?.socialLinks.map((social) => (
+                    <a
+                      key={social.name}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setIsSocialMenuOpen(false)}
+                      className={cn(
+                'flex h-8 w-8 items-center justify-center rounded-full transition sm:h-10 sm:w-10',
+                        isDark ? 'text-white/72 hover:bg-white/10 hover:text-white' : 'text-rose-900 hover:bg-rose-950/10',
+                      )}
+                      aria-label={social.name}
+                      title={social.name}
+                    >
+                      {renderSocialIcon(social)}
+                    </a>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        ),
+      },
       ...(profile?.socialLinks ?? []).map((social) => ({
         key: `social-${social.name}`,
+        hideOnMobileBar: true,
+        mobileBarOnly: false,
         node: (
           <a
             href={social.href}
@@ -146,47 +199,56 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
       })),
       {
         key: 'theme',
+        hideOnMobileBar: false,
+        mobileBarOnly: false,
         node: (
           <ThemeToggle
             theme={isDark ? 'dark' : 'light'}
             onToggle={toggleTheme}
             variant="ghost"
             size="sm"
-            className={isDark ? 'text-white hover:bg-white/10' : 'text-[#140407] hover:bg-rose-950/10'}
+            className={cn(
+              'h-8 w-8 sm:h-10 sm:w-10',
+              isDark ? 'text-white hover:bg-white/10' : 'text-[#140407] hover:bg-rose-950/10',
+            )}
           />
         ),
       },
       {
         key: 'position',
+        hideOnMobileBar: false,
+        mobileBarOnly: false,
         node: (
           <button
             type="button"
             onClick={cycleNavPosition}
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-full transition',
+              'flex h-8 w-8 items-center justify-center rounded-full transition sm:h-10 sm:w-10',
               isDark ? 'text-white/72 hover:bg-white/10 hover:text-white' : 'text-[#140407] hover:bg-rose-950/10',
             )}
             aria-label={`Mover navegação, posição atual ${navPositionLabel}`}
             title={`Mover navegação (${navPositionLabel})`}
           >
-            {isVerticalNav ? <ArrowsRightLeftIcon className="h-5 w-5" /> : <ArrowsUpDownIcon className="h-5 w-5" />}
+            {isVerticalNav ? <ArrowsRightLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" /> : <ArrowsUpDownIcon className="h-4 w-4 sm:h-5 sm:w-5" />}
           </button>
         ),
       },
       {
         key: 'classic',
+        hideOnMobileBar: false,
+        mobileBarOnly: false,
         node: (
           <button
             type="button"
             onClick={switchToClassic}
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-full transition',
+              'flex h-8 w-8 items-center justify-center rounded-full transition sm:h-10 sm:w-10',
               isDark ? 'text-white/72 hover:bg-white/10 hover:text-white' : 'text-[#140407] hover:bg-rose-950/10',
             )}
             aria-label="Trocar para modo tradicional"
             title="Trocar para modo tradicional"
           >
-            <ArrowPathRoundedSquareIcon className="h-5 w-5" />
+            <ArrowPathRoundedSquareIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         ),
       },
@@ -196,6 +258,7 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
       <>
         <motion.div
           key={`logo-${navPosition}-${drawer ? 'drawer' : 'bar'}`}
+          className={cn(!drawer && !vertical && 'hidden sm:block')}
           initial={itemInitial}
           animate={itemAnimate}
           transition={{ delay: baseDelay, type: 'spring', stiffness: 460, damping: 28 }}
@@ -226,7 +289,7 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
                 <Link
                   to={item.href}
                   className={cn(
-                    'relative flex h-10 w-10 items-center justify-center rounded-full transition',
+                    'relative flex h-8 w-8 items-center justify-center rounded-full transition sm:h-10 sm:w-10',
                     drawer ? 'w-full justify-start gap-3 px-3' : vertical ? '' : 'sm:w-auto sm:px-3',
                     isActive
                       ? isDark ? 'text-white' : 'text-rose-900'
@@ -244,7 +307,7 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
                       transition={{ type: 'spring', stiffness: 420, damping: 32 }}
                     />
                   )}
-                  <Icon className="relative h-5 w-5" />
+                  <Icon className="relative h-4 w-4 sm:h-5 sm:w-5" />
                   <span className={cn('relative text-sm font-medium', !drawer && (vertical ? 'sr-only' : 'ml-2 hidden sm:inline'))}>
                     {item.name}
                   </span>
@@ -258,6 +321,11 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
           {actions.map((action, index) => (
             <motion.div
               key={`${action.key}-${navPosition}-${drawer ? 'drawer' : 'bar'}-${isDrawerOpen}`}
+              className={cn(
+                action.hideOnMobileBar && !drawer && !vertical && 'hidden sm:block',
+                action.mobileBarOnly && (drawer || vertical) && 'hidden',
+                action.mobileBarOnly && !drawer && !vertical && 'sm:hidden',
+              )}
               initial={itemInitial}
               animate={itemAnimate}
               transition={{ delay: baseDelay + 0.4 + index * 0.07, type: 'spring', stiffness: 420, damping: 26 }}
@@ -357,10 +425,10 @@ export default function AuroraLayout({ children }: { children: React.ReactNode }
               animate={{ opacity: 1, x: 0, y: 0, scale: 1, filter: 'blur(0px)' }}
               transition={{ type: 'spring', stiffness: 420, damping: 34 }}
               className={cn(
-                'mx-auto flex border shadow-2xl backdrop-blur-xl',
+                'relative mx-auto flex border shadow-2xl backdrop-blur-xl',
                 isVerticalNav
                   ? 'h-full max-h-[calc(100vh-2rem)] w-16 flex-col items-center justify-between rounded-[2rem] px-2 py-3'
-                  : 'h-14 max-w-5xl items-center justify-between rounded-full px-3',
+                  : 'h-12 w-fit max-w-full items-center justify-center gap-0.5 rounded-full px-1 sm:h-14 sm:w-full sm:max-w-5xl sm:justify-between sm:gap-0 sm:px-3',
                 isDark
                   ? 'border-rose-900/45 bg-black/60 shadow-rose-950/45'
                   : 'border-rose-900/25 bg-white/95 shadow-rose-950/15',

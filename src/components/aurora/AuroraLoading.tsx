@@ -1,6 +1,6 @@
 export function AuroraLoading({ label = 'Carregando' }: { label?: string }) {
   return (
-    <div className="mx-auto flex min-h-[58vh] max-w-6xl items-center justify-center px-4 pb-24 pt-32 text-[rgb(var(--aurora-text))]">
+    <div className="mx-auto flex min-h-[58vh] max-w-6xl items-center justify-center px-4 pb-24 pt-10 text-[rgb(var(--aurora-text))] md:pt-32">
       <div className="relative h-72 w-full max-w-3xl overflow-hidden rounded-[2rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 shadow-2xl shadow-rose-950/35 backdrop-blur-xl">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(159,18,57,0.28),transparent_28%),radial-gradient(circle_at_72%_62%,rgba(127,29,29,0.22),transparent_30%)]" />
         <div className="absolute left-8 top-8 h-28 w-20 animate-[pulse_1.2s_ease-in-out_infinite] rounded-xl border border-rose-500/45 bg-black/30 shadow-[0_0_34px_rgba(159,18,57,0.45)]">

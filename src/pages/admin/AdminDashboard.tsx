@@ -6,13 +6,14 @@ import { Badge, ThemeToggle } from '@/components/ui/feedback'
 import { Button, Input } from '@/components/ui/forms'
 import { Article, ArticleKind, useArticleList } from '@/api/articles/useArticleList'
 import { useProfileContent } from '@/api/profile/useProfileContent'
+import { useHomeContent } from '@/api/home/useHomeContent'
 import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { useResumeContent } from '@/api/resume/useResumeContent'
 import { supabase } from '@/config/supabase'
 import { formatTextList, parseTextList } from '@/lib/text-list'
 import { useStoredTheme } from '@/lib/useStoredTheme'
 
-type AdminTab = 'profile' | 'projects' | 'articles' | 'resume'
+type AdminTab = 'profile' | 'home' | 'projects' | 'articles' | 'resume'
 
 type ProfileForm = {
   name: string
@@ -24,6 +25,30 @@ type ProfileForm = {
   technologies: string
   aboutParagraphs: string
   highlights: string
+}
+
+type HomeForm = {
+  heroEyebrow: string
+  heroHeadline: string
+  heroDescription: string
+  projectsButtonLabel: string
+  resumeButtonLabel: string
+  contactButtonLabel: string
+  stackGroups: string
+  classicAboutTitle: string
+  classicHighlightsTitle: string
+  classicCapabilitiesTitle: string
+  languageNote: string
+  auroraAboutEyebrow: string
+  auroraAboutTitle: string
+  projectsEyebrow: string
+  projectsTitle: string
+  projectsLinkLabel: string
+  projectsTotalLabel: string
+  blogEyebrow: string
+  blogTitle: string
+  contactTitle: string
+  contactDescription: string
 }
 
 type ProjectGroupForm = {
@@ -84,6 +109,7 @@ type ExperienceForm = {
 
 const tabs: Array<{ id: AdminTab; label: string }> = [
   { id: 'profile', label: 'Perfil' },
+  { id: 'home', label: 'Home' },
   { id: 'projects', label: 'Projetos' },
   { id: 'articles', label: 'Artigos' },
   { id: 'resume', label: 'Currículo' },
@@ -149,6 +175,7 @@ export default function AdminDashboard() {
   const { theme, toggleTheme } = useStoredTheme()
 
   const profileQuery = useProfileContent()
+  const homeQuery = useHomeContent()
   const projectGroupsQuery = useProjectGroups()
   const workArticlesQuery = useArticleList('work')
   const personalArticlesQuery = useArticleList('personal')
@@ -166,6 +193,29 @@ export default function AdminDashboard() {
     highlights: '',
   })
   const [projectGroupsForm, setProjectGroupsForm] = useState<ProjectGroupForm[]>([])
+  const [homeForm, setHomeForm] = useState<HomeForm>({
+    heroEyebrow: '',
+    heroHeadline: '',
+    heroDescription: '',
+    projectsButtonLabel: '',
+    resumeButtonLabel: '',
+    contactButtonLabel: '',
+    stackGroups: '',
+    classicAboutTitle: '',
+    classicHighlightsTitle: '',
+    classicCapabilitiesTitle: '',
+    languageNote: '',
+    auroraAboutEyebrow: '',
+    auroraAboutTitle: '',
+    projectsEyebrow: '',
+    projectsTitle: '',
+    projectsLinkLabel: '',
+    projectsTotalLabel: '',
+    blogEyebrow: '',
+    blogTitle: '',
+    contactTitle: '',
+    contactDescription: '',
+  })
   const [articleForms, setArticleForms] = useState<ArticleForm[]>([])
   const [resumeForm, setResumeForm] = useState<ResumeForm>({
     technologies: '',
@@ -175,6 +225,7 @@ export default function AdminDashboard() {
 
   const isLoading =
     profileQuery.isLoading ||
+    homeQuery.isLoading ||
     projectGroupsQuery.isLoading ||
     workArticlesQuery.isLoading ||
     personalArticlesQuery.isLoading ||
@@ -208,6 +259,16 @@ export default function AdminDashboard() {
     if (!projectGroupsQuery.data) return
     setProjectGroupsForm(projectGroupsQuery.data.map(mapProjectGroupToForm))
   }, [projectGroupsQuery.data])
+
+  useEffect(() => {
+    if (!homeQuery.data) return
+    setHomeForm({
+      ...homeQuery.data,
+      stackGroups: homeQuery.data.stackGroups
+        .map((group) => `${group.title}|${group.items.join(';')}`)
+        .join('\n'),
+    })
+  }, [homeQuery.data])
 
   useEffect(() => {
     setArticleForms(articleQueries.map(mapArticleToForm))
@@ -346,6 +407,48 @@ export default function AdminDashboard() {
 
       if (error) throw error
     }, 'Perfil salvo.')
+
+  const saveHome = () =>
+    runSave(async () => {
+      const stackGroups = homeForm.stackGroups
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [title = '', items = ''] = line.split('|')
+          return {
+            title: title.trim(),
+            items: items.split(';').map((item) => item.trim()).filter(Boolean),
+          }
+        })
+
+      const { error } = await supabase.from('home_content').upsert({
+        id: 'main',
+        hero_eyebrow: homeForm.heroEyebrow,
+        hero_headline: homeForm.heroHeadline,
+        hero_description: homeForm.heroDescription,
+        projects_button_label: homeForm.projectsButtonLabel,
+        resume_button_label: homeForm.resumeButtonLabel,
+        contact_button_label: homeForm.contactButtonLabel,
+        stack_groups: stackGroups,
+        classic_about_title: homeForm.classicAboutTitle,
+        classic_highlights_title: homeForm.classicHighlightsTitle,
+        classic_capabilities_title: homeForm.classicCapabilitiesTitle,
+        language_note: homeForm.languageNote,
+        aurora_about_eyebrow: homeForm.auroraAboutEyebrow,
+        aurora_about_title: homeForm.auroraAboutTitle,
+        projects_eyebrow: homeForm.projectsEyebrow,
+        projects_title: homeForm.projectsTitle,
+        projects_link_label: homeForm.projectsLinkLabel,
+        projects_total_label: homeForm.projectsTotalLabel,
+        blog_eyebrow: homeForm.blogEyebrow,
+        blog_title: homeForm.blogTitle,
+        contact_title: homeForm.contactTitle,
+        contact_description: homeForm.contactDescription,
+      })
+
+      if (error) throw error
+    }, 'Home salva.')
 
   const saveProjects = () =>
     runSave(async () => {
@@ -513,7 +616,7 @@ export default function AdminDashboard() {
         ) : (
           <>
             {activeTab === 'profile' && (
-              <AdminSection title="Perfil e Home">
+              <AdminSection title="Perfil">
                 <div className="grid gap-4 md:grid-cols-2">
                   <Input label="Nome" value={profileForm.name} onChange={(event) => setProfileForm({ ...profileForm, name: event.target.value })} />
                   <Input label="Cargo" value={profileForm.role} onChange={(event) => setProfileForm({ ...profileForm, role: event.target.value })} />
@@ -552,6 +655,49 @@ export default function AdminDashboard() {
                 <div className="mt-5 flex justify-end">
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveProfile}>
                     Salvar perfil
+                  </Button>
+                </div>
+              </AdminSection>
+            )}
+
+            {activeTab === 'home' && (
+              <AdminSection title="Home">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Input label="Chamada superior" value={homeForm.heroEyebrow} onChange={(event) => setHomeForm({ ...homeForm, heroEyebrow: event.target.value })} />
+                  <Input label="Título de impacto" value={homeForm.heroHeadline} onChange={(event) => setHomeForm({ ...homeForm, heroHeadline: event.target.value })} />
+                </div>
+                <div className="mt-4">
+                  <Textarea label="Apresentação principal" value={homeForm.heroDescription} onChange={(value) => setHomeForm({ ...homeForm, heroDescription: value })} rows={4} />
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                  <Input label="Botão de projetos" value={homeForm.projectsButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsButtonLabel: event.target.value })} />
+                  <Input label="Botão de currículo" value={homeForm.resumeButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, resumeButtonLabel: event.target.value })} />
+                  <Input label="Botão de contato" value={homeForm.contactButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, contactButtonLabel: event.target.value })} />
+                </div>
+                <div className="mt-4">
+                  <Textarea label="Grupos da stack: titulo|item;item;item" value={homeForm.stackGroups} onChange={(value) => setHomeForm({ ...homeForm, stackGroups: value })} rows={7} />
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <Input label="Tradicional: título sobre" value={homeForm.classicAboutTitle} onChange={(event) => setHomeForm({ ...homeForm, classicAboutTitle: event.target.value })} />
+                  <Input label="Tradicional: título diferenciais" value={homeForm.classicHighlightsTitle} onChange={(event) => setHomeForm({ ...homeForm, classicHighlightsTitle: event.target.value })} />
+                  <Input label="Tradicional: título capacidades" value={homeForm.classicCapabilitiesTitle} onChange={(event) => setHomeForm({ ...homeForm, classicCapabilitiesTitle: event.target.value })} />
+                  <Input label="Observação de idioma" value={homeForm.languageNote} onChange={(event) => setHomeForm({ ...homeForm, languageNote: event.target.value })} />
+                  <Input label="Aurora: chamada sobre" value={homeForm.auroraAboutEyebrow} onChange={(event) => setHomeForm({ ...homeForm, auroraAboutEyebrow: event.target.value })} />
+                  <Input label="Aurora: título sobre" value={homeForm.auroraAboutTitle} onChange={(event) => setHomeForm({ ...homeForm, auroraAboutTitle: event.target.value })} />
+                  <Input label="Chamada de projetos" value={homeForm.projectsEyebrow} onChange={(event) => setHomeForm({ ...homeForm, projectsEyebrow: event.target.value })} />
+                  <Input label="Título de projetos" value={homeForm.projectsTitle} onChange={(event) => setHomeForm({ ...homeForm, projectsTitle: event.target.value })} />
+                  <Input label="Link de projetos" value={homeForm.projectsLinkLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsLinkLabel: event.target.value })} />
+                  <Input label="Legenda do total de projetos" value={homeForm.projectsTotalLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsTotalLabel: event.target.value })} />
+                  <Input label="Chamada do blog" value={homeForm.blogEyebrow} onChange={(event) => setHomeForm({ ...homeForm, blogEyebrow: event.target.value })} />
+                  <Input label="Título do blog" value={homeForm.blogTitle} onChange={(event) => setHomeForm({ ...homeForm, blogTitle: event.target.value })} />
+                  <Input label="Título do contato" value={homeForm.contactTitle} onChange={(event) => setHomeForm({ ...homeForm, contactTitle: event.target.value })} />
+                </div>
+                <div className="mt-4">
+                  <Textarea label="Descrição do contato" value={homeForm.contactDescription} onChange={(value) => setHomeForm({ ...homeForm, contactDescription: value })} rows={3} />
+                </div>
+                <div className="mt-5 flex justify-end">
+                  <Button type="button" className="min-w-36" loading={isSaving} onClick={saveHome}>
+                    Salvar home
                   </Button>
                 </div>
               </AdminSection>

@@ -173,14 +173,14 @@ export default function AuroraResume() {
 
   if (hasError || !profile || !resume) {
     return (
-      <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-32">
+      <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-10 md:pt-32">
         <p className="text-center text-rose-500">Não foi possível carregar o currículo.</p>
       </div>
     )
   }
 
   return (
-    <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-32">
+    <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-10 md:pt-32">
       <header className="resume-hero mb-14 text-center">
         <div className="mb-6 flex justify-center">
           <img src={profile.logoUrl} alt="Logo FF" className="h-24 w-24 object-contain" />
