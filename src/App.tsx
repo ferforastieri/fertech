@@ -14,6 +14,9 @@ const AuroraBlog = lazy(() => import('./pages/aurora/AuroraBlog'))
 const AuroraProjects = lazy(() => import('./pages/aurora/AuroraProjects'))
 const AuroraResume = lazy(() => import('./pages/aurora/AuroraResume'))
 const AuroraArticle = lazy(() => import('./pages/aurora/AuroraArticle'))
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const ProtectedAdminRoute = lazy(() => import('./pages/admin/ProtectedAdminRoute'))
 
 function ClassicPage({ children, basePath = '' }: { children: React.ReactNode; basePath?: string }) {
   return <Layout basePath={basePath}>{children}</Layout>
@@ -52,6 +55,9 @@ function App() {
       <Route path="/aurora/blog/:slug" element={<LazyExperience><AuroraPage><AuroraArticle /></AuroraPage></LazyExperience>} />
       <Route path="/aurora/projects" element={<LazyExperience><AuroraPage><AuroraProjects /></AuroraPage></LazyExperience>} />
       <Route path="/aurora/resume" element={<LazyExperience><AuroraPage><AuroraResume /></AuroraPage></LazyExperience>} />
+
+      <Route path="/admin/login" element={<LazyExperience><AdminLogin /></LazyExperience>} />
+      <Route path="/admin" element={<LazyExperience><ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute></LazyExperience>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

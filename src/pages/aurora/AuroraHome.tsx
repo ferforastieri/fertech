@@ -18,7 +18,7 @@ const highlightIcons = {
 }
 
 function getHighlightIcon(highlight: ProfileHighlight) {
-  return highlightIcons[highlight.icon]
+  return highlightIcons[highlight.icon] ?? SparklesIcon
 }
 
 const stackGroups = [

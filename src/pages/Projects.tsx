@@ -4,7 +4,7 @@ import { Project, useProjectGroups } from '@/api/projects/useProjectGroups'
 
 function ProjectItem({ project }: { project: Project }) {
   const content = (
-    <div className="py-7 first:pt-3 last:pb-3 transition-colors">
+    <div className="py-10 first:pt-6 last:pb-6 transition-colors">
       <div className="mb-4 flex items-start gap-4">
         {project.logo && (
           <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background">
@@ -123,7 +123,7 @@ export default function Projects() {
                 <h2 className="text-2xl font-bold text-foreground">{group.title}</h2>
                 <span className="text-sm text-muted-foreground">{group.projects.length} projetos</span>
               </div>
-              <div className="divide-y divide-border/70 px-1">
+              <div className="divide-y divide-border/60 px-1">
                 {group.projects.map((project) => (
                   <ProjectItem key={project.title} project={project} />
                 ))}
