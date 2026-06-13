@@ -12,19 +12,19 @@ export type ProjectGroup = {
   projects: Project[]
 }
 
-export const currentProjects: Project[] = [
+export const personalProjects: Project[] = [
   {
     title: 'FerTech',
     description:
-      'Este Site! Portfólio pessoal desenvolvido com React, TypeScript e Tailwind CSS. Interface moderna e responsiva com suporte a dark mode.',
+      'Este site: portfólio pessoal em React, TypeScript e Tailwind CSS, com modo tradicional, experiência imersiva, dark mode e animações WebGL.',
     url: 'https://github.com/ferforastieri/fertech',
     logo: '/logo.png',
-    tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'React Router'],
+    tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'React Router', 'Three.js'],
   },
   {
     title: 'Atacte',
     description:
-      'Gerenciador de senhas e notas seguras para servidor pessoal. Criptografia AES-256, 2FA/TOTP e interface moderna.',
+      'Gerenciador de senhas e notas seguras para servidor pessoal, com criptografia AES-256, 2FA/TOTP, aplicação web e mobile.',
     url: 'https://github.com/ferforastieri/atacte',
     logo: '/logos/atacte.png',
     tags: ['Vue.js 3', 'React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma'],
@@ -32,52 +32,73 @@ export const currentProjects: Project[] = [
   {
     title: 'Valk UI',
     description:
-      'Biblioteca moderna de componentes UI para React com TypeScript. Inclui CLI interativo, suporte a dark mode, e componentes totalmente customizáveis.',
+      'Biblioteca moderna de componentes UI para React com TypeScript, CLI interativo, suporte a dark mode e componentes customizáveis.',
     url: 'https://valkui.vercel.app',
     logo: '/logos/valk-ui.png',
-    tags: ['React', 'TypeScript', 'Tailwind CSS', 'CLI'],
+    tags: ['React', 'TypeScript', 'Tailwind CSS', 'CLI', 'Design System'],
   },
 ]
 
 export const imperioCervejaProjects: Project[] = [
   {
-    title: 'Vendedor Gold - Império Cerveja',
+    title: 'Vendedor Gold',
     description:
-      'Sistema completo de gestão para vendedores. App mobile em React Native com TypeScript, interface web em React 18, backend NestJS com TypeORM e PostgreSQL. Gestão de pedidos, rotas, clientes e relatórios.',
+      'Sistema para força de vendas com app mobile, painel web, backend NestJS, rotas, clientes, pedidos, metas e relatórios operacionais.',
     url: 'https://vendedorgold.com.br',
     logo: '/logos/vendedor-gold.png',
-    tags: ['React Native', 'React 18', 'TypeScript', 'NestJS', 'TypeORM', 'PostgreSQL'],
+    tags: ['React Native', 'Expo', 'React', 'TypeScript', 'NestJS', 'TypeORM', 'PostgreSQL'],
   },
   {
-    title: 'Parceiro Gold - Império Cerveja',
+    title: 'Parceiro Gold / ClienteRei',
     description:
-      'Plataforma para distribuidores com app mobile em React Native. Interface web em React 18 com Material-UI, backend Express e Fastify com MySQL. Controle de estoque, distribuição e dashboard analítico.',
+      'Plataforma para parceiros e distribuidores com app mobile, web administrativo, gestão de clientes, campanhas, estoque e indicadores.',
     url: 'https://parceirogold.com.br',
     logo: '/logos/parceiro-gold.png',
-    tags: ['React Native', 'React 18', 'TypeScript', 'Material-UI', 'Express', 'Fastify', 'MySQL'],
+    tags: ['React Native', 'Expo', 'React', 'TypeScript', 'Express', 'Prisma', 'PostgreSQL'],
   },
   {
-    title: 'Garçom Rei - Império Cerveja',
+    title: 'Garçom Rei',
     description:
-      'Sistema de gestão e programa de fidelidade para garçons. Desenvolvido em PHP com MySQL, interface web responsiva. Gestão de pontos, resgates, controle de PDVs e relatórios financeiros.',
+      'Programa de fidelidade e gestão para garçons, com pontos, resgates, campanhas, PDVs e relatórios financeiros.',
     logo: '/logos/garcom-rei.png',
     tags: ['PHP', 'MySQL', 'JavaScript'],
+  },
+  {
+    title: 'Império Delivery',
+    description:
+      'Ecossistema de delivery com aplicações web/mobile, monorepo, componentes compartilhados, regras de pedido e infraestrutura de operação.',
+    logo: '/logos/imperio-cerveja.png',
+    tags: ['React', 'React Native', 'TypeScript', 'Node.js', 'Monorepo', 'Turborepo'],
+  },
+  {
+    title: 'WhatsApp ParceiroGold',
+    description:
+      'Serviço de mensageria e automações para ParceiroGold, com NestJS, Prisma e integrações para fluxos operacionais via WhatsApp.',
+    logo: '/logos/parceiro-gold.png',
+    tags: ['NestJS', 'TypeScript', 'Prisma', 'WhatsApp', 'PostgreSQL'],
+  },
+  {
+    title: 'Vendedor Gold IA Backend',
+    description:
+      'Backend de IA e automações para apoiar fluxos do Vendedor Gold, com serviços Python, scripts, testes e integrações de dados.',
+    logo: '/logos/vendedor-gold.png',
+    tags: ['Python', 'FastAPI', 'IA', 'Automação', 'Testes'],
   },
 ]
 
 export const sherwinWilliamsProjects: Project[] = [
   {
-    title: 'Clube Pro Pintor - SW',
+    title: 'Clube Pro Pintor',
     description:
-      'Sistema completo de gestão de cores e produtos. App mobile em Ionic, interface web em React 16 com Redux, backend Express com Sequelize e MySQL. Catálogo de produtos, gestão de cores e programa de fidelidade.',
+      'Sistema de fidelidade, catálogo e gestão para pintores, com frontend React, backend Express, campanhas, produtos e resgates.',
     url: 'https://clubepropintor.com.br',
-    logo: '/logos/sw.png',
-    tags: ['Ionic', 'React 16', 'Redux', 'Express', 'Sequelize', 'MySQL'],
+    logo: '/logos/sherwin-williams.png',
+    tags: ['React 16', 'Redux', 'Express', 'Sequelize', 'MySQL'],
   },
   {
     title: 'Experiências SW',
     description:
-      'Plataforma de experiências e programas de fidelidade. Interface web em React 16 com Redux para gerenciamento de estado, backend Express com Sequelize e MySQL. Campanhas, prêmios e resgates.',
+      'Plataforma de experiências, campanhas, prêmios e resgates para programas Sherwin Williams.',
     url: 'https://experiencias-sw.com.br',
     logo: '/logos/experiencias-sw.png',
     tags: ['React 16', 'Redux', 'Express', 'Sequelize', 'MySQL'],
@@ -85,31 +106,48 @@ export const sherwinWilliamsProjects: Project[] = [
   {
     title: 'SW Dashboard',
     description:
-      'Dashboard analítico e de métricas. Interface web em React 18 com TypeScript para visualização de dados, gráficos e relatórios em tempo real.',
+      'Dashboard analítico para visualização de indicadores, métricas, relatórios e dados operacionais em tempo real.',
     logo: '/logos/sw-dashboard.png',
-    tags: ['React 18', 'TypeScript'],
+    tags: ['React 18', 'TypeScript', 'Charts', 'Dashboard'],
   },
   {
     title: 'SW Recomenda',
     description:
-      'Sistema de recomendações e sugestões. Frontend React 18 com TypeScript, backend NestJS com Prisma ORM. Algoritmos de recomendação personalizados para produtos e campanhas.',
+      'Sistema de recomendações e relacionamento com frontend React/Angular/Ionic, backend NestJS e Prisma.',
     logo: '/logos/sw-recomenda.png',
-    tags: ['React 18', 'TypeScript', 'NestJS', 'Prisma'],
+    tags: ['React 18', 'Angular', 'Ionic', 'TypeScript', 'NestJS', 'Prisma'],
   },
   {
     title: 'SW Integration',
     description:
-      'API REST de integração para sistemas Sherwin Williams. Backend NestJS com TypeScript, documentação Swagger/OpenAPI, Prisma ORM para gerenciamento de dados e autenticação JWT.',
+      'API REST de integração para sistemas Sherwin Williams, com autenticação, documentação e contratos entre plataformas.',
     logo: '/logos/sw-integration.png',
-    tags: ['NestJS', 'TypeScript', 'Swagger', 'Prisma'],
+    tags: ['NestJS', 'TypeScript', 'Swagger', 'Prisma', 'API REST'],
+  },
+  {
+    title: 'SW Club',
+    description:
+      'Nova plataforma de clube/fidelidade Sherwin Williams com backend NestJS, Prisma e frontend React moderno.',
+    logo: '/logos/sherwin-williams.png',
+    tags: ['React', 'TypeScript', 'NestJS', 'Prisma', 'Tailwind CSS'],
   },
 ]
 
-export const otherProjects: Project[] = [
+export const cocaColaProjects: Project[] = [
   {
-    title: 'GabrielPro - Arquitetura',
+    title: 'Embaixadores Coca-Cola',
     description:
-      'Site institucional e portfólio para empresa de arquitetura. Desenvolvido em Next.js 12 com TypeScript, implementando Clean Architecture e Use Cases.',
+      'Plataforma de campanhas e embaixadores com gestão administrativa, participantes, imagens, relatórios e operações.',
+    logo: '/logos/coca-cola.png',
+    tags: ['React 16', 'Redux', 'Express', 'Sequelize', 'MySQL'],
+  },
+]
+
+export const otherCompanyProjects: Project[] = [
+  {
+    title: 'GabrielPro',
+    description:
+      'Plataforma institucional e administrativa com front em Next.js, backend Express/Prisma e arquitetura orientada a casos de uso.',
     url: 'https://gabrielpro.com.br',
     logo: '/logos/gabrielpro.png',
     tags: ['Next.js 12', 'React 17', 'TypeScript', 'Express', 'Prisma'],
@@ -117,29 +155,29 @@ export const otherProjects: Project[] = [
   {
     title: 'Clube Grendene',
     description:
-      'Programa de fidelidade e pontos. Interface web React 16 com Redux para gerenciamento de estado, backend Express.js com Sequelize ORM e MySQL. Gestão de pontos, prêmios e resgates.',
+      'Programa de fidelidade e pontos com gestão de campanhas, participantes, prêmios e resgates.',
     logo: '/logos/grendene.png',
     tags: ['React 16', 'Redux', 'Express', 'Sequelize', 'MySQL'],
   },
   {
     title: 'GudPoints',
     description:
-      'Sistema de pontos e recompensas. Frontend React 16 com Redux, backend Express.js com Sequelize ORM e MySQL. Gestão de prêmios, campanhas promocionais e resgates.',
+      'Sistema de pontos e recompensas com gestão de prêmios, campanhas promocionais, resgates e relatórios administrativos.',
     url: 'https://gudpoints.com.br',
     logo: '/logos/gudpoints.png',
     tags: ['React 16', 'Redux', 'Express', 'Sequelize', 'MySQL'],
   },
   {
-    title: 'iD - Inhotim',
+    title: 'iD / Inhotim',
     description:
-      'Plataforma de experiências e campanhas. Frontend Next.js 12 com TypeScript e SSR, backend Express.js com Prisma ORM. Gestão de campanhas, experiências e relatórios.',
-    logo: '/logos/id.png',
+      'Projeto de experiências e campanhas, com frontend em Next.js, backend Express/Prisma, SSR e rotinas administrativas.',
+    logo: '/logos/inhotim-id.png',
     tags: ['Next.js 12', 'React 17', 'TypeScript', 'Express', 'Prisma'],
   },
   {
     title: 'Legrand',
     description:
-      'Sistema de gestão e catálogo de produtos. Interface React 18 com TypeScript, Material-UI para componentes, Zustand para estado global e React Query para cache de dados.',
+      'Sistema de gestão, catálogo e benefícios com interface React, Material UI, estado global e sincronização de dados via React Query.',
     url: 'https://legrandmaisvantagens.com.br',
     logo: '/logos/legrand.png',
     tags: ['React 18', 'TypeScript', 'Material-UI', 'Zustand', 'React Query'],
@@ -147,15 +185,15 @@ export const otherProjects: Project[] = [
   {
     title: 'LeoPlus',
     description:
-      'Programa de fidelidade com parcerias. Frontend React 18 com TypeScript, Material-UI, Zustand para estado e React Query para sincronização. Integração com múltiplos parceiros via APIs.',
+      'Programa de fidelidade com parcerias, integrações com múltiplas APIs, frontend React e backend NestJS/Prisma.',
     url: 'https://leoplus.com.br',
     logo: '/logos/leoplus.png',
-    tags: ['React 18', 'TypeScript', 'Material-UI', 'Zustand', 'React Query'],
+    tags: ['React 18', 'TypeScript', 'Material-UI', 'NestJS', 'Prisma', 'React Query'],
   },
   {
     title: 'Clube Morelli',
     description:
-      'Programa de pontos e benefícios. Interface React 16 com Redux, backend Express.js com Sequelize ORM e MySQL. Gestão de campanhas, prêmios e resgates.',
+      'Programa de pontos e benefícios com campanhas, prêmios, resgates e área administrativa.',
     url: 'https://clubemorelli.com.br',
     logo: '/logos/morelli.png',
     tags: ['React 16', 'Redux', 'Express', 'Sequelize', 'MySQL'],
@@ -163,24 +201,33 @@ export const otherProjects: Project[] = [
   {
     title: 'Smart Backoffice',
     description:
-      'Painel administrativo e gestão de sistemas. Frontend React 18 com TypeScript e Tailwind CSS, backend NestJS com TypeORM e PostgreSQL. Dashboard, relatórios e gestão de usuários.',
+      'Ferramenta interna Smart para gestão administrativa, usuários, dashboards, relatórios e suporte operacional.',
     logo: '/logos/smart-backoffice.png',
     tags: ['React 18', 'TypeScript', 'Tailwind CSS', 'NestJS', 'TypeORM', 'PostgreSQL'],
   },
   {
     title: 'Parceiro Blum',
     description:
-      'Sistema de gestão e programa de fidelidade. Backend Laravel 5.8 (PHP), frontend Vue.js 2.5, banco MySQL. Gestão de pontos, resgates e relatórios administrativos.',
+      'Sistema de gestão e programa de fidelidade com backend Laravel, frontend Vue e banco MySQL.',
     logo: '/logos/parceiro-blum.png',
     tags: ['Laravel 5.8', 'Vue.js 2.5', 'PHP', 'MySQL'],
   },
 ]
 
 export const projectGroups: ProjectGroup[] = [
-  { id: 'current', title: 'Projetos Atuais', projects: currentProjects },
-  { id: 'imperio', title: 'Império Cerveja (Gold)', projects: imperioCervejaProjects },
-  { id: 'sherwin', title: 'Sherwin Williams (SW e Experiências)', projects: sherwinWilliamsProjects },
-  { id: 'others', title: 'Outros Projetos', projects: otherProjects },
+  { id: 'personal', title: 'Projetos próprios', projects: personalProjects },
+  { id: 'imperio', title: 'Império Cerveja', projects: imperioCervejaProjects },
+  { id: 'sherwin', title: 'Sherwin Williams', projects: sherwinWilliamsProjects },
+  { id: 'coca-cola', title: 'Coca-Cola', projects: cocaColaProjects },
+  { id: 'others', title: 'Outras empresas', projects: otherCompanyProjects },
 ]
 
 export const allProjects = projectGroups.flatMap((group) => group.projects)
+
+export const currentProjects = personalProjects
+export const smartClientProjects = [
+  ...imperioCervejaProjects,
+  ...sherwinWilliamsProjects,
+  ...cocaColaProjects,
+  ...otherCompanyProjects,
+]

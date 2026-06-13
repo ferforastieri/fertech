@@ -4,7 +4,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { aboutParagraphs, highlights, profile } from '@/data/profile'
-import { projectGroups } from '@/data/projects'
+import { allProjects, projectGroups } from '@/data/projects'
 import { workArticles } from '@/data/articles'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -138,12 +138,16 @@ export default function AuroraHome() {
           </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-4">
-          {projectGroups.map((group) => (
+          {projectGroups.slice(0, 4).map((group) => (
             <div key={group.id} className="aurora-reveal rounded-[1.5rem] border border-white/12 bg-white/[0.07] p-5 opacity-0 translate-y-8 backdrop-blur">
               <span className="text-4xl font-bold text-rose-500">{group.projects.length}</span>
               <h3 className="mt-4 font-semibold">{group.title}</h3>
             </div>
           ))}
+          <div className="aurora-reveal rounded-[1.5rem] border border-white/12 bg-white/[0.07] p-5 opacity-0 translate-y-8 backdrop-blur md:col-span-4">
+            <span className="text-4xl font-bold text-rose-500">{allProjects.length}</span>
+            <h3 className="mt-4 font-semibold">Projetos mapeados no total</h3>
+          </div>
         </div>
       </section>
 
