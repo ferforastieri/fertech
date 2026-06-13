@@ -11,8 +11,12 @@ import {
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
 import { useProfileContent } from '@/api/profile/useProfileContent'
-import { useResumeContent } from '@/api/resume/useResumeContent'
+import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeContent'
+import { useProjects } from '@/api/projects/useProjects'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
+import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
+import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
+import { generateResumePdf } from '@/features/resume/generateResumePdf'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -21,11 +25,14 @@ export default function AuroraResume() {
   const [isGenerating, setIsGenerating] = useState(false)
   const profileQuery = useProfileContent()
   const resumeQuery = useResumeContent()
+  const projectsQuery = useProjects()
 
   const profile = profileQuery.data
   const resume = resumeQuery.data
-  const isLoading = profileQuery.isLoading || resumeQuery.isLoading
-  const hasError = profileQuery.isError || resumeQuery.isError
+  const projects = projectsQuery.data ?? []
+  const isLoading = profileQuery.isLoading || resumeQuery.isLoading || projectsQuery.isLoading
+  const hasError = profileQuery.isError || resumeQuery.isError || projectsQuery.isError
+  const loadingTransition = useAuroraLoadingTransition(isLoading)
 
   useEffect(() => {
     if (isLoading) return
@@ -55,111 +62,7 @@ export default function AuroraResume() {
     setIsGenerating(true)
 
     try {
-      const { jsPDF } = await import('jspdf')
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const pageWidth = doc.internal.pageSize.getWidth()
-      const pageHeight = doc.internal.pageSize.getHeight()
-      const margin = 15
-      const maxWidth = pageWidth - margin * 2
-      let yPosition = margin
-
-      const ensureSpace = (height = 24) => {
-        if (yPosition > pageHeight - height) {
-          doc.addPage()
-          yPosition = margin
-        }
-      }
-
-      const sectionTitle = (title: string) => {
-        ensureSpace(24)
-        doc.setFontSize(14)
-        doc.setFont('helvetica', 'bold')
-        doc.text(title, margin, yPosition)
-        yPosition += 6
-        doc.setLineWidth(0.5)
-        doc.line(margin, yPosition, pageWidth - margin, yPosition)
-        yPosition += 5
-      }
-
-      doc.setFontSize(20)
-      doc.setFont('helvetica', 'bold')
-      doc.text(profile.name.toUpperCase(), pageWidth / 2, yPosition, { align: 'center' })
-      yPosition += 8
-      doc.setFontSize(12)
-      doc.setFont('helvetica', 'normal')
-      doc.text(profile.role, pageWidth / 2, yPosition, { align: 'center' })
-      yPosition += 8
-
-      sectionTitle('RESUMO PROFISSIONAL')
-      doc.setFontSize(10)
-      doc.setFont('helvetica', 'normal')
-      profile.aboutParagraphs.forEach((paragraph) => {
-        ensureSpace(18)
-        const lines = doc.splitTextToSize(paragraph, maxWidth)
-        doc.text(lines, margin, yPosition)
-        yPosition += lines.length * 4 + 4
-      })
-
-      sectionTitle('EXPERIÊNCIA PROFISSIONAL')
-      resume.experiences.forEach((experience) => {
-        ensureSpace(34)
-        doc.setFontSize(12)
-        doc.setFont('helvetica', 'bold')
-        doc.text(experience.position, margin, yPosition)
-        doc.setFontSize(10)
-        doc.setFont('helvetica', 'normal')
-        doc.text(experience.period, pageWidth - margin, yPosition, { align: 'right' })
-        yPosition += 6
-        doc.setFont('helvetica', 'italic')
-        doc.text(`${experience.company} | ${experience.location}`, margin, yPosition)
-        yPosition += 6
-        experience.roles?.forEach((role) => {
-          ensureSpace(12)
-          doc.setFontSize(10)
-          doc.setFont('helvetica', 'bold')
-          doc.text(`• ${role.position}`, margin + 4, yPosition)
-          doc.setFont('helvetica', 'normal')
-          doc.text(role.period, pageWidth - margin, yPosition, { align: 'right' })
-          yPosition += 5
-        })
-        if (experience.roles?.length) yPosition += 2
-        doc.setFont('helvetica', 'normal')
-        experience.responsibilities.forEach((responsibility) => {
-          ensureSpace(14)
-          const lines = doc.splitTextToSize(`• ${responsibility}`, maxWidth - 5)
-          doc.text(lines, margin + 4, yPosition)
-          yPosition += lines.length * 4 + 2
-        })
-        yPosition += 5
-      })
-
-      sectionTitle('FORMAÇÃO ACADÊMICA')
-      resume.education.forEach((item) => {
-        ensureSpace(18)
-        doc.setFontSize(11)
-        doc.setFont('helvetica', 'bold')
-        doc.text(item.course, margin, yPosition)
-        yPosition += 5
-        doc.setFontSize(10)
-        doc.setFont('helvetica', 'normal')
-        doc.text(`${item.institution} | ${item.location} | ${item.period}`, margin, yPosition)
-        yPosition += 8
-      })
-
-      sectionTitle('HABILIDADES TÉCNICAS')
-      doc.setFontSize(10)
-      doc.setFont('helvetica', 'normal')
-      const skillLines = doc.splitTextToSize(resume.technologies.join(' • '), maxWidth)
-      doc.text(skillLines, margin, yPosition)
-      yPosition += skillLines.length * 4 + 8
-
-      sectionTitle('IDIOMAS')
-      doc.setFontSize(10)
-      doc.text('Português: Nativo', margin, yPosition)
-      yPosition += 5
-      doc.text('Inglês: Técnico - Capacidade de escrita e leitura de documentações técnicas', margin, yPosition)
-
-      doc.save('CV_Fernando_Forastieri.pdf')
+      await generateResumePdf({ profile, resume, projects })
     } catch (error) {
       console.error('Erro ao gerar PDF:', error)
     } finally {
@@ -167,8 +70,8 @@ export default function AuroraResume() {
     }
   }
 
-  if (isLoading) {
-    return <AuroraLoading label="Montando currículo" />
+  if (loadingTransition.visible) {
+    return <AuroraLoading label="Montando currículo" exiting={loadingTransition.exiting} />
   }
 
   if (hasError || !profile || !resume) {
@@ -179,7 +82,11 @@ export default function AuroraResume() {
     )
   }
 
+  const getSection = (key: ResumeSectionKey) => resume.sections.find((section) => section.key === key)
+  const sectionStyle = (key: ResumeSectionKey) => ({ order: resume.sections.findIndex((section) => section.key === key) })
+
   return (
+    <AuroraPageReveal>
     <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-10 md:pt-32">
       <header className="resume-hero mb-14 text-center">
         <div className="mb-6 flex justify-center">
@@ -194,23 +101,24 @@ export default function AuroraResume() {
           className="mt-8 inline-flex items-center rounded-full bg-rose-900 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5 disabled:opacity-50"
         >
           <ArrowDownTrayIcon className="mr-2 h-5 w-5" />
-          {isGenerating ? 'Gerando PDF...' : 'Baixar PDF'}
+          {isGenerating ? resume.generatingLabel : resume.downloadLabel}
         </button>
       </header>
 
-      <section className="resume-reveal mb-12 translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
-        <h2 className="text-3xl font-bold text-[rgb(var(--aurora-text))]">Sobre</h2>
+      <div className="flex flex-col gap-12">
+      {getSection('about')?.enabled && <section style={sectionStyle('about')} className="resume-reveal translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
+        <h2 className="text-3xl font-bold text-[rgb(var(--aurora-text))]">{getSection('about')?.title}</h2>
         <div className="mt-6 space-y-4 text-[rgb(var(--aurora-muted))]">
-          {profile.aboutParagraphs.map((paragraph) => (
+          {resume.aboutParagraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>
-      </section>
+      </section>}
 
-      <section className="resume-reveal mb-12 translate-y-8 opacity-0">
+      {getSection('education')?.enabled && <section style={sectionStyle('education')} className="resume-reveal translate-y-8 opacity-0">
         <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold text-[rgb(var(--aurora-text))]">
           <AcademicCapIcon className="h-8 w-8 text-rose-500" />
-          Educação
+          {getSection('education')?.title}
         </h2>
         <div className="space-y-4">
           {resume.education.map((item) => (
@@ -230,12 +138,12 @@ export default function AuroraResume() {
             </article>
           ))}
         </div>
-      </section>
+      </section>}
 
-      <section className="resume-reveal mb-12 translate-y-8 opacity-0">
+      {getSection('experience')?.enabled && <section style={sectionStyle('experience')} className="resume-reveal translate-y-8 opacity-0">
         <h2 className="mb-6 flex items-center gap-3 text-3xl font-bold text-[rgb(var(--aurora-text))]">
           <BriefcaseIcon className="h-8 w-8 text-rose-500" />
-          Experiência Profissional
+          {getSection('experience')?.title}
         </h2>
         <div className="space-y-4">
           {resume.experiences.map((experience) => (
@@ -278,12 +186,12 @@ export default function AuroraResume() {
             </article>
           ))}
         </div>
-      </section>
+      </section>}
 
-      <section className="resume-reveal mb-12 translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
+      {getSection('skills')?.enabled && <section style={sectionStyle('skills')} className="resume-reveal translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
         <h2 className="flex items-center gap-3 text-3xl font-bold text-[rgb(var(--aurora-text))]">
           <WrenchScrewdriverIcon className="h-8 w-8 text-rose-500" />
-          Habilidades Técnicas
+          {getSection('skills')?.title}
         </h2>
         <div className="mt-6 flex flex-wrap gap-2">
           {resume.technologies.map((tech) => (
@@ -292,24 +200,37 @@ export default function AuroraResume() {
             </span>
           ))}
         </div>
-      </section>
+      </section>}
 
-      <section className="resume-reveal translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
+      {getSection('languages')?.enabled && <section style={sectionStyle('languages')} className="resume-reveal translate-y-8 rounded-[1.75rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 opacity-0 backdrop-blur">
         <h2 className="flex items-center gap-3 text-3xl font-bold text-[rgb(var(--aurora-text))]">
           <LanguageIcon className="h-8 w-8 text-rose-500" />
-          Idiomas
+          {getSection('languages')?.title}
         </h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div>
-            <p className="text-lg font-semibold text-[rgb(var(--aurora-text))]">Português</p>
-            <p className="text-sm text-[rgb(var(--aurora-muted))]">Nativo</p>
-          </div>
-          <div>
-            <p className="text-lg font-semibold text-[rgb(var(--aurora-text))]">Inglês</p>
-            <p className="text-sm text-[rgb(var(--aurora-muted))]">Inglês técnico - Capacidade de escrita e leitura de documentações técnicas</p>
-          </div>
+          {resume.languages.map((language) => (
+            <div key={language.name}>
+              <p className="text-lg font-semibold text-[rgb(var(--aurora-text))]">{language.name}</p>
+              <p className="text-sm text-[rgb(var(--aurora-muted))]">{language.description}</p>
+            </div>
+          ))}
         </div>
-      </section>
+      </section>}
+
+      {getSection('projects')?.enabled && <section style={sectionStyle('projects')} className="resume-reveal translate-y-8 opacity-0">
+        <h2 className="text-3xl font-bold text-[rgb(var(--aurora-text))]">{getSection('projects')?.title}</h2>
+        <div className="mt-6 space-y-4">
+          {projects.slice(0, 6).map((project) => (
+            <article key={project.id} className="border-b border-[rgb(var(--aurora-border))] pb-5 last:border-0 last:pb-0">
+              <h3 className="text-xl font-bold text-[rgb(var(--aurora-text))]">{project.title}</h3>
+              <p className="mt-2 text-[rgb(var(--aurora-muted))]">{project.description}</p>
+              <p className="mt-3 text-sm text-rose-500">{resume.projectTechnologiesLabel}: {project.tags.join(', ')}</p>
+            </article>
+          ))}
+        </div>
+      </section>}
+      </div>
     </div>
+    </AuroraPageReveal>
   )
 }

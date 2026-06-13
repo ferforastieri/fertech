@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import AuroraScene from '@/components/aurora/AuroraScene'
-import { EXPERIENCE_STORAGE_KEY, ExperienceMode, saveExperienceMode } from '@/lib/experience'
+import {
+  EXPERIENCE_STORAGE_KEY,
+  ExperienceMode,
+  saveExperienceMode,
+} from '@/contexts/experience/ExperienceContext'
 
 const modes = [
   {

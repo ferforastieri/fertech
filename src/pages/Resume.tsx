@@ -11,7 +11,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { useProjects } from '@/api/projects/useProjects'
-import { useResumeContent } from '@/api/resume/useResumeContent'
+import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeContent'
+import { generateResumePdf } from '@/features/resume/generateResumePdf'
 
 export default function Resume() {
   const [isGenerating, setIsGenerating] = useState(false)
@@ -31,159 +32,7 @@ export default function Resume() {
     setIsGenerating(true)
 
     try {
-      const { jsPDF } = await import('jspdf')
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const pageWidth = doc.internal.pageSize.getWidth()
-      const pageHeight = doc.internal.pageSize.getHeight()
-      const margin = 15
-      const maxWidth = pageWidth - margin * 2
-      let yPosition = margin
-
-      const ensureSpace = (height = 24) => {
-        if (yPosition > pageHeight - height) {
-          doc.addPage()
-          yPosition = margin
-        }
-      }
-
-      const sectionTitle = (title: string) => {
-        ensureSpace(26)
-        doc.setFontSize(14)
-        doc.setFont('helvetica', 'bold')
-        doc.text(title, margin, yPosition)
-        yPosition += 6
-        doc.setLineWidth(0.5)
-        doc.line(margin, yPosition, pageWidth - margin, yPosition)
-        yPosition += 5
-      }
-
-      doc.setFontSize(20)
-      doc.setFont('helvetica', 'bold')
-      doc.text(profile.name.toUpperCase(), pageWidth / 2, yPosition, { align: 'center' })
-      yPosition += 8
-
-      doc.setFontSize(12)
-      doc.setFont('helvetica', 'normal')
-      doc.text(profile.role, pageWidth / 2, yPosition, { align: 'center' })
-      yPosition += 6
-
-      doc.setFontSize(10)
-      const socialText = profile.socialLinks.map((social) => `${social.name}: ${social.href.replace(/^https?:\/\//, '')}`).join(' | ')
-      doc.text(socialText || profile.contactUrl, pageWidth / 2, yPosition, { align: 'center' })
-      yPosition += 5
-      doc.text('Sorocaba, SP - Brasil', pageWidth / 2, yPosition, { align: 'center' })
-      yPosition += 10
-
-      sectionTitle('RESUMO PROFISSIONAL')
-      doc.setFontSize(10)
-      doc.setFont('helvetica', 'normal')
-      profile.aboutParagraphs.forEach((paragraph) => {
-        ensureSpace(16)
-        const lines = doc.splitTextToSize(paragraph, maxWidth)
-        doc.text(lines, margin, yPosition)
-        yPosition += lines.length * 4 + 4
-      })
-
-      sectionTitle('EXPERIÊNCIA PROFISSIONAL')
-      resume.experiences.forEach((exp) => {
-        ensureSpace(40)
-        doc.setFontSize(12)
-        doc.setFont('helvetica', 'bold')
-        const positionLines = doc.splitTextToSize(exp.position, maxWidth - 50)
-        doc.text(positionLines, margin, yPosition)
-
-        doc.setFontSize(10)
-        doc.setFont('helvetica', 'normal')
-        doc.text(exp.period, pageWidth - margin, yPosition, { align: 'right' })
-        yPosition += 6
-
-        doc.setFontSize(11)
-        doc.setFont('helvetica', 'italic')
-        doc.text(`${exp.company} | ${exp.location}`, margin, yPosition)
-        yPosition += 6
-
-        exp.roles?.forEach((role) => {
-          ensureSpace(12)
-          doc.setFontSize(10)
-          doc.setFont('helvetica', 'bold')
-          doc.text(`• ${role.position}`, margin + 5, yPosition)
-          doc.setFont('helvetica', 'normal')
-          doc.text(role.period, pageWidth - margin, yPosition, { align: 'right' })
-          yPosition += 5
-        })
-
-        if (exp.roles?.length) yPosition += 2
-
-        doc.setFontSize(10)
-        doc.setFont('helvetica', 'normal')
-        exp.responsibilities.forEach((resp) => {
-          ensureSpace(14)
-          const respLines = doc.splitTextToSize(`• ${resp}`, maxWidth - 5)
-          doc.text(respLines, margin + 5, yPosition)
-          yPosition += respLines.length * 4 + 2
-        })
-        yPosition += 5
-      })
-
-      sectionTitle('FORMAÇÃO ACADÊMICA')
-      resume.education.forEach((edu) => {
-        ensureSpace(20)
-        doc.setFontSize(11)
-        doc.setFont('helvetica', 'bold')
-        doc.text(edu.course, margin, yPosition)
-        yPosition += 5
-
-        doc.setFontSize(10)
-        doc.setFont('helvetica', 'normal')
-        doc.text(`${edu.institution} | ${edu.location} | ${edu.period}`, margin, yPosition)
-        yPosition += 8
-      })
-
-      sectionTitle('HABILIDADES TÉCNICAS')
-      doc.setFontSize(10)
-      doc.setFont('helvetica', 'normal')
-      const skillsLines = doc.splitTextToSize(resume.technologies.join(' • '), maxWidth)
-      doc.text(skillsLines, margin, yPosition)
-      yPosition += skillsLines.length * 4 + 8
-
-      sectionTitle('IDIOMAS')
-      doc.setFontSize(11)
-      doc.setFont('helvetica', 'bold')
-      doc.text('Português:', margin, yPosition)
-      doc.setFont('helvetica', 'normal')
-      doc.text('Nativo', margin + 30, yPosition)
-      yPosition += 6
-
-      doc.setFont('helvetica', 'bold')
-      doc.text('Inglês:', margin, yPosition)
-      doc.setFont('helvetica', 'normal')
-      const englishLines = doc.splitTextToSize('Técnico - Capacidade de escrita e leitura de documentações técnicas', maxWidth - 30)
-      doc.text(englishLines, margin + 30, yPosition)
-      yPosition += englishLines.length * 4 + 8
-
-      sectionTitle('PROJETOS RELEVANTES')
-      projects.slice(0, 6).forEach((project) => {
-        ensureSpace(30)
-        doc.setFontSize(11)
-        doc.setFont('helvetica', 'bold')
-        const projectNameLines = doc.splitTextToSize(project.title, maxWidth)
-        doc.text(projectNameLines, margin, yPosition)
-        yPosition += projectNameLines.length * 4 + 2
-
-        doc.setFontSize(10)
-        doc.setFont('helvetica', 'normal')
-        const descLines = doc.splitTextToSize(project.description, maxWidth)
-        doc.text(descLines, margin, yPosition)
-        yPosition += descLines.length * 4 + 2
-
-        doc.setFontSize(9)
-        doc.setFont('helvetica', 'italic')
-        const techLines = doc.splitTextToSize(`Tecnologias: ${project.tags.join(', ')}`, maxWidth)
-        doc.text(techLines, margin, yPosition)
-        yPosition += techLines.length * 3 + 6
-      })
-
-      doc.save('CV_Fernando_Forastieri.pdf')
+      await generateResumePdf({ profile, resume, projects })
     } catch (error) {
       console.error('Erro ao gerar PDF:', error)
     } finally {
@@ -225,6 +74,9 @@ export default function Resume() {
     )
   }
 
+  const getSection = (key: ResumeSectionKey) => resume.sections.find((section) => section.key === key)
+  const sectionStyle = (key: ResumeSectionKey) => ({ order: resume.sections.findIndex((section) => section.key === key) })
+
   return (
     <div className="container mx-auto px-4 pt-4 pb-12">
       <div id="resume-content" className="mx-auto max-w-4xl space-y-12">
@@ -236,27 +88,29 @@ export default function Resume() {
           <p className="mb-6 text-xl text-foreground">{profile.role}</p>
           <Button size="lg" onClick={handleDownloadPDF} disabled={isGenerating} className="disabled:opacity-50">
             <ArrowDownTrayIcon className="mr-2 h-5 w-5" />
-            {isGenerating ? 'Gerando PDF...' : 'Baixar PDF'}
+            {isGenerating ? resume.generatingLabel : resume.downloadLabel}
           </Button>
         </div>
 
-        <Separator />
-
-        <section>
-          <h2 className="mb-6 text-3xl font-bold text-foreground">Sobre</h2>
+        <div className="flex flex-col gap-12">
+        {getSection('about')?.enabled && <div style={sectionStyle('about')}>
+          <Separator className="mb-12" />
+          <section>
+          <h2 className="mb-6 text-3xl font-bold text-foreground">{getSection('about')?.title}</h2>
           <div className="space-y-4 text-foreground">
-            {profile.aboutParagraphs.map((paragraph) => (
+            {resume.aboutParagraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-        </section>
+          </section>
+        </div>}
 
-        <Separator />
-
-        <section>
+        {getSection('education')?.enabled && <div style={sectionStyle('education')}>
+          <Separator className="mb-12" />
+          <section>
           <h2 className="mb-6 flex items-center gap-2 text-3xl font-bold text-foreground">
             <AcademicCapIcon className="h-8 w-8" />
-            Educação
+            {getSection('education')?.title}
           </h2>
           <div className="space-y-6">
             {resume.education.map((edu) => (
@@ -278,14 +132,15 @@ export default function Resume() {
               </Card>
             ))}
           </div>
-        </section>
+          </section>
+        </div>}
 
-        <Separator />
-
-        <section>
+        {getSection('experience')?.enabled && <div style={sectionStyle('experience')}>
+          <Separator className="mb-12" />
+          <section>
           <h2 className="mb-6 flex items-center gap-2 text-3xl font-bold text-foreground">
             <BriefcaseIcon className="h-8 w-8" />
-            Experiência Profissional
+            {getSection('experience')?.title}
           </h2>
           <div className="space-y-6">
             {resume.experiences.map((exp) => (
@@ -332,12 +187,13 @@ export default function Resume() {
               </Card>
             ))}
           </div>
-        </section>
+          </section>
+        </div>}
 
-        <Separator />
-
-        <section>
-          <h2 className="mb-6 text-3xl font-bold text-foreground">Habilidades Técnicas</h2>
+        {getSection('skills')?.enabled && <div style={sectionStyle('skills')}>
+          <Separator className="mb-12" />
+          <section>
+          <h2 className="mb-6 text-3xl font-bold text-foreground">{getSection('skills')?.title}</h2>
           <div className="flex flex-wrap gap-2">
             {resume.technologies.map((tech) => (
               <Badge key={tech} variant="secondary" className="px-3 py-1 text-sm">
@@ -345,25 +201,42 @@ export default function Resume() {
               </Badge>
             ))}
           </div>
-        </section>
+          </section>
+        </div>}
 
-        <Separator />
-
-        <section>
-          <h2 className="mb-6 text-3xl font-bold text-foreground">Idiomas</h2>
+        {getSection('languages')?.enabled && <div style={sectionStyle('languages')}>
+          <Separator className="mb-12" />
+          <section>
+          <h2 className="mb-6 text-3xl font-bold text-foreground">{getSection('languages')?.title}</h2>
           <div className="space-y-4">
-            <div>
-              <p className="text-lg font-semibold text-foreground">Português</p>
-              <p className="text-sm text-muted-foreground">Nativo</p>
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-foreground">Inglês</p>
-              <p className="text-sm text-muted-foreground">
-                Inglês técnico - Capacidade de escrita e leitura de documentações técnicas
-              </p>
-            </div>
+            {resume.languages.map((language) => (
+              <div key={language.name}>
+                <p className="text-lg font-semibold text-foreground">{language.name}</p>
+                <p className="text-sm text-muted-foreground">{language.description}</p>
+              </div>
+            ))}
           </div>
-        </section>
+          </section>
+        </div>}
+
+        {getSection('projects')?.enabled && <div style={sectionStyle('projects')}>
+          <Separator className="mb-12" />
+          <section>
+            <h2 className="mb-6 text-3xl font-bold text-foreground">{getSection('projects')?.title}</h2>
+            <div className="space-y-6">
+              {projects.slice(0, 6).map((project) => (
+                <article key={project.id}>
+                  <h3 className="text-xl font-semibold text-foreground">{project.title}</h3>
+                  <p className="mt-2 text-foreground">{project.description}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {resume.projectTechnologiesLabel}: {project.tags.join(', ')}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>}
+        </div>
       </div>
     </div>
   )

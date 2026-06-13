@@ -9,6 +9,8 @@ import { useProjects } from '@/api/projects/useProjects'
 import { useArticleList } from '@/api/articles/useArticleList'
 import { useHomeContent } from '@/api/home/useHomeContent'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
+import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
+import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -35,6 +37,7 @@ export default function AuroraHome() {
   const projectGroups = projectGroupsQuery.data
   const allProjects = projectsQuery.data
   const workArticles = workArticlesQuery.data
+  const loadingTransition = useAuroraLoadingTransition(isLoading)
 
   useEffect(() => {
     if (isLoading) return
@@ -68,8 +71,8 @@ export default function AuroraHome() {
     return () => ctx.revert()
   }, [isLoading, profileContent?.name, homeContent?.heroHeadline, projectGroups?.length, allProjects?.length, workArticles?.length])
 
-  if (isLoading) {
-    return <AuroraLoading label="Inicializando experiência" />
+  if (loadingTransition.visible) {
+    return <AuroraLoading label="Inicializando experiência" exiting={loadingTransition.exiting} />
   }
 
   if (profileQuery.error || projectGroupsQuery.error || projectsQuery.error || workArticlesQuery.error || homeQuery.error || !profileContent || !homeContent || !projectGroups || !allProjects || !workArticles) {
@@ -77,6 +80,7 @@ export default function AuroraHome() {
   }
 
   return (
+    <AuroraPageReveal>
     <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-24">
       <section className="aurora-hero grid items-start gap-10 pb-8 pt-0 md:pt-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
@@ -218,5 +222,6 @@ export default function AuroraHome() {
         </div>
       </section>
     </div>
+    </AuroraPageReveal>
   )
 }

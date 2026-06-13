@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@/config/supabase'
+import { supabase } from '@/config/supabase/client'
 
-type ResumeRole = {
+export type ResumeRole = {
   position: string
   period: string
   sortOrder: number
 }
 
-type Experience = {
+export type Experience = {
   id: string
   company: string
   position: string
@@ -18,7 +18,7 @@ type Experience = {
   sortOrder: number
 }
 
-type Education = {
+export type Education = {
   id: string
   institution: string
   course: string
@@ -27,10 +27,31 @@ type Education = {
   sortOrder: number
 }
 
-type ResumeContent = {
+export type ResumeSectionKey = 'about' | 'education' | 'experience' | 'skills' | 'languages' | 'projects'
+
+export type ResumeLanguage = {
+  name: string
+  description: string
+}
+
+export type ResumeSection = {
+  key: ResumeSectionKey
+  title: string
+  enabled: boolean
+}
+
+export type ResumeContent = {
   technologies: string[]
   experiences: Experience[]
   education: Education[]
+  aboutParagraphs: string[]
+  languages: ResumeLanguage[]
+  sections: ResumeSection[]
+  location: string
+  downloadLabel: string
+  generatingLabel: string
+  pdfFilename: string
+  projectTechnologiesLabel: string
 }
 
 type ExperienceRow = {
@@ -62,6 +83,17 @@ type EducationRow = {
 type ResumeTechnologyRow = {
   name: string
   sort_order: number
+}
+
+type ResumeSettingsRow = {
+  about_paragraphs: string[]
+  languages: ResumeLanguage[]
+  sections: ResumeSection[]
+  location: string
+  download_label: string
+  generating_label: string
+  pdf_filename: string
+  project_technologies_label: string
 }
 
 function mapEducation(row: EducationRow): Education {
@@ -97,17 +129,25 @@ function mapExperience(row: ExperienceRow, roles: ResumeRole[]): Experience {
 }
 
 async function getResumeContent(): Promise<ResumeContent> {
-  const [technologiesResult, experiencesResult, rolesResult, educationResult] = await Promise.all([
+  const [technologiesResult, experiencesResult, rolesResult, educationResult, settingsResult] = await Promise.all([
     supabase.from('resume_technologies').select('name,sort_order').order('sort_order', { ascending: true }),
     supabase.from('resume_experiences').select('id,company,position,location,period,responsibilities,sort_order').order('sort_order', { ascending: true }),
     supabase.from('resume_roles').select('experience_id,position,period,sort_order').order('sort_order', { ascending: true }),
     supabase.from('resume_education').select('id,institution,course,location,period,sort_order').order('sort_order', { ascending: true }),
+    supabase
+      .from('resume_settings')
+      .select('about_paragraphs,languages,sections,location,download_label,generating_label,pdf_filename,project_technologies_label')
+      .eq('id', 'main')
+      .single(),
   ])
 
   if (technologiesResult.error) throw technologiesResult.error
   if (experiencesResult.error) throw experiencesResult.error
   if (rolesResult.error) throw rolesResult.error
   if (educationResult.error) throw educationResult.error
+  if (settingsResult.error) throw settingsResult.error
+
+  const settings = settingsResult.data as ResumeSettingsRow
 
   const rolesByExperience = new Map<string, ResumeRole[]>()
   ;((rolesResult.data ?? []) as ResumeRoleRow[]).forEach((role) => {
@@ -122,6 +162,14 @@ async function getResumeContent(): Promise<ResumeContent> {
       mapExperience(experience, rolesByExperience.get(experience.id) ?? []),
     ),
     education: ((educationResult.data ?? []) as EducationRow[]).map(mapEducation),
+    aboutParagraphs: settings.about_paragraphs,
+    languages: settings.languages,
+    sections: settings.sections,
+    location: settings.location,
+    downloadLabel: settings.download_label,
+    generatingLabel: settings.generating_label,
+    pdfFilename: settings.pdf_filename,
+    projectTechnologiesLabel: settings.project_technologies_label,
   }
 }
 

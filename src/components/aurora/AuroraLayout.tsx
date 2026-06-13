@@ -12,12 +12,15 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline'
 import { ThemeToggle } from '@/components/ui/feedback'
-import { ExperienceProvider, saveExperienceMode } from '@/lib/experience'
+import {
+  ExperienceProvider,
+  saveExperienceMode,
+} from '@/contexts/experience/ExperienceContext'
 import AuroraScene from './AuroraScene'
 import AuroraPointerEffects from './AuroraPointerEffects'
 import { cn } from '@/components/lib'
 import { useProfileContent } from '@/api/profile/useProfileContent'
-import { renderSocialIcon } from '@/lib/social-icons'
+import { renderSocialIcon } from '@/features/profile/renderSocialIcon'
 
 const navItems = [
   { name: 'Início', href: '/aurora', icon: HomeIcon },

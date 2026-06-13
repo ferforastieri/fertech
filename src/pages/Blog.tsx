@@ -7,7 +7,7 @@ import {
   BriefcaseIcon,
   BookOpenIcon,
 } from '@heroicons/react/24/outline'
-import { useExperiencePath } from '@/lib/experience'
+import { useExperiencePath } from '@/contexts/experience/ExperienceContext'
 
 export default function Blog() {
   const modePath = useExperiencePath()

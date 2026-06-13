@@ -3,13 +3,16 @@ import ReactMarkdown from 'react-markdown'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { useArticleBySlug } from '@/api/articles/useArticleBySlug'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
+import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
+import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
 
 export default function AuroraArticle() {
   const { slug } = useParams<{ slug: string }>()
   const { data: article, isLoading } = useArticleBySlug(slug)
+  const loadingTransition = useAuroraLoadingTransition(isLoading)
 
-  if (isLoading) {
-    return <AuroraLoading label="Renderizando artigo" />
+  if (loadingTransition.visible) {
+    return <AuroraLoading label="Renderizando artigo" exiting={loadingTransition.exiting} />
   }
 
   if (!article) {
@@ -26,6 +29,7 @@ export default function AuroraArticle() {
   const contentWithoutTitle = article.content.replace(/^#\s+.*$/m, '').trim()
 
   return (
+    <AuroraPageReveal>
     <article className="mx-auto max-w-4xl px-4 pb-24 pt-10 text-white md:pt-32">
       <Link to="/aurora/blog" className="mb-10 inline-flex items-center rounded-full border border-white/12 bg-white/8 px-4 py-2 text-white/78 backdrop-blur transition hover:bg-white/14">
         <ArrowLeftIcon className="mr-2 h-4 w-4" />
@@ -45,5 +49,6 @@ export default function AuroraArticle() {
         </div>
       </div>
     </article>
+    </AuroraPageReveal>
   )
 }

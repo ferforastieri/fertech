@@ -1,7 +1,27 @@
-export function AuroraLoading({ label = 'Carregando' }: { label?: string }) {
+import { motion } from 'motion/react'
+
+export function AuroraLoading({
+  label = 'Carregando',
+  exiting = false,
+}: {
+  label?: string
+  exiting?: boolean
+}) {
   return (
-    <div className="mx-auto flex min-h-[58vh] max-w-6xl items-center justify-center px-4 pb-24 pt-10 text-[rgb(var(--aurora-text))] md:pt-32">
-      <div className="relative h-72 w-full max-w-3xl overflow-hidden rounded-[2rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 shadow-2xl shadow-rose-950/35 backdrop-blur-xl">
+    <motion.div
+      initial={{ opacity: 0, scale: 1.04, filter: 'blur(14px)' }}
+      animate={exiting
+        ? { opacity: 0, scale: 0.96, filter: 'blur(18px)' }
+        : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
+      transition={{ duration: exiting ? 0.42 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed inset-0 z-30 flex min-h-[100svh] items-center justify-center px-4 py-20 text-[rgb(var(--aurora-text))]"
+    >
+      <motion.div
+        initial={{ y: 24 }}
+        animate={{ y: exiting ? -18 : 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="relative h-72 w-full max-w-3xl overflow-hidden rounded-[2rem] border border-[rgb(var(--aurora-border))] bg-[rgb(var(--aurora-panel))] p-6 shadow-2xl shadow-rose-950/35 backdrop-blur-xl"
+      >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(159,18,57,0.28),transparent_28%),radial-gradient(circle_at_72%_62%,rgba(127,29,29,0.22),transparent_30%)]" />
         <div className="absolute left-8 top-8 h-28 w-20 animate-[pulse_1.2s_ease-in-out_infinite] rounded-xl border border-rose-500/45 bg-black/30 shadow-[0_0_34px_rgba(159,18,57,0.45)]">
           <span className="absolute left-3 top-4 h-2 w-2 rounded-full bg-rose-400 shadow-[0_0_16px_rgba(251,113,133,0.85)]" />
@@ -22,7 +42,7 @@ export function AuroraLoading({ label = 'Carregando' }: { label?: string }) {
             <span className="block h-full w-1/2 animate-[aurora-nav-flight_1s_linear_infinite] rounded-full bg-gradient-to-r from-rose-950 via-rose-500 to-rose-200" />
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

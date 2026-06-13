@@ -3,7 +3,7 @@ import { StatusBadge, Badge, Skeleton } from '@/components/ui/feedback'
 import { Button } from '@/components/ui/forms'
 import { Card, CardContent } from '@/components/ui/layout'
 import { ArrowRightIcon, CodeBracketIcon, RocketLaunchIcon, SparklesIcon } from '@heroicons/react/24/outline'
-import { useExperiencePath } from '@/lib/experience'
+import { useExperiencePath } from '@/contexts/experience/ExperienceContext'
 import { ProfileHighlight, useProfileContent } from '@/api/profile/useProfileContent'
 import { useHomeContent } from '@/api/home/useHomeContent'
 

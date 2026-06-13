@@ -9,9 +9,12 @@ import {
 } from '@heroicons/react/24/outline'
 import { ThemeToggle } from '@/components/ui/feedback'
 import { cn } from '@/components/lib'
-import { ExperienceProvider, saveExperienceMode } from '@/lib/experience'
+import {
+  ExperienceProvider,
+  saveExperienceMode,
+} from '@/contexts/experience/ExperienceContext'
 import { useProfileContent } from '@/api/profile/useProfileContent'
-import { renderSocialIcon } from '@/lib/social-icons'
+import { renderSocialIcon } from '@/features/profile/renderSocialIcon'
 
 interface LayoutProps {
   children: React.ReactNode

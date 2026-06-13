@@ -4,6 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowTopRightOnSquareIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
+import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
+import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -72,6 +74,7 @@ function ProjectGroupSection({ group }: { group: ProjectGroup }) {
 export default function AuroraProjects() {
   const rootRef = useRef<HTMLDivElement>(null)
   const { data: projectGroups, isLoading, error } = useProjectGroups()
+  const loadingTransition = useAuroraLoadingTransition(isLoading)
 
   useEffect(() => {
     if (isLoading) return
@@ -94,8 +97,8 @@ export default function AuroraProjects() {
     return () => ctx.revert()
   }, [isLoading, projectGroups?.length])
 
-  if (isLoading) {
-    return <AuroraLoading label="Carregando projetos" />
+  if (loadingTransition.visible) {
+    return <AuroraLoading label="Carregando projetos" exiting={loadingTransition.exiting} />
   }
 
   if (error || !projectGroups) {
@@ -103,6 +106,7 @@ export default function AuroraProjects() {
   }
 
   return (
+    <AuroraPageReveal>
     <div ref={rootRef} className="mx-auto max-w-6xl px-4 pb-24 pt-10 text-white md:pt-32">
       <header className="mb-14 max-w-3xl">
         <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Portfólio técnico</p>
@@ -118,5 +122,6 @@ export default function AuroraProjects() {
         ))}
       </div>
     </div>
+    </AuroraPageReveal>
   )
 }

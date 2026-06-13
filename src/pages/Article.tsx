@@ -4,7 +4,7 @@ import { Badge, Skeleton } from '@/components/ui/feedback'
 import { Button } from '@/components/ui/forms'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import ReactMarkdown from 'react-markdown'
-import { useExperiencePath } from '@/lib/experience'
+import { useExperiencePath } from '@/contexts/experience/ExperienceContext'
 import { useArticleBySlug } from '@/api/articles/useArticleBySlug'
 
 export default function Article() {

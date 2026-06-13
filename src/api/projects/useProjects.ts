@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@/config/supabase'
+import { supabase } from '@/config/supabase/client'
 import { Project } from './useProjectGroups'
 
 type ProjectRow = {

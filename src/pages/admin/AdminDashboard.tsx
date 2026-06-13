@@ -8,10 +8,10 @@ import { Article, ArticleKind, useArticleList } from '@/api/articles/useArticleL
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { useHomeContent } from '@/api/home/useHomeContent'
 import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
-import { useResumeContent } from '@/api/resume/useResumeContent'
-import { supabase } from '@/config/supabase'
-import { formatTextList, parseTextList } from '@/lib/text-list'
-import { useStoredTheme } from '@/lib/useStoredTheme'
+import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeContent'
+import { supabase } from '@/config/supabase/client'
+import { formatTextList, parseTextList } from '@/features/admin/textList'
+import { useStoredTheme } from '@/hooks/useStoredTheme'
 
 type AdminTab = 'profile' | 'home' | 'projects' | 'articles' | 'resume'
 
@@ -83,6 +83,14 @@ type ArticleForm = {
 
 type ResumeForm = {
   technologies: string
+  aboutParagraphs: string
+  languages: string
+  sections: string
+  location: string
+  downloadLabel: string
+  generatingLabel: string
+  pdfFilename: string
+  projectTechnologiesLabel: string
   education: EducationForm[]
   experiences: ExperienceForm[]
 }
@@ -219,6 +227,14 @@ export default function AdminDashboard() {
   const [articleForms, setArticleForms] = useState<ArticleForm[]>([])
   const [resumeForm, setResumeForm] = useState<ResumeForm>({
     technologies: '',
+    aboutParagraphs: '',
+    languages: '',
+    sections: '',
+    location: '',
+    downloadLabel: '',
+    generatingLabel: '',
+    pdfFilename: '',
+    projectTechnologiesLabel: '',
     education: [],
     experiences: [],
   })
@@ -278,6 +294,14 @@ export default function AdminDashboard() {
     if (!resumeQuery.data) return
     setResumeForm({
       technologies: formatTextList(resumeQuery.data.technologies),
+      aboutParagraphs: formatTextList(resumeQuery.data.aboutParagraphs),
+      languages: resumeQuery.data.languages.map((language) => `${language.name}|${language.description}`).join('\n'),
+      sections: resumeQuery.data.sections.map((section) => `${section.key}|${section.title}|${section.enabled}`).join('\n'),
+      location: resumeQuery.data.location,
+      downloadLabel: resumeQuery.data.downloadLabel,
+      generatingLabel: resumeQuery.data.generatingLabel,
+      pdfFilename: resumeQuery.data.pdfFilename,
+      projectTechnologiesLabel: resumeQuery.data.projectTechnologiesLabel,
       education: resumeQuery.data.education.map((item) => ({ ...item })),
       experiences: resumeQuery.data.experiences.map((experience) => ({
         id: experience.id,
@@ -542,6 +566,26 @@ export default function AdminDashboard() {
         name,
         sort_order: index,
       }))
+      const languages = resumeForm.languages
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [name = '', description = ''] = line.split('|')
+          return { name: name.trim(), description: description.trim() }
+        })
+      const sections = resumeForm.sections
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [key = '', title = '', enabled = 'true'] = line.split('|')
+          return {
+            key: key.trim() as ResumeSectionKey,
+            title: title.trim(),
+            enabled: enabled.trim().toLowerCase() !== 'false',
+          }
+        })
 
       const deleteSteps = [
         supabase.from('resume_roles').delete().neq('id', ''),
@@ -570,6 +614,18 @@ export default function AdminDashboard() {
         const { error } = await supabase.from('resume_technologies').insert(technologies)
         if (error) throw error
       }
+      const { error: settingsError } = await supabase.from('resume_settings').upsert({
+        id: 'main',
+        about_paragraphs: parseTextList(resumeForm.aboutParagraphs),
+        languages,
+        sections,
+        location: resumeForm.location,
+        download_label: resumeForm.downloadLabel,
+        generating_label: resumeForm.generatingLabel,
+        pdf_filename: resumeForm.pdfFilename,
+        project_technologies_label: resumeForm.projectTechnologiesLabel,
+      })
+      if (settingsError) throw settingsError
     }, 'Currículo salvo.')
 
   return (
@@ -832,7 +888,19 @@ export default function AdminDashboard() {
 
             {activeTab === 'resume' && (
               <AdminSection title="Currículo">
-                <Textarea label="Habilidades técnicas, uma por linha" value={resumeForm.technologies} onChange={(value) => setResumeForm({ ...resumeForm, technologies: value })} rows={6} />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Textarea label="Sobre do currículo, um parágrafo por linha" value={resumeForm.aboutParagraphs} onChange={(value) => setResumeForm({ ...resumeForm, aboutParagraphs: value })} rows={6} />
+                  <Textarea label="Idiomas: nome|descrição" value={resumeForm.languages} onChange={(value) => setResumeForm({ ...resumeForm, languages: value })} rows={6} />
+                  <Textarea label="Seções em ordem: chave|título|true/false" value={resumeForm.sections} onChange={(value) => setResumeForm({ ...resumeForm, sections: value })} rows={8} />
+                  <Textarea label="Habilidades técnicas, uma por linha" value={resumeForm.technologies} onChange={(value) => setResumeForm({ ...resumeForm, technologies: value })} rows={8} />
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <Input label="Localização no PDF" value={resumeForm.location} onChange={(event) => setResumeForm({ ...resumeForm, location: event.target.value })} />
+                  <Input label="Nome do arquivo PDF" value={resumeForm.pdfFilename} onChange={(event) => setResumeForm({ ...resumeForm, pdfFilename: event.target.value })} />
+                  <Input label="Texto do botão de download" value={resumeForm.downloadLabel} onChange={(event) => setResumeForm({ ...resumeForm, downloadLabel: event.target.value })} />
+                  <Input label="Texto durante geração" value={resumeForm.generatingLabel} onChange={(event) => setResumeForm({ ...resumeForm, generatingLabel: event.target.value })} />
+                  <Input label="Rótulo de tecnologias dos projetos" value={resumeForm.projectTechnologiesLabel} onChange={(event) => setResumeForm({ ...resumeForm, projectTechnologiesLabel: event.target.value })} />
+                </div>
                 <h2 className="mt-8 text-2xl font-bold">Educação</h2>
                 <div className="mt-4 space-y-4">
                   {resumeForm.education.map((item, index) => (

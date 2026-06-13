@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { Article, useArticleList } from '@/api/articles/useArticleList'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
+import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
+import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
 
 function ArticleList({
   title,
@@ -59,9 +61,10 @@ export default function AuroraBlog() {
   const personalArticles = personalArticlesQuery.data ?? []
   const isLoading = workArticlesQuery.isLoading || personalArticlesQuery.isLoading
   const hasError = workArticlesQuery.error || personalArticlesQuery.error
+  const loadingTransition = useAuroraLoadingTransition(isLoading)
 
-  if (isLoading) {
-    return <AuroraLoading label="Sincronizando artigos" />
+  if (loadingTransition.visible) {
+    return <AuroraLoading label="Sincronizando artigos" exiting={loadingTransition.exiting} />
   }
 
   if (hasError) {
@@ -69,6 +72,7 @@ export default function AuroraBlog() {
   }
 
   return (
+    <AuroraPageReveal>
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-10 text-white md:pt-32">
       <header className="mb-12 max-w-3xl">
         <p className="text-sm uppercase tracking-[0.32em] text-rose-500">Artigos e ideias</p>
@@ -83,5 +87,6 @@ export default function AuroraBlog() {
         <ArticleList title="Artigos Pessoais" articles={personalArticles} />
       </div>
     </div>
+    </AuroraPageReveal>
   )
 }
