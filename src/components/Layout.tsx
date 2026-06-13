@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link as RouterLink, useLocation } from 'react-router-dom'
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
 import { 
   HomeIcon,
   DocumentTextIcon,
@@ -23,6 +23,7 @@ interface LayoutProps {
 
 export default function Layout({ children, basePath = '' }: LayoutProps) {
   const location = useLocation()
+  const navigate = useNavigate()
   const [isDark, setIsDark] = useState(false)
   const { data: profile } = useProfileContent()
 
@@ -62,7 +63,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
 
   const switchToAurora = () => {
     saveExperienceMode('aurora')
-    window.location.href = '/aurora'
+    navigate('/aurora')
   }
 
 

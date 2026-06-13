@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { StatusBadge, Badge, Skeleton } from '@/components/ui/feedback'
+import { Badge, Skeleton } from '@/components/ui/feedback'
 import { Button } from '@/components/ui/forms'
 import { Card, CardContent } from '@/components/ui/layout'
 import { ArrowRightIcon, CodeBracketIcon, RocketLaunchIcon, SparklesIcon } from '@heroicons/react/24/outline'
@@ -81,19 +81,7 @@ export default function Home() {
             <p className="text-lg text-foreground mb-8 text-center md:text-left">
               {profileContent.intro}
             </p>
-            <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-8">
-              {profileContent.technologies.map((tech) => (
-                <StatusBadge
-                  key={tech}
-                  status="active"
-                  size="sm"
-                  className="transition-all hover:scale-110"
-                >
-                  {tech}
-                </StatusBadge>
-              ))}
-            </div>
-            <div className="flex gap-4 justify-center md:justify-start">
+            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
               <Link to={modePath('/projects')}>
                 <Button size="lg" className="group">
                   {homeContent.projectsButtonLabel}
@@ -105,6 +93,15 @@ export default function Home() {
                   {homeContent.resumeButtonLabel}
                 </Button>
               </Link>
+              <a
+                href={profileContent.contactUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" size="lg">
+                  {homeContent.contactButtonLabel}
+                </Button>
+              </a>
             </div>
           </div>
         </section>
@@ -149,9 +146,9 @@ export default function Home() {
         <section>
           <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl font-bold mb-6 text-center text-foreground">{homeContent.classicCapabilitiesTitle}</h2>
-            <div className="divide-y divide-border">
+            <div className="space-y-5">
               {homeContent.stackGroups.map((group) => (
-                <div key={group.title} className="grid gap-3 py-4 first:pt-0 last:pb-0 md:grid-cols-[10rem_1fr] md:items-center">
+                <div key={group.title} className="grid gap-3 md:grid-cols-[10rem_1fr] md:items-center">
                   <h3 className="font-semibold text-foreground">{group.title}</h3>
                   <div className="flex flex-wrap gap-2">
                     {group.items.map((item) => (
