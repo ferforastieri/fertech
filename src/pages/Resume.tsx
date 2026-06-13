@@ -91,6 +91,18 @@ export default function Resume() {
         doc.setFont('helvetica', 'italic')
         doc.text(`${exp.company} | ${exp.location}`, margin, yPosition)
         yPosition += 6
+
+        if (exp.roles) {
+          exp.roles.forEach((role) => {
+            doc.setFontSize(10)
+            doc.setFont('helvetica', 'bold')
+            doc.text(`• ${role.position}`, margin + 5, yPosition)
+            doc.setFont('helvetica', 'normal')
+            doc.text(role.period, pageWidth - margin, yPosition, { align: 'right' })
+            yPosition += 5
+          })
+          yPosition += 2
+        }
         
         doc.setFontSize(10)
         doc.setFont('helvetica', 'normal')
@@ -375,6 +387,19 @@ export default function Resume() {
                   </div>
                 </CardHeader>
                 <CardContent>
+                  {exp.roles && (
+                    <div className="mb-5 space-y-3 border-l border-border pl-4">
+                      {exp.roles.map((role) => (
+                        <div key={`${exp.company}-${role.position}`} className="relative">
+                          <span className="absolute -left-[1.35rem] top-1.5 h-2.5 w-2.5 rounded-full bg-primary" />
+                          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                            <h4 className="font-semibold text-foreground">{role.position}</h4>
+                            <span className="text-xs text-muted-foreground">{role.period}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <ul className="space-y-2">
                     {exp.responsibilities.map((resp, respIndex) => (
                       <li key={respIndex} className="text-sm leading-relaxed flex items-start gap-2 text-foreground">

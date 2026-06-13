@@ -31,6 +31,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
     } else {
       document.documentElement.classList.remove('dark')
     }
+    localStorage.setItem('theme', shouldBeDark ? 'dark' : 'light')
   }, [])
 
 
@@ -90,7 +91,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
     <ExperienceProvider mode="classic">
       <div className="min-h-screen bg-background flex flex-col overflow-x-hidden w-full">
       {/* Mobile Header */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b border-border bg-background">
         <div className="flex items-center justify-between h-16 px-4">
           <RouterLink to="/" className="flex items-center">
             <img 
@@ -147,7 +148,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
 
 
       {/* Desktop Bottom Navigation */}
-      <nav className="hidden md:flex fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="hidden md:flex fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
           <div className="flex items-center justify-between h-16">
             {/* Navigation Items */}
@@ -218,7 +219,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
       </nav>
 
       {/* Mobile Bottom Navigation - Simplified */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background">
         <div className="flex items-center justify-around h-16 px-2">
           {navigationItems.map((item) => {
             const Icon = item.icon

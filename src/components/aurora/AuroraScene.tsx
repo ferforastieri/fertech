@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Line, Sparkles } from '@react-three/drei'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 
 type SceneTheme = 'light' | 'dark'
@@ -116,7 +116,6 @@ function NetworkGrid({ theme }: { theme: SceneTheme }) {
 function ServerRack({ theme }: { theme: SceneTheme }) {
   const groupRef = useRef<THREE.Group>(null)
   const reducedMotion = useReducedMotion()
-  const { pointer } = useThree()
   const p = palette[theme]
 
   useFrame((state, delta) => {
@@ -124,7 +123,11 @@ function ServerRack({ theme }: { theme: SceneTheme }) {
       return
     }
 
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, -0.2 + pointer.x * 0.08, delta * 1.6)
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(
+      groupRef.current.rotation.y,
+      -0.2 + Math.sin(state.clock.elapsedTime * 0.42) * 0.05,
+      delta * 1.6,
+    )
     groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.06
     groupRef.current.children.forEach((tower, towerIndex) => {
       tower.children.forEach((row, rowIndex) => {
@@ -219,19 +222,148 @@ function DataPackets({ theme }: { theme: SceneTheme }) {
   )
 }
 
-function FighterShip({ theme }: { theme: SceneTheme }) {
-  const groupRef = useRef<THREE.Group>(null)
-  const reducedMotion = useReducedMotion()
-  const { pointer } = useThree()
+function ShipModel({ theme }: { theme: SceneTheme }) {
   const p = palette[theme]
+  const shipShape = useMemo(() => {
+    const shape = new THREE.Shape()
+    shape.moveTo(0.88, 0)
+    shape.lineTo(0.3, 0.2)
+    shape.lineTo(-0.14, 0.56)
+    shape.lineTo(-0.08, 0.18)
+    shape.lineTo(-0.74, 0.11)
+    shape.lineTo(-0.48, 0)
+    shape.lineTo(-0.74, -0.11)
+    shape.lineTo(-0.08, -0.18)
+    shape.lineTo(-0.14, -0.56)
+    shape.lineTo(0.3, -0.2)
+    shape.lineTo(0.88, 0)
+    return shape
+  }, [])
+
+  return (
+    <group>
+      <mesh position={[0, 0, 0]}>
+        <shapeGeometry args={[shipShape]} />
+        <meshStandardMaterial
+          color={p.panelAlt}
+          emissive={p.wine}
+          emissiveIntensity={theme === 'light' ? 0.18 : 0.5}
+          roughness={0.18}
+          metalness={0.45}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      <Line
+        points={[
+          new THREE.Vector3(0.78, 0, 0.04),
+          new THREE.Vector3(0.18, 0.11, 0.04),
+          new THREE.Vector3(-0.42, 0.04, 0.04),
+        ]}
+        color={p.wineSoft}
+        lineWidth={0.85}
+        transparent
+        opacity={0.8}
+      />
+      <Line
+        points={[
+          new THREE.Vector3(0.18, -0.11, 0.04),
+          new THREE.Vector3(-0.42, -0.04, 0.04),
+        ]}
+        color={p.wineSoft}
+        lineWidth={0.85}
+        transparent
+        opacity={0.8}
+      />
+      <mesh position={[0.22, 0, 0.08]} scale={[1, 0.58, 0.32]}>
+        <sphereGeometry args={[0.16, 24, 24]} />
+        <meshStandardMaterial color={p.glass} emissive={p.wineBright} emissiveIntensity={theme === 'light' ? 0.28 : 0.72} transparent opacity={0.88} roughness={0.05} metalness={0.18} />
+      </mesh>
+      <mesh position={[-0.54, 0.08, 0.04]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.06, 0.08, 0.22, 14]} />
+        <meshStandardMaterial color={p.wineBright} emissive={p.wineSoft} emissiveIntensity={1.1} />
+      </mesh>
+      <mesh position={[-0.54, -0.08, 0.04]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.06, 0.08, 0.22, 14]} />
+        <meshStandardMaterial color={p.wineBright} emissive={p.wineSoft} emissiveIntensity={1.1} />
+      </mesh>
+      <mesh position={[-0.72, 0.08, 0.02]} rotation={[0, 0, Math.PI / 2]}>
+        <coneGeometry args={[0.065, 0.34, 18]} />
+        <meshBasicMaterial color={p.wineSoft} transparent opacity={theme === 'light' ? 0.32 : 0.64} />
+      </mesh>
+      <mesh position={[-0.72, -0.08, 0.02]} rotation={[0, 0, Math.PI / 2]}>
+        <coneGeometry args={[0.065, 0.34, 18]} />
+        <meshBasicMaterial color={p.wineSoft} transparent opacity={theme === 'light' ? 0.32 : 0.64} />
+      </mesh>
+      <Line
+        points={[new THREE.Vector3(-0.18, 0.44, 0.05), new THREE.Vector3(-0.04, 0.18, 0.05)]}
+        color={p.glass}
+        lineWidth={0.65}
+        transparent
+        opacity={theme === 'light' ? 0.38 : 0.56}
+      />
+      <Line
+        points={[new THREE.Vector3(-0.18, -0.44, 0.05), new THREE.Vector3(-0.04, -0.18, 0.05)]}
+        color={p.glass}
+        lineWidth={0.65}
+        transparent
+        opacity={theme === 'light' ? 0.38 : 0.56}
+      />
+    </group>
+  )
+}
+
+function FighterShip({ theme, followPointer }: { theme: SceneTheme; followPointer: boolean }) {
+  const groupRef = useRef<THREE.Group>(null)
+  const cursorRef = useRef({ x: 0, y: 0 })
+  const reducedMotion = useReducedMotion()
+  const { viewport } = useThree()
+  const p = palette[theme]
+
+  useEffect(() => {
+    if (!followPointer || typeof window === 'undefined') {
+      cursorRef.current = { x: 0, y: 0 }
+      return
+    }
+
+    const updateCursor = (clientX: number, clientY: number) => {
+      cursorRef.current = {
+        x: (clientX / window.innerWidth) * 2 - 1,
+        y: -((clientY / window.innerHeight) * 2 - 1),
+      }
+    }
+
+    const handlePointerMove = (event: PointerEvent) => updateCursor(event.clientX, event.clientY)
+    const handleTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0]
+      if (touch) {
+        updateCursor(touch.clientX, touch.clientY)
+      }
+    }
+
+    window.addEventListener('pointermove', handlePointerMove)
+    window.addEventListener('touchmove', handleTouchMove, { passive: true })
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove)
+      window.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [followPointer])
 
   useFrame((state, delta) => {
     if (!groupRef.current || reducedMotion) {
       return
     }
 
-    groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, pointer.y * 0.42 + Math.sin(state.clock.elapsedTime * 1.2) * 0.13, delta * 1.8)
-    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, pointer.y * -0.14, delta * 1.8)
+    const idleY = Math.sin(state.clock.elapsedTime * 1.2) * 0.06
+    const idleX = Math.sin(state.clock.elapsedTime * 0.7) * 0.05
+    const cursor = cursorRef.current
+    const targetX = followPointer ? cursor.x * viewport.width * 0.36 : -3.35 + idleX
+    const targetY = followPointer ? cursor.y * viewport.height * 0.36 + idleY : idleY
+    const targetRotation = followPointer ? THREE.MathUtils.clamp(cursor.y * -0.12, -0.18, 0.18) : Math.sin(state.clock.elapsedTime * 0.8) * 0.06
+
+    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetX, delta * 3.2)
+    groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 3.2)
+    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotation, delta * 4.5)
     groupRef.current.children.forEach((child) => {
       if (!child.userData.shot) {
         return
@@ -244,32 +376,11 @@ function FighterShip({ theme }: { theme: SceneTheme }) {
   })
 
   return (
-    <group ref={groupRef} position={[-3.25, 0.32, -0.15]}>
-      <group rotation={[0, 0, -Math.PI / 2]}>
-        <mesh>
-          <coneGeometry args={[0.44, 1.18, 4]} />
-          <meshStandardMaterial color={p.panelAlt} emissive={p.wine} emissiveIntensity={theme === 'light' ? 0.18 : 0.48} roughness={0.22} metalness={0.32} />
-        </mesh>
-        <mesh position={[0, -0.32, 0]} rotation={[0, 0, Math.PI]}>
-          <coneGeometry args={[0.22, 0.5, 4]} />
-          <meshStandardMaterial color={p.wineBright} emissive={p.wineSoft} emissiveIntensity={1.2} />
-        </mesh>
-        <mesh position={[-0.48, -0.12, 0]} rotation={[0, 0, 0.62]}>
-          <boxGeometry args={[0.78, 0.1, 0.05]} />
-          <meshStandardMaterial color={p.wineSoft} emissive={p.wineBright} emissiveIntensity={0.7} />
-        </mesh>
-        <mesh position={[0.48, -0.12, 0]} rotation={[0, 0, -0.62]}>
-          <boxGeometry args={[0.78, 0.1, 0.05]} />
-          <meshStandardMaterial color={p.wineSoft} emissive={p.wineBright} emissiveIntensity={0.7} />
-        </mesh>
-        <mesh position={[0, 0.12, 0.05]}>
-          <sphereGeometry args={[0.12, 20, 20]} />
-          <meshStandardMaterial color={p.glass} emissive={p.wineBright} emissiveIntensity={theme === 'light' ? 0.25 : 0.7} transparent opacity={0.85} />
-        </mesh>
-      </group>
+    <group ref={groupRef} position={[-3.35, 0.28, -0.15]} scale={0.38}>
+      <ShipModel theme={theme} />
 
       {[0, 0.48, 0.96, 1.44].map((offset) => (
-        <group key={offset} userData={{ shot: true }} position={[0.52 + offset, 0, 0]}>
+        <group key={offset} userData={{ shot: true }} position={[0.62 + offset, 0, 0]}>
           <mesh>
             <boxGeometry args={[0.78, 0.035, 0.035]} />
             <meshStandardMaterial color={p.wineSoft} emissive={p.wineSoft} emissiveIntensity={1.45} />
@@ -365,21 +476,41 @@ function HudOverlay({ theme }: { theme: SceneTheme }) {
   )
 }
 
-function TechBattlefield({ theme }: { theme: SceneTheme }) {
+function BackgroundShips({ theme }: { theme: SceneTheme }) {
+  return (
+    <>
+      <group position={[-4.35, 1.75, -2.05]} rotation={[0, 0, -0.08]} scale={0.36}>
+        <ShipModel theme={theme} />
+      </group>
+      <group position={[3.55, -1.55, -2.25]} rotation={[0, 0, 0.12]} scale={0.32}>
+        <ShipModel theme={theme} />
+      </group>
+    </>
+  )
+}
+
+function TechBattlefield({ theme, interactiveShip }: { theme: SceneTheme; interactiveShip: boolean }) {
   return (
     <>
       <NetworkGrid theme={theme} />
       <StarTraffic theme={theme} />
       <HudOverlay theme={theme} />
       <DataPackets theme={theme} />
-      <FighterShip theme={theme} />
+      <BackgroundShips theme={theme} />
+      <FighterShip theme={theme} followPointer={interactiveShip} />
       <EnemyAndExplosions theme={theme} />
       <ServerRack theme={theme} />
     </>
   )
 }
 
-export default function AuroraScene({ theme = 'dark' }: { theme?: SceneTheme }) {
+export default function AuroraScene({
+  theme = 'dark',
+  interactiveShip = false,
+}: {
+  theme?: SceneTheme
+  interactiveShip?: boolean
+}) {
   const isLight = theme === 'light'
   const p = palette[theme]
 
@@ -397,7 +528,7 @@ export default function AuroraScene({ theme = 'dark' }: { theme?: SceneTheme }) 
         <directionalLight position={[1.5, 3, 4]} intensity={isLight ? 2.4 : 1.3} color="#fff1f4" />
         <pointLight position={[4.6, 1.8, 3.2]} intensity={isLight ? 9 : 17} color={p.wineBright} />
         <pointLight position={[-4.6, -1.8, 3.2]} intensity={isLight ? 5 : 9} color={p.wineSoft} />
-        <TechBattlefield theme={theme} />
+        <TechBattlefield theme={theme} interactiveShip={interactiveShip} />
         <Sparkles
           count={isLight ? 34 : 58}
           scale={[9, 5, 4]}

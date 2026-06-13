@@ -8,9 +8,19 @@ export const resumeTechnologies = [
 export const experiences = [
   {
     company: 'Smart S.A',
-    position: 'Desenvolvedor Junior',
+    position: 'Desenvolvedor Fullstack',
     location: 'Sorocaba, SP, Brasil',
     period: '06/2023 - Atual',
+    roles: [
+      {
+        position: 'Desenvolvedor Pleno',
+        period: 'Promoção',
+      },
+      {
+        position: 'Desenvolvedor Junior',
+        period: '06/2023',
+      },
+    ],
     responsibilities: [
       'Desenvolvimento de sistemas e aplicações internas utilizando React, Redux e Express',
       'Design e implementação de funcionalidades, realizando testes e garantindo conformidade',

@@ -105,6 +105,18 @@ export default function AuroraResume() {
         doc.setFont('helvetica', 'italic')
         doc.text(`${experience.company} | ${experience.location}`, margin, yPosition)
         yPosition += 6
+        if (experience.roles) {
+          experience.roles.forEach((role) => {
+            ensureSpace(12)
+            doc.setFontSize(10)
+            doc.setFont('helvetica', 'bold')
+            doc.text(`• ${role.position}`, margin + 4, yPosition)
+            doc.setFont('helvetica', 'normal')
+            doc.text(role.period, pageWidth - margin, yPosition, { align: 'right' })
+            yPosition += 5
+          })
+          yPosition += 2
+        }
         doc.setFont('helvetica', 'normal')
         experience.responsibilities.forEach((responsibility) => {
           ensureSpace(14)
@@ -224,6 +236,19 @@ export default function AuroraResume() {
                 <MapPinIcon className="h-4 w-4" />
                 {experience.location}
               </p>
+              {experience.roles && (
+                <div className="mt-5 space-y-3 border-l border-white/12 pl-4">
+                  {experience.roles.map((role) => (
+                    <div key={`${experience.company}-${role.position}`} className="relative">
+                      <span className="absolute -left-[1.35rem] top-1.5 h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_16px_rgba(244,63,94,0.55)]" />
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h4 className="font-semibold text-white">{role.position}</h4>
+                        <span className="text-sm text-white/56">{role.period}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               <ul className="mt-5 space-y-3 text-white/72">
                 {experience.responsibilities.map((responsibility) => (
                   <li key={responsibility} className="flex items-start gap-2">
