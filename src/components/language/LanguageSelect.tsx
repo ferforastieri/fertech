@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { cn } from '@/components/lib'
 import { localeOptions, useLanguage } from '@/contexts/language/LanguageContext'
 
@@ -18,7 +17,7 @@ export function LanguageSelect({ className, compact = false }: { className?: str
     const updatePosition = () => {
       if (!rootRef.current) return
       const rect = rootRef.current.getBoundingClientRect()
-      const width = Math.max(rect.width, compact ? 96 : 180)
+      const width = Math.max(rect.width, 48)
       const left = Math.min(Math.max(8, rect.right - width), window.innerWidth - width - 8)
       const top = Math.min(rect.bottom + 8, window.innerHeight - 156)
 
@@ -70,15 +69,14 @@ export function LanguageSelect({ className, compact = false }: { className?: str
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}
-        className="group inline-flex h-full min-h-9 w-full appearance-none items-center justify-center gap-0.5 rounded-full border border-transparent bg-transparent px-1 text-current outline-none ring-0 transition hover:bg-current/10 focus:outline-none focus-visible:outline-none focus-visible:ring-0 [-webkit-tap-highlight-color:transparent]"
+        className="group inline-flex h-full min-h-9 w-full appearance-none items-center justify-center rounded-full border border-transparent bg-transparent p-0 text-current outline-none ring-0 transition hover:bg-current/10 focus:outline-none focus-visible:outline-none focus-visible:ring-0 [-webkit-tap-highlight-color:transparent]"
         aria-label="Selecionar idioma"
         aria-expanded={isOpen}
         title={selectedOption.label}
       >
-        <span className="text-base leading-none" aria-hidden="true">
+        <span className="text-lg leading-none" aria-hidden="true">
           {selectedOption.flag}
         </span>
-        <ChevronDownIcon className={cn('h-3 w-3 shrink-0 text-current opacity-70 transition-transform', isOpen && 'rotate-180')} />
       </button>
 
       {isOpen && createPortal(
@@ -99,14 +97,13 @@ export function LanguageSelect({ className, compact = false }: { className?: str
                   setIsOpen(false)
                 }}
                 className={cn(
-                  'flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm font-medium transition',
-                  active ? 'bg-primary text-primary-foreground' : 'hover:bg-accent hover:text-accent-foreground',
+                  'grid h-10 w-full place-items-center rounded-xl text-lg transition',
+                  active ? 'bg-primary/15 ring-1 ring-primary/40' : 'hover:bg-accent hover:text-accent-foreground',
                 )}
                 title={option.label}
               >
                 <span className="text-lg leading-none" aria-hidden="true">{option.flag}</span>
                 <span className="sr-only">{option.label}</span>
-                <span className={cn('h-1.5 w-1.5 rounded-full', active ? 'bg-primary-foreground' : 'bg-transparent')} />
               </button>
             )
           })}

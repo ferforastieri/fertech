@@ -1,11 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'motion/react'
 import {
   ChevronRightIcon,
   CircleStackIcon,
   CloudIcon,
   CodeBracketSquareIcon,
-  DocumentTextIcon,
   FolderIcon,
   FolderOpenIcon,
   ServerStackIcon,
@@ -13,57 +12,112 @@ import {
 import { ProjectArchitecture } from '@/api/projects/useProjectGroups'
 import { SiteContent } from '@/api/site/useSiteContent'
 
-function ArchitectureFolder({ folder, accent, index }: { folder: string; accent: string; index: number }) {
-  const [isOpen, setIsOpen] = useState(index < 2)
-  const parts = folder.split('/').filter(Boolean)
-  const folderName = parts[0] ?? folder
-  const children = parts.slice(1)
-  const Icon = isOpen ? FolderOpenIcon : FolderIcon
+type FolderTreeNode = {
+  name: string
+  path: string
+  children: FolderTreeNode[]
+}
+
+function buildFolderTree(paths: string[]) {
+  const root: FolderTreeNode[] = []
+
+  paths.forEach((path) => {
+    const parts = path.split('/').filter(Boolean)
+    let currentLevel = root
+    let currentPath = ''
+
+    parts.forEach((part) => {
+      currentPath = currentPath ? `${currentPath}/${part}` : part
+      let node = currentLevel.find((child) => child.name === part)
+
+      if (!node) {
+        node = { name: part, path: currentPath, children: [] }
+        currentLevel.push(node)
+      }
+
+      currentLevel = node.children
+    })
+  })
+
+  const hydrate = (nodes: FolderTreeNode[]) =>
+    nodes
+      .map((node) => ({
+        ...node,
+        children: hydrate(node.children),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+
+  return hydrate(root)
+}
+
+function ArchitectureFolderNode({
+  node,
+  accent,
+  depth = 0,
+  index = 0,
+}: {
+  node: FolderTreeNode
+  accent: string
+  depth?: number
+  index?: number
+}) {
+  const [isOpen, setIsOpen] = useState(depth === 0 && index < 2)
+  const hasChildren = node.children.length > 0
+  const Icon = hasChildren && isOpen ? FolderOpenIcon : FolderIcon
 
   return (
     <motion.div
       initial={{ opacity: 0, x: -12 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.3 }}
-      transition={{ delay: 0.18 + index * 0.05 }}
-      className="overflow-hidden border border-white/10 bg-white/[0.035]"
+      transition={{ delay: 0.12 + index * 0.035 }}
+      className={depth === 0 ? 'overflow-hidden border border-white/10 bg-white/[0.035]' : ''}
     >
       <button
         type="button"
-        onClick={() => setIsOpen((value) => !value)}
+        onClick={() => hasChildren && setIsOpen((value) => !value)}
         className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/[0.06]"
+        style={{ paddingLeft: `${1 + depth * 1.2}rem` }}
         aria-expanded={isOpen}
+        disabled={!hasChildren}
       >
-        <ChevronRightIcon className={`h-4 w-4 shrink-0 text-white/35 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+        <ChevronRightIcon
+          className={`h-4 w-4 shrink-0 text-white/35 transition-transform ${
+            isOpen ? 'rotate-90' : ''
+          } ${hasChildren ? '' : 'opacity-0'}`}
+        />
         <Icon className="h-5 w-5 shrink-0" style={{ color: accent }} />
-        <span className="min-w-0 flex-1 break-all font-mono text-sm text-white/78">{folderName}</span>
+        <span className="min-w-0 flex-1 break-all font-mono text-sm text-white/78">{node.name}</span>
+        {hasChildren && (
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
+            {node.children.length}
+          </span>
+        )}
       </button>
-      <motion.div
-        initial={false}
-        animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
-        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        className="overflow-hidden"
-      >
-        <div className="space-y-2 border-t border-white/8 px-5 py-3">
-          {(children.length ? children : ['index']).map((child, childIndex) => (
-            <motion.div
-              key={`${child}-${childIndex}`}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: childIndex * 0.04 }}
-              className="flex items-center gap-2 pl-6 font-mono text-xs text-white/55"
-            >
-              <DocumentTextIcon className="h-4 w-4 shrink-0 text-white/28" />
-              <span className="break-all">{child}</span>
-            </motion.div>
+      {hasChildren && (
+        <motion.div
+          initial={false}
+          animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          className="overflow-hidden border-t border-white/8"
+        >
+          {node.children.map((child, childIndex) => (
+            <ArchitectureFolderNode
+              key={child.path}
+              node={child}
+              accent={accent}
+              depth={depth + 1}
+              index={childIndex}
+            />
           ))}
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   )
 }
 
 export function ArchitectureExplorer({ architecture: selected, copy }: { architecture: ProjectArchitecture; copy: SiteContent['architecture'] }) {
+  const folderTree = useMemo(() => buildFolderTree(selected.folders), [selected.folders])
   const layerMeta = [
     { key: 'clients' as const, title: copy.layerTitles[0], icon: CodeBracketSquareIcon },
     { key: 'services' as const, title: copy.layerTitles[1], icon: ServerStackIcon },
@@ -168,8 +222,8 @@ export function ArchitectureExplorer({ architecture: selected, copy }: { archite
                 <h4 className="text-xl font-bold">{copy.foldersTitle}</h4>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
-                {selected.folders.map((folder, index) => (
-                  <ArchitectureFolder key={folder} folder={folder} accent={selected.accent} index={index} />
+                {folderTree.map((folder, index) => (
+                  <ArchitectureFolderNode key={folder.path} node={folder} accent={selected.accent} index={index} />
                 ))}
               </div>
             </div>
