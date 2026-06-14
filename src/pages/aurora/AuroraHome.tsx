@@ -58,14 +58,16 @@ export default function AuroraHome() {
         gsap.to('.aurora-stack-scan', { xPercent: 120, duration: 2.4, repeat: -1, ease: 'none' })
         gsap.to('.aurora-stack-group', { y: -5, duration: 1.9, repeat: -1, yoyo: true, stagger: 0.18, ease: 'sine.inOut' })
         gsap.to('.aurora-highlight-card', { opacity: 1, y: 0, duration: 0.75, stagger: 0.08, delay: 0.55, ease: 'power3.out' })
-        gsap.to('.aurora-orbit', {
-          yPercent: -18,
-          scrollTrigger: { trigger: '.aurora-hero', start: 'top top', end: 'bottom top', scrub: true },
-        })
         ScrollTrigger.batch('.aurora-reveal', {
           start: 'top 82%',
           onEnter: (elements) => gsap.to(elements, { opacity: 1, y: 0, duration: 0.85, stagger: 0.12, ease: 'power3.out' }),
           once: true,
+        })
+      })
+      mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+        gsap.to('.aurora-orbit', {
+          yPercent: -18,
+          scrollTrigger: { trigger: '.aurora-hero', start: 'top top', end: 'bottom top', scrub: true },
         })
       })
       return () => mm.revert()
@@ -101,21 +103,21 @@ export default function AuroraHome() {
           <p className="mt-7 max-w-2xl text-lg leading-8 text-white/72">
             {homeContent.heroDescription}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/aurora/projects" className="inline-flex items-center rounded-full bg-rose-900 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5">
-              {homeContent.projectsButtonLabel}
-              <ArrowRightIcon className="ml-2 h-5 w-5" />
+          <div className="mt-8 grid grid-cols-3 gap-2.5 md:flex md:flex-wrap md:gap-3">
+            <Link to="/aurora/projects" className="inline-flex min-h-11 min-w-0 items-center justify-center rounded-full bg-rose-900 px-2.5 py-2.5 text-center text-xs font-semibold leading-tight text-white transition hover:-translate-y-0.5 sm:text-sm md:min-h-0 md:px-5 md:py-3 md:text-base">
+              <span className="truncate">{homeContent.projectsButtonLabel}</span>
+              <ArrowRightIcon className="ml-1 hidden h-4 w-4 shrink-0 sm:block md:ml-2 md:h-5 md:w-5" />
             </Link>
-            <Link to="/aurora/resume" className="aurora-outline-action inline-flex items-center rounded-full border border-white/15 bg-white/8 px-5 py-3 font-semibold text-white backdrop-blur transition hover:bg-white/14">
-              {homeContent.resumeButtonLabel}
+            <Link to="/aurora/resume" className="aurora-outline-action inline-flex min-h-11 min-w-0 items-center justify-center rounded-full border border-white/15 bg-white/8 px-2.5 py-2.5 text-center text-xs font-semibold leading-tight text-white backdrop-blur transition hover:bg-white/14 sm:text-sm md:min-h-0 md:px-5 md:py-3 md:text-base">
+              <span className="truncate">{homeContent.resumeButtonLabel}</span>
             </Link>
             <a
               href={profileContent.contactUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="aurora-outline-action inline-flex items-center rounded-full border border-white/15 bg-white/8 px-5 py-3 font-semibold text-white backdrop-blur transition hover:bg-white/14"
+              className="aurora-outline-action inline-flex min-h-11 min-w-0 items-center justify-center rounded-full border border-white/15 bg-white/8 px-2.5 py-2.5 text-center text-xs font-semibold leading-tight text-white backdrop-blur transition hover:bg-white/14 sm:text-sm md:min-h-0 md:px-5 md:py-3 md:text-base"
             >
-              {homeContent.contactButtonLabel}
+              <span className="truncate">{homeContent.contactButtonLabel}</span>
             </a>
           </div>
         </div>

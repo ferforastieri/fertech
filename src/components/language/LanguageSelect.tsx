@@ -1,7 +1,38 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/components/lib'
-import { localeOptions, useLanguage } from '@/contexts/language/LanguageContext'
+import { Locale, localeOptions, useLanguage } from '@/contexts/language/LanguageContext'
+
+function FlagIcon({ locale }: { locale: Locale }) {
+  if (locale === 'pt-BR') {
+    return (
+      <span className="relative block h-4 w-5 overflow-hidden rounded-[3px] bg-[#009b3a] shadow-sm ring-1 ring-black/10" aria-hidden="true">
+        <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#ffdf00]" />
+        <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#002776]" />
+      </span>
+    )
+  }
+
+  if (locale === 'en') {
+    return (
+      <span
+        className="relative block h-4 w-5 overflow-hidden rounded-[3px] shadow-sm ring-1 ring-black/10"
+        style={{ background: 'repeating-linear-gradient(to bottom, #b22234 0 2px, #fff 2px 4px)' }}
+        aria-hidden="true"
+      >
+        <span className="absolute left-0 top-0 h-[8px] w-[9px] bg-[#3c3b6e]" />
+      </span>
+    )
+  }
+
+  return (
+    <span
+      className="block h-4 w-5 overflow-hidden rounded-[3px] shadow-sm ring-1 ring-black/10"
+      style={{ background: 'linear-gradient(to bottom, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75% 100%)' }}
+      aria-hidden="true"
+    />
+  )
+}
 
 export function LanguageSelect({ className, compact = false }: { className?: string; compact?: boolean }) {
   const { locale, setLocale } = useLanguage()
@@ -61,7 +92,7 @@ export function LanguageSelect({ className, compact = false }: { className?: str
     <div
       ref={rootRef}
       className={cn(
-        'relative inline-flex shrink-0',
+        'relative inline-flex shrink-0 items-center justify-center',
         compact ? 'w-10' : 'w-11',
         className,
       )}
@@ -69,14 +100,12 @@ export function LanguageSelect({ className, compact = false }: { className?: str
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}
-        className="group inline-flex h-full min-h-9 w-full appearance-none items-center justify-center rounded-full border border-transparent bg-transparent p-0 text-current outline-none ring-0 transition hover:bg-current/10 focus:outline-none focus-visible:outline-none focus-visible:ring-0 [-webkit-tap-highlight-color:transparent]"
+        className="group grid h-full min-h-0 w-full appearance-none place-items-center rounded-full border border-transparent bg-transparent p-0 text-current leading-none outline-none ring-0 transition hover:bg-current/10 focus:outline-none focus-visible:outline-none focus-visible:ring-0 [-webkit-tap-highlight-color:transparent]"
         aria-label="Selecionar idioma"
         aria-expanded={isOpen}
         title={selectedOption.label}
       >
-        <span className="text-lg leading-none" aria-hidden="true">
-          {selectedOption.flag}
-        </span>
+        <FlagIcon locale={selectedOption.value} />
       </button>
 
       {isOpen && createPortal(
@@ -97,12 +126,12 @@ export function LanguageSelect({ className, compact = false }: { className?: str
                   setIsOpen(false)
                 }}
                 className={cn(
-                  'grid h-10 w-full place-items-center rounded-xl text-lg transition',
+                  'grid h-10 w-full place-items-center rounded-xl text-lg leading-none transition',
                   active ? 'bg-primary/15 ring-1 ring-primary/40' : 'hover:bg-accent hover:text-accent-foreground',
                 )}
                 title={option.label}
               >
-                <span className="text-lg leading-none" aria-hidden="true">{option.flag}</span>
+                <FlagIcon locale={option.value} />
                 <span className="sr-only">{option.label}</span>
               </button>
             )

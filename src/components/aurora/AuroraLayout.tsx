@@ -134,7 +134,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
     const itemAnimate = { opacity: 1, x: 0, y: 0, scale: 1, rotateX: 0, filter: 'blur(0px)' }
 
   const actions = [
-      {
+      ...((profile?.socialLinks.length ?? 0) > 0 ? [{
         key: 'mobile-socials',
         hideOnMobileBar: false,
         mobileBarOnly: true,
@@ -188,7 +188,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
             </AnimatePresence>
           </>
         ),
-      },
+      }] : []),
       ...(profile?.socialLinks ?? []).map((social) => ({
         key: `social-${social.name}`,
         hideOnMobileBar: true,
@@ -216,7 +216,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
         node: (
           <LanguageSelect
             compact
-            className="h-8 w-10 sm:h-10"
+            className="h-8 w-8 sm:h-10 sm:w-10"
           />
         ),
       },
@@ -341,14 +341,15 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
         </div>
 
         <div className={cn('flex items-center gap-1', vertical && 'flex-col', drawer && 'w-full justify-center border-t border-white/10 pt-3')}>
-          {actions.map((action, index) => (
+          {actions.filter((action) => {
+            if (action.mobileBarOnly && (drawer || vertical)) return false
+            if (action.mobileBarOnly && !drawer && !vertical && !isMobile) return false
+            if (action.hideOnMobileBar && !drawer && !vertical && isMobile) return false
+            return true
+          }).map((action, index) => (
             <motion.div
               key={`${action.key}-${navPosition}-${drawer ? 'drawer' : 'bar'}-${isDrawerOpen}`}
-              className={cn(
-                action.hideOnMobileBar && !drawer && !vertical && 'hidden sm:block',
-                action.mobileBarOnly && (drawer || vertical) && 'hidden',
-                action.mobileBarOnly && !drawer && !vertical && 'sm:hidden',
-              )}
+              className="grid place-items-center"
               initial={itemInitial}
               animate={itemAnimate}
               transition={{ delay: baseDelay + 0.4 + index * 0.07, type: 'spring', stiffness: 420, damping: 26 }}
@@ -451,7 +452,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
                 'relative mx-auto flex border shadow-2xl backdrop-blur-xl',
                 isVerticalNav
                   ? 'h-full max-h-[calc(100vh-2rem)] w-16 flex-col items-center justify-between rounded-[2rem] px-2 py-3'
-                  : 'h-12 w-full max-w-[calc(100vw-1rem)] items-center justify-start gap-1 overflow-x-auto rounded-full px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:h-14 sm:max-w-5xl sm:justify-between sm:gap-0 sm:px-3',
+                  : 'h-12 w-fit max-w-[calc(100vw-1rem)] items-center justify-start gap-1 overflow-x-auto rounded-full px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:h-14 sm:w-full sm:max-w-5xl sm:justify-between sm:gap-0 sm:px-3',
                 isDark
                   ? 'border-rose-900/45 bg-black/60 shadow-rose-950/45'
                   : 'border-rose-900/25 bg-white/95 shadow-rose-950/15',

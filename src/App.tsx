@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { lazy, Suspense, useLayoutEffect } from 'react'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
 import { RouteSeo } from './components/seo/RouteSeo'
 import Home from './pages/home'
@@ -34,10 +34,21 @@ function LazyExperience({ children }: { children: React.ReactNode }) {
   )
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [pathname])
+
+  return null
+}
+
 function App() {
   return (
     <>
       <RouteSeo />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<LazyExperience><ExperienceGateway /></LazyExperience>} />
 

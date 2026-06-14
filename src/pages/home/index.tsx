@@ -84,25 +84,26 @@ export default function Home() {
             <p className="text-lg text-foreground mb-8 text-center md:text-left">
               {profileContent.intro}
             </p>
-            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-              <Link to={modePath('/projects')}>
-                <Button size="lg" className="group">
-                  {homeContent.projectsButtonLabel}
-                  <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            <div className="grid grid-cols-3 gap-2.5 md:flex md:flex-wrap md:justify-start md:gap-4">
+              <Link to={modePath('/projects')} className="min-w-0">
+                <Button size="lg" className="group h-11 w-full px-2.5 text-xs leading-tight sm:text-sm md:h-12 md:px-6 md:text-base">
+                  <span className="truncate">{homeContent.projectsButtonLabel}</span>
+                  <ArrowRightIcon className="ml-1 hidden h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 sm:block md:ml-2 md:h-5 md:w-5" />
                 </Button>
               </Link>
-              <Link to={modePath('/resume')}>
-                <Button variant="outline" size="lg">
-                  {homeContent.resumeButtonLabel}
+              <Link to={modePath('/resume')} className="min-w-0">
+                <Button variant="outline" size="lg" className="h-11 w-full px-2.5 text-xs leading-tight sm:text-sm md:h-12 md:px-6 md:text-base">
+                  <span className="truncate">{homeContent.resumeButtonLabel}</span>
                 </Button>
               </Link>
               <a
                 href={profileContent.contactUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="min-w-0"
               >
-                <Button variant="outline" size="lg">
-                  {homeContent.contactButtonLabel}
+                <Button variant="outline" size="lg" className="h-11 w-full px-2.5 text-xs leading-tight sm:text-sm md:h-12 md:px-6 md:text-base">
+                  <span className="truncate">{homeContent.contactButtonLabel}</span>
                 </Button>
               </a>
             </div>

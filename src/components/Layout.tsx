@@ -108,8 +108,9 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
               onToggle={toggleTheme}
               variant="ghost"
               size="sm"
+              className="h-9 w-9 rounded-xl p-0"
             />
-            <LanguageSelect compact className="h-9 w-10" />
+            <LanguageSelect compact className="h-9 w-9" />
             <button
               type="button"
               onClick={switchToAurora}
@@ -182,12 +183,13 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
                 </a>
               ))}
               <div className="h-6 w-px bg-border" />
-              <LanguageSelect compact />
+              <LanguageSelect compact className="h-10 w-10" />
               <ThemeToggle
                 theme={isDark ? 'dark' : 'light'}
                 onToggle={toggleTheme}
                 variant="ghost"
                 size="sm"
+                className="h-10 w-10 rounded-xl p-0"
               />
               <button
                 type="button"

@@ -144,6 +144,8 @@ function PointerCanvas({
     }
 
     const handleDown = (event: PointerEvent) => {
+      if (!settings.drawing) return
+
       event.preventDefault()
       canvas.setPointerCapture?.(event.pointerId)
       drawingRef.current = true
@@ -152,19 +154,21 @@ function PointerCanvas({
     }
 
     const handleMove = (event: PointerEvent) => {
+      if (drawingRef.current) event.preventDefault()
       const point = pointFromEvent(event)
       if (point) addPoint(point)
     }
 
-    const handleUp = () => {
+    const handleUp = (event: PointerEvent) => {
+      canvas.releasePointerCapture?.(event.pointerId)
       drawingRef.current = false
     }
 
     const canvas = gl.domElement
     const previousTouchAction = canvas.style.touchAction
-    canvas.style.touchAction = 'none'
-    canvas.addEventListener('pointerdown', handleDown)
-    canvas.addEventListener('pointermove', handleMove)
+    canvas.style.touchAction = settings.drawing ? 'none' : 'pan-y'
+    canvas.addEventListener('pointerdown', handleDown, { passive: false })
+    canvas.addEventListener('pointermove', handleMove, { passive: false })
     window.addEventListener('pointerup', handleUp)
     window.addEventListener('pointercancel', handleUp)
 
