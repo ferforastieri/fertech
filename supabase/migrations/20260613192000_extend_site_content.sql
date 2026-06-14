@@ -1,8 +1,1 @@
-update public.site_content
-set content = jsonb_set(
-  jsonb_set(content, '{common,homeLoading}', '"Inicializando experiência"', true),
-  '{common,closeNavigation}',
-  '"Fechar navegação"',
-  true
-)
-where id = 'main';
+-- Intentionally left without data changes. Public site copy is managed in Supabase via the admin panel.
