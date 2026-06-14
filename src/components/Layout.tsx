@@ -80,7 +80,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
           <RouterLink to="/" className="flex items-center">
             {profile && (
               <img
-                src={profile.logoUrl}
+                src={profile.professionalLogoUrl}
                 alt="Logo"
                 className="h-8 w-8 object-contain"
               />

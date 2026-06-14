@@ -294,7 +294,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
               isDark ? 'text-white' : 'text-[#140407]',
             )}
           >
-            {profile && <img src={profile.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />}
+            {profile && <img src={profile.auroraLogoUrl} alt="Logo" className="h-8 w-8 object-contain" />}
           </Link>
         </motion.div>
 

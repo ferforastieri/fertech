@@ -1,7 +1,8 @@
-import { lazy, Suspense, useLayoutEffect } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
 import { RouteSeo } from './components/seo/RouteSeo'
+import { useProfileContent } from './api/profile/useProfileContent'
 import Home from './pages/home'
 import Blog from './pages/blog'
 import Projects from './pages/projects'
@@ -44,10 +45,36 @@ function ScrollToTop() {
   return null
 }
 
+function DynamicBrandMeta() {
+  const { data: profile } = useProfileContent()
+
+  useEffect(() => {
+    const href = profile?.professionalLogoUrl
+    if (!href) return
+
+    const setIcon = (selector: string, rel: string) => {
+      let element = document.head.querySelector<HTMLLinkElement>(selector)
+      if (!element) {
+        element = document.createElement('link')
+        element.rel = rel
+        document.head.appendChild(element)
+      }
+      element.href = href
+    }
+
+    setIcon('link[rel="icon"]', 'icon')
+    setIcon('link[rel="shortcut icon"]', 'shortcut icon')
+    setIcon('link[rel="apple-touch-icon"]', 'apple-touch-icon')
+  }, [profile?.professionalLogoUrl])
+
+  return null
+}
+
 function App() {
   return (
     <>
       <RouteSeo />
+      <DynamicBrandMeta />
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<LazyExperience><ExperienceGateway /></LazyExperience>} />

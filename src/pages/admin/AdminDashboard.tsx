@@ -23,7 +23,8 @@ type ProfileForm = {
   role: string
   intro: string
   contactUrl: string
-  logoUrl: string
+  professionalLogoUrl: string
+  auroraLogoUrl: string
   socialLinks: SocialLinkForm[]
   technologies: string
   aboutParagraphs: string
@@ -980,7 +981,8 @@ export default function AdminDashboard() {
     role: '',
     intro: '',
     contactUrl: '',
-    logoUrl: '',
+    professionalLogoUrl: '',
+    auroraLogoUrl: '',
     socialLinks: [],
     technologies: '',
     aboutParagraphs: '',
@@ -1051,7 +1053,8 @@ export default function AdminDashboard() {
       role: profileQuery.data.role,
       intro: profileQuery.data.intro,
       contactUrl: profileQuery.data.contactUrl,
-      logoUrl: profileQuery.data.logoUrl,
+      professionalLogoUrl: profileQuery.data.professionalLogoUrl,
+      auroraLogoUrl: profileQuery.data.auroraLogoUrl,
       socialLinks: profileQuery.data.socialLinks.map((social) => ({ ...social })),
       technologies: formatTextList(profileQuery.data.technologies),
       aboutParagraphs: formatTextList(profileQuery.data.aboutParagraphs),
@@ -1215,13 +1218,13 @@ export default function AdminDashboard() {
     }
   }
 
-  const uploadSiteLogo = async (file: File) => {
+  const uploadSiteLogo = async (file: File, target: 'professionalLogoUrl' | 'auroraLogoUrl') => {
     setStatus('')
-    setUploadingLogo('site')
+    setUploadingLogo(target)
 
     try {
       const extension = file.name.split('.').pop() || 'png'
-      const path = `site/logo-${Date.now()}.${extension}`
+      const path = `site/${target}-${Date.now()}.${extension}`
       const { error } = await supabase.storage.from('logos').upload(path, file, {
         cacheControl: '31536000',
         upsert: true,
@@ -1230,12 +1233,12 @@ export default function AdminDashboard() {
       if (error) throw error
 
       const { data } = supabase.storage.from('logos').getPublicUrl(path)
-      setProfileForm((current) => ({ ...current, logoUrl: data.publicUrl }))
-      setStatus('Logo do site enviada. Salve o perfil para persistir o caminho.')
-      notifySuccess('Logo do site enviada.', 'Salve o perfil para persistir o caminho.')
+      setProfileForm((current) => ({ ...current, [target]: data.publicUrl }))
+      setStatus('Logo enviada. Salve o perfil para persistir o caminho.')
+      notifySuccess('Logo enviada.', 'Salve o perfil para persistir o caminho.')
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Erro ao enviar logo do site.')
-      notifyError('Erro ao enviar logo do site', error)
+      setStatus(error instanceof Error ? error.message : 'Erro ao enviar logo.')
+      notifyError('Erro ao enviar logo', error)
     } finally {
       setUploadingLogo('')
     }
@@ -1261,7 +1264,8 @@ export default function AdminDashboard() {
         role: profileForm.role,
         intro: profileForm.intro,
         contact_url: profileForm.contactUrl,
-        logo_url: profileForm.logoUrl,
+        professional_logo_url: profileForm.professionalLogoUrl,
+        aurora_logo_url: profileForm.auroraLogoUrl,
         social_links: profileForm.socialLinks,
         technologies: parseTextList(profileForm.technologies),
         about_paragraphs: parseTextList(profileForm.aboutParagraphs),
@@ -1600,11 +1604,19 @@ export default function AdminDashboard() {
                   <Input label="Intro" value={profileForm.intro} onChange={(event) => setProfileForm({ ...profileForm, intro: event.target.value })} />
                 </div>
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
-                  <Input label="Logo do site" value={profileForm.logoUrl} onChange={(event) => setProfileForm({ ...profileForm, logoUrl: event.target.value })} />
+                  <Input label="Logo profissional / favicon" value={profileForm.professionalLogoUrl} onChange={(event) => setProfileForm({ ...profileForm, professionalLogoUrl: event.target.value })} />
                   <FileUploadButton
-                    label={uploadingLogo === 'site' ? 'Enviando...' : 'Enviar logo'}
-                    disabled={uploadingLogo === 'site'}
-                    onFile={(file) => void uploadSiteLogo(file)}
+                    label={uploadingLogo === 'professionalLogoUrl' ? 'Enviando...' : 'Enviar'}
+                    disabled={uploadingLogo === 'professionalLogoUrl'}
+                    onFile={(file) => void uploadSiteLogo(file, 'professionalLogoUrl')}
+                  />
+                </div>
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
+                  <Input label="Logo Aurora" value={profileForm.auroraLogoUrl} onChange={(event) => setProfileForm({ ...profileForm, auroraLogoUrl: event.target.value })} />
+                  <FileUploadButton
+                    label={uploadingLogo === 'auroraLogoUrl' ? 'Enviando...' : 'Enviar'}
+                    disabled={uploadingLogo === 'auroraLogoUrl'}
+                    onFile={(file) => void uploadSiteLogo(file, 'auroraLogoUrl')}
                   />
                 </div>
                 <div>
