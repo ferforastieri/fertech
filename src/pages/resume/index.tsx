@@ -87,7 +87,7 @@ export default function Resume() {
       <div id="resume-content" className="mx-auto max-w-4xl space-y-12">
         <div className="text-center">
           <div className="mb-6 flex justify-center">
-            <img src={profile.professionalLogoUrl} alt={copy.resume.logoAlt} className="h-24 w-24 object-contain" />
+            <img src={profile.photoUrl} alt={profile.name} className="h-28 w-28 rounded-full object-cover shadow-lg ring-2 ring-border" />
           </div>
           <h1 className="mb-4 text-5xl font-bold text-foreground">{profile.name}</h1>
           <p className="mb-6 text-xl text-foreground">{profile.role}</p>

@@ -99,7 +99,7 @@ export default function AuroraResume() {
     <div ref={rootRef} className="mx-auto max-w-5xl px-4 pb-24 pt-10 md:pt-32">
       <header className="resume-hero mb-14 text-center">
         <div className="mb-6 flex justify-center">
-          <img src={profile.auroraLogoUrl} alt={copy.resume.logoAlt} className="h-24 w-24 object-contain" />
+          <img src={profile.photoUrl} alt={profile.name} className="h-28 w-28 rounded-full object-cover shadow-2xl shadow-rose-950/35 ring-2 ring-rose-500/40" />
         </div>
         <h1 className="text-5xl font-bold text-[rgb(var(--aurora-text))] md:text-7xl">{profile.name}</h1>
         <p className="mx-auto mt-5 max-w-2xl text-xl text-[rgb(var(--aurora-muted))]">{profile.role}</p>

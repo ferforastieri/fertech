@@ -23,8 +23,8 @@ type ProfileForm = {
   role: string
   intro: string
   contactUrl: string
-  professionalLogoUrl: string
-  auroraLogoUrl: string
+  logoUrl: string
+  photoUrl: string
   socialLinks: SocialLinkForm[]
   technologies: string
   aboutParagraphs: string
@@ -981,8 +981,8 @@ export default function AdminDashboard() {
     role: '',
     intro: '',
     contactUrl: '',
-    professionalLogoUrl: '',
-    auroraLogoUrl: '',
+    logoUrl: '',
+    photoUrl: '',
     socialLinks: [],
     technologies: '',
     aboutParagraphs: '',
@@ -1053,8 +1053,8 @@ export default function AdminDashboard() {
       role: profileQuery.data.role,
       intro: profileQuery.data.intro,
       contactUrl: profileQuery.data.contactUrl,
-      professionalLogoUrl: profileQuery.data.professionalLogoUrl,
-      auroraLogoUrl: profileQuery.data.auroraLogoUrl,
+      logoUrl: profileQuery.data.logoUrl,
+      photoUrl: profileQuery.data.photoUrl,
       socialLinks: profileQuery.data.socialLinks.map((social) => ({ ...social })),
       technologies: formatTextList(profileQuery.data.technologies),
       aboutParagraphs: formatTextList(profileQuery.data.aboutParagraphs),
@@ -1218,7 +1218,7 @@ export default function AdminDashboard() {
     }
   }
 
-  const uploadSiteLogo = async (file: File, target: 'professionalLogoUrl' | 'auroraLogoUrl') => {
+  const uploadProfileAsset = async (file: File, target: 'logoUrl' | 'photoUrl') => {
     setStatus('')
     setUploadingLogo(target)
 
@@ -1264,8 +1264,8 @@ export default function AdminDashboard() {
         role: profileForm.role,
         intro: profileForm.intro,
         contact_url: profileForm.contactUrl,
-        professional_logo_url: profileForm.professionalLogoUrl,
-        aurora_logo_url: profileForm.auroraLogoUrl,
+        logo_url: profileForm.logoUrl,
+        photo_url: profileForm.photoUrl,
         social_links: profileForm.socialLinks,
         technologies: parseTextList(profileForm.technologies),
         about_paragraphs: parseTextList(profileForm.aboutParagraphs),
@@ -1604,19 +1604,19 @@ export default function AdminDashboard() {
                   <Input label="Intro" value={profileForm.intro} onChange={(event) => setProfileForm({ ...profileForm, intro: event.target.value })} />
                 </div>
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
-                  <Input label="Logo profissional / favicon" value={profileForm.professionalLogoUrl} onChange={(event) => setProfileForm({ ...profileForm, professionalLogoUrl: event.target.value })} />
+                  <Input label="Logo do site" value={profileForm.logoUrl} onChange={(event) => setProfileForm({ ...profileForm, logoUrl: event.target.value })} />
                   <FileUploadButton
-                    label={uploadingLogo === 'professionalLogoUrl' ? 'Enviando...' : 'Enviar'}
-                    disabled={uploadingLogo === 'professionalLogoUrl'}
-                    onFile={(file) => void uploadSiteLogo(file, 'professionalLogoUrl')}
+                    label={uploadingLogo === 'logoUrl' ? 'Enviando...' : 'Enviar'}
+                    disabled={uploadingLogo === 'logoUrl'}
+                    onFile={(file) => void uploadProfileAsset(file, 'logoUrl')}
                   />
                 </div>
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
-                  <Input label="Logo Aurora" value={profileForm.auroraLogoUrl} onChange={(event) => setProfileForm({ ...profileForm, auroraLogoUrl: event.target.value })} />
+                  <Input label="Foto do currículo" value={profileForm.photoUrl} onChange={(event) => setProfileForm({ ...profileForm, photoUrl: event.target.value })} />
                   <FileUploadButton
-                    label={uploadingLogo === 'auroraLogoUrl' ? 'Enviando...' : 'Enviar'}
-                    disabled={uploadingLogo === 'auroraLogoUrl'}
-                    onFile={(file) => void uploadSiteLogo(file, 'auroraLogoUrl')}
+                    label={uploadingLogo === 'photoUrl' ? 'Enviando...' : 'Enviar'}
+                    disabled={uploadingLogo === 'photoUrl'}
+                    onFile={(file) => void uploadProfileAsset(file, 'photoUrl')}
                   />
                 </div>
                 <div>

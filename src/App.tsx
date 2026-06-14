@@ -49,7 +49,7 @@ function DynamicBrandMeta() {
   const { data: profile } = useProfileContent()
 
   useEffect(() => {
-    const href = profile?.professionalLogoUrl
+    const href = profile?.logoUrl
     if (!href) return
 
     const setIcon = (selector: string, rel: string) => {
@@ -65,7 +65,7 @@ function DynamicBrandMeta() {
     setIcon('link[rel="icon"]', 'icon')
     setIcon('link[rel="shortcut icon"]', 'shortcut icon')
     setIcon('link[rel="apple-touch-icon"]', 'apple-touch-icon')
-  }, [profile?.professionalLogoUrl])
+  }, [profile?.logoUrl])
 
   return null
 }
