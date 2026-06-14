@@ -7,6 +7,7 @@ import { useExperiencePath } from '@/contexts/experience/ExperienceContext'
 import { ProfileHighlight, useProfileContent } from '@/api/profile/useProfileContent'
 import { useHomeContent } from '@/api/home/useHomeContent'
 import { useSiteContent } from '@/api/site/useSiteContent'
+import { renderSocialIcon } from '@/components/profile/renderSocialIcon'
 
 const highlightIcons = {
   code: CodeBracketIcon,
@@ -181,7 +182,7 @@ export default function Home() {
                 rel="noopener noreferrer"
               >
                 <Button size="lg" className="group">
-                  <span className="mr-2">𝕏</span>
+                  <span className="mr-2">{renderSocialIcon({ icon: 'linkedin', name: 'LinkedIn' })}</span>
                   {homeContent.contactButtonLabel}
                   <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>

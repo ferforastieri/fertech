@@ -1,7 +1,8 @@
 import { Badge, Skeleton } from '@/components/ui/feedback'
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ArrowRightIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
-import { Project, useProjectGroups } from '@/api/projects/useProjectGroups'
+import { ArrowRightIcon, ArrowTopRightOnSquareIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { isExternalUrl, projectDetailPath } from '@/api/projects/projectRoutes'
 import { SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 
@@ -86,6 +87,38 @@ function ProjectItem({ project, classic, copy }: { project: Project; classic: bo
   )
 }
 
+function ProjectGroupSection({ group, classic, copy }: { group: ProjectGroup; classic: boolean; copy: SiteContent }) {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <section className="rounded-2xl border border-border bg-card/40 p-4 shadow-sm transition-colors md:p-5">
+      <button
+        type="button"
+        onClick={() => setIsOpen((value) => !value)}
+        className="flex w-full items-center justify-between gap-4 rounded-xl px-1 py-1 text-left transition-colors hover:text-primary"
+        aria-expanded={isOpen}
+      >
+        <span>
+          <span className="block text-2xl font-bold text-foreground">{group.title}</span>
+          <span className="mt-1 block text-sm text-muted-foreground">
+            {group.projects.length} {copy.common.projectsCountLabel}
+          </span>
+        </span>
+        <ChevronDownIcon
+          className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {isOpen && (
+        <div className="mt-3 divide-y divide-border/60 px-1">
+          {group.projects.map((project) => (
+            <ProjectItem key={project.title} project={project} classic={classic} copy={copy} />
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
 export default function Projects() {
   const location = useLocation()
   const classic = location.pathname.startsWith('/classic')
@@ -151,19 +184,9 @@ export default function Projects() {
           </p>
         </div>
 
-        <div className="space-y-12">
+        <div className="space-y-6">
           {projectGroups.map((group) => (
-            <section key={group.id}>
-              <div className="mb-4 flex items-end justify-between gap-4 border-b border-border pb-3">
-                <h2 className="text-2xl font-bold text-foreground">{group.title}</h2>
-                <span className="text-sm text-muted-foreground">{group.projects.length} {copy.common.projectsCountLabel}</span>
-              </div>
-              <div className="divide-y divide-border/60 px-1">
-                {group.projects.map((project) => (
-                  <ProjectItem key={project.title} project={project} classic={classic} copy={copy} />
-                ))}
-              </div>
-            </section>
+            <ProjectGroupSection key={group.id} group={group} classic={classic} copy={copy} />
           ))}
         </div>
       </div>
