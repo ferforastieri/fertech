@@ -93,7 +93,11 @@ function PointerCanvas({
   const groupRef = useRef<THREE.Group>(null)
   const drawingRef = useRef(false)
   const lastPointAt = useRef(0)
-  const { viewport } = useThree()
+  const { camera, gl } = useThree()
+  const raycaster = useMemo(() => new THREE.Raycaster(), [])
+  const pointer = useMemo(() => new THREE.Vector2(), [])
+  const drawingPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), -0.8), [])
+  const targetPoint = useMemo(() => new THREE.Vector3(), [])
 
   useEffect(() => {
     groupRef.current?.children.forEach((child) => {
@@ -105,64 +109,77 @@ function PointerCanvas({
     groupRef.current?.clear()
   }, [clearToken])
 
-  useEffect(() => {
-    const addPoint = (clientX: number, clientY: number) => {
-      if (!settings.drawing || !drawingRef.current) return
+  const addPoint = (point: THREE.Vector3) => {
+    if (!settings.drawing || !drawingRef.current) return
 
-      const now = performance.now()
-      if (now - lastPointAt.current < 16) return
-      lastPointAt.current = now
+    const now = performance.now()
+    if (now - lastPointAt.current < 12) return
+    lastPointAt.current = now
 
-      const x = (clientX / window.innerWidth - 0.5) * viewport.width
-      const y = -(clientY / window.innerHeight - 0.5) * viewport.height
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(settings.brushSize * 0.045, 12, 12),
+      new THREE.MeshBasicMaterial({ color: settings.color, transparent: true, opacity: 0.88 }),
+    )
+    mesh.position.copy(point)
+    mesh.position.z = 0.8
+    groupRef.current?.add(mesh)
 
-      const mesh = new THREE.Mesh(
-        new THREE.SphereGeometry(settings.brushSize * 0.045, 12, 12),
-        new THREE.MeshBasicMaterial({ color: settings.color, transparent: true, opacity: 0.88 }),
-      )
-      mesh.position.set(x, y, 0.8)
-      groupRef.current?.add(mesh)
-
-      if ((groupRef.current?.children.length ?? 0) > 420) {
-        const first = groupRef.current?.children[0] as THREE.Mesh | undefined
-        if (first) {
-          first.geometry.dispose()
-          ;(first.material as THREE.Material).dispose()
-          groupRef.current?.remove(first)
-        }
+    if ((groupRef.current?.children.length ?? 0) > 420) {
+      const first = groupRef.current?.children[0] as THREE.Mesh | undefined
+      if (first) {
+        first.geometry.dispose()
+        ;(first.material as THREE.Material).dispose()
+        groupRef.current?.remove(first)
       }
+    }
+  }
+
+  useEffect(() => {
+    const pointFromEvent = (event: PointerEvent) => {
+      const rect = gl.domElement.getBoundingClientRect()
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+      raycaster.setFromCamera(pointer, camera)
+      return raycaster.ray.intersectPlane(drawingPlane, targetPoint)
     }
 
     const handleDown = (event: PointerEvent) => {
-      const target = event.target instanceof Element ? event.target : null
-      if (target?.closest('[data-playground-controls]')) return
+      event.preventDefault()
+      canvas.setPointerCapture?.(event.pointerId)
       drawingRef.current = true
-      addPoint(event.clientX, event.clientY)
+      const point = pointFromEvent(event)
+      if (point) addPoint(point)
     }
-    const handleMove = (event: PointerEvent) => addPoint(event.clientX, event.clientY)
+
+    const handleMove = (event: PointerEvent) => {
+      const point = pointFromEvent(event)
+      if (point) addPoint(point)
+    }
+
     const handleUp = () => {
       drawingRef.current = false
     }
 
-    window.addEventListener('pointerdown', handleDown)
-    window.addEventListener('pointermove', handleMove, { passive: true })
+    const canvas = gl.domElement
+    const previousTouchAction = canvas.style.touchAction
+    canvas.style.touchAction = 'none'
+    canvas.addEventListener('pointerdown', handleDown)
+    canvas.addEventListener('pointermove', handleMove)
     window.addEventListener('pointerup', handleUp)
     window.addEventListener('pointercancel', handleUp)
 
     return () => {
-      window.removeEventListener('pointerdown', handleDown)
-      window.removeEventListener('pointermove', handleMove)
+      canvas.removeEventListener('pointerdown', handleDown)
+      canvas.removeEventListener('pointermove', handleMove)
+      canvas.style.touchAction = previousTouchAction
       window.removeEventListener('pointerup', handleUp)
       window.removeEventListener('pointercancel', handleUp)
     }
-  }, [settings.brushSize, settings.color, settings.drawing, viewport.height, viewport.width])
+  }, [camera, drawingPlane, gl.domElement, pointer, raycaster, targetPoint, settings.brushSize, settings.color, settings.drawing])
 
-  useFrame((_, delta) => {
-    if (!groupRef.current || settings.paused) return
-    groupRef.current.rotation.z += delta * settings.speed * 0.025
-  })
-
-  return <group ref={groupRef} />
+  return (
+    <group ref={groupRef} />
+  )
 }
 
 function PlaygroundScene({

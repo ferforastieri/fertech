@@ -44,8 +44,8 @@ function ProjectRow({ project, copy }: { project: Project; copy: SiteContent }) 
 
   return (
     <article className="project-reveal py-10 transition duration-300 first:pt-4 last:pb-4">
-      <div className="mb-4 flex items-start gap-4">
-        <div className="grid h-16 w-16 flex-shrink-0 place-items-center rounded-2xl border border-white/12 bg-white/8">
+      <div className="mb-4 flex items-center gap-4">
+        <div className="grid h-16 w-16 flex-shrink-0 place-items-center rounded-2xl bg-white/8">
           <img src={project.logo} alt={project.title} className="h-full w-full object-contain p-2" />
         </div>
         <div className="min-w-0">

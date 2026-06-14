@@ -34,8 +34,8 @@ export default function ProjectDetail() {
       </Link>
       <header className="mt-10 border-b border-border pb-10">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">{group?.title}</p>
-        <div className="mt-5 flex items-start gap-5">
-          {project.logo && <img src={project.logo} alt="" className="h-20 w-20 rounded-xl border border-border object-contain p-2" />}
+        <div className="mt-5 flex items-center gap-5">
+          {project.logo && <img src={project.logo} alt="" className="h-20 w-20 rounded-xl object-contain p-2" />}
           <div>
             <h1 className="text-4xl font-bold text-foreground md:text-6xl">{project.title}</h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">{project.description}</p>

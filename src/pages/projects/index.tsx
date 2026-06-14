@@ -37,9 +37,9 @@ function ProjectItem({ project, classic, copy }: { project: Project; classic: bo
 
   return (
     <article className="py-10 first:pt-6 last:pb-6 transition-colors">
-      <div className="mb-4 flex items-start gap-4">
+      <div className="mb-4 flex items-center gap-4">
         {project.logo && (
-          <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background">
+          <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-background">
             <img
               src={project.logo}
               alt={project.title}
@@ -48,7 +48,7 @@ function ProjectItem({ project, classic, copy }: { project: Project; classic: bo
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center justify-between gap-2">
             <h3 className="text-2xl font-semibold text-foreground">{project.title}</h3>
           </div>
           <p className="mt-3 text-base leading-relaxed text-foreground">

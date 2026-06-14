@@ -29,8 +29,8 @@ export default function AuroraProjectDetail() {
           </Link>
           <header className="mt-10 border-b border-white/12 pb-10">
             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-rose-400">{group?.title}</p>
-            <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
-              {project.logo && <img src={project.logo} alt="" className="h-24 w-24 rounded-2xl border border-white/12 bg-white/8 object-contain p-3" />}
+            <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-center">
+              {project.logo && <img src={project.logo} alt="" className="h-24 w-24 rounded-2xl bg-white/8 object-contain p-3" />}
               <div>
                 <h1 className="text-5xl font-bold md:text-7xl">{project.title}</h1>
                 <p className="mt-6 max-w-4xl text-lg leading-8 text-white/68">{project.description}</p>

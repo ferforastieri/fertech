@@ -5,29 +5,56 @@ import * as THREE from 'three'
 
 function SignalSculpture() {
   const group = useRef<THREE.Group>(null)
+  const bars = useRef<THREE.InstancedMesh>(null)
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const barSeeds = useMemo(
+    () => Array.from({ length: 56 }, (_, index) => ({ x: (index - 27.5) * 0.085, phase: index * 0.34 })),
+    [],
+  )
 
-  useFrame((state, delta) => {
-    if (!group.current) return
-    group.current.rotation.y += delta * 0.18
-    group.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.35) * 0.16
+  useFrame((state) => {
+    const time = state.clock.elapsedTime
+    if (group.current) {
+      group.current.rotation.y = Math.sin(time * 0.26) * 0.18
+      group.current.rotation.x = -0.1 + Math.sin(time * 0.22) * 0.06
+    }
+    if (!bars.current) return
+    barSeeds.forEach((seed, index) => {
+      const wave = Math.sin(time * 2.1 + seed.phase)
+      const envelope = 0.25 + Math.exp(-Math.abs(seed.x) * 1.2)
+      const height = 0.12 + Math.abs(wave) * envelope * 0.58
+      dummy.position.set(seed.x, 0, Math.sin(seed.phase) * 0.08)
+      dummy.scale.set(0.028, height, 0.028)
+      dummy.updateMatrix()
+      bars.current?.setMatrixAt(index, dummy.matrix)
+    })
+    bars.current.instanceMatrix.needsUpdate = true
+    bars.current.rotation.z = Math.sin(time * 0.45) * 0.04
   })
 
   return (
-    <group ref={group}>
-      <Float speed={1.6} rotationIntensity={0.35} floatIntensity={0.55}>
+    <group ref={group} scale={1.7}>
+      <instancedMesh ref={bars} args={[undefined, undefined, barSeeds.length]}>
+        <boxGeometry />
+        <meshStandardMaterial color="#22d3ee" emissive="#22d3ee" emissiveIntensity={0.9} metalness={0.35} roughness={0.28} />
+      </instancedMesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1.12, 0.008, 8, 160]} />
+        <meshBasicMaterial color="#ff315f" transparent opacity={0.34} />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, Math.PI / 2]}>
+        <torusGeometry args={[0.72, 0.006, 8, 140]} />
+        <meshBasicMaterial color="#7c5cff" transparent opacity={0.28} />
+      </mesh>
+      <Float speed={1.1} rotationIntensity={0.08} floatIntensity={0.12}>
         <mesh>
-          <torusKnotGeometry args={[1.35, 0.38, 180, 24, 2, 5]} />
-          <MeshDistortMaterial color="#ff315f" emissive="#6b071f" metalness={0.72} roughness={0.2} distort={0.38} speed={2} />
+          <octahedronGeometry args={[0.18, 1]} />
+          <meshStandardMaterial color="#ffffff" emissive="#f9a8d4" emissiveIntensity={0.8} metalness={0.5} roughness={0.18} />
         </mesh>
       </Float>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[2.4, 0.012, 8, 160]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.26} />
-      </mesh>
     </group>
   )
 }
-
 function PulseGrid() {
   const mesh = useRef<THREE.InstancedMesh>(null)
   const dummy = useMemo(() => new THREE.Object3D(), [])
@@ -60,45 +87,67 @@ function PulseGrid() {
 
 function LandingHero() {
   const group = useRef<THREE.Group>(null)
-  const cards = useMemo(
+  const rings = useRef<THREE.Group>(null)
+  const particles = useRef<THREE.Points>(null)
+  const positions = useMemo(() => {
+    const values = new Float32Array(520 * 3)
+    for (let index = 0; index < 520; index += 1) {
+      const angle = index * 0.22
+      const radius = 0.65 + (index % 26) * 0.045
+      values[index * 3] = Math.cos(angle) * radius
+      values[index * 3 + 1] = Math.sin(index * 0.09) * 1.55
+      values[index * 3 + 2] = Math.sin(angle) * radius
+    }
+    return values
+  }, [])
+  const ringConfigs = useMemo(
     () => [
-      { label: 'Design', color: '#ff315f', position: [-1.9, 0.72, 0] as [number, number, number] },
-      { label: 'Infra', color: '#22d3ee', position: [1.85, -0.15, -0.4] as [number, number, number] },
-      { label: 'Produto', color: '#7c5cff', position: [-0.2, -1.05, 0.25] as [number, number, number] },
+      { radius: 0.7, color: '#22d3ee', rotation: [Math.PI / 2, 0, 0] as [number, number, number], opacity: 0.55 },
+      { radius: 1.12, color: '#ff315f', rotation: [Math.PI / 2.3, 0.4, 0] as [number, number, number], opacity: 0.36 },
+      { radius: 1.55, color: '#7c5cff', rotation: [Math.PI / 1.7, -0.32, 0.12] as [number, number, number], opacity: 0.26 },
     ],
     [],
   )
 
   useFrame((state, delta) => {
-    if (!group.current) return
-    group.current.rotation.y += delta * 0.12
-    group.current.position.y = Math.sin(state.clock.elapsedTime * 0.7) * 0.12
+    const time = state.clock.elapsedTime
+    if (group.current) {
+      group.current.rotation.y = Math.sin(time * 0.28) * 0.26
+      group.current.rotation.x = Math.sin(time * 0.22) * 0.12
+    }
+    if (rings.current) {
+      rings.current.children.forEach((child, index) => {
+        child.rotation.z += delta * (0.08 + index * 0.025)
+      })
+    }
+    if (particles.current) {
+      particles.current.rotation.y += delta * 0.12
+      particles.current.position.y = Math.sin(time * 0.6) * 0.08
+    }
   })
 
   return (
     <group ref={group}>
-      <Float speed={1.4} rotationIntensity={0.2} floatIntensity={0.38}>
+      <group ref={rings}>
+        {ringConfigs.map((ring) => (
+          <mesh key={ring.color} rotation={ring.rotation}>
+            <torusGeometry args={[ring.radius, 0.008, 8, 180]} />
+            <meshBasicMaterial color={ring.color} transparent opacity={ring.opacity} />
+          </mesh>
+        ))}
+      </group>
+      <points ref={particles}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        </bufferGeometry>
+        <pointsMaterial color="#ffffff" size={0.016} transparent opacity={0.38} depthWrite={false} />
+      </points>
+      <Float speed={1.2} rotationIntensity={0.1} floatIntensity={0.22}>
         <mesh>
-          <sphereGeometry args={[1.12, 64, 64]} />
-          <MeshDistortMaterial color="#12040a" emissive="#ff315f" emissiveIntensity={0.7} metalness={0.72} roughness={0.18} distort={0.28} speed={1.4} />
+          <dodecahedronGeometry args={[0.42, 1]} />
+          <MeshDistortMaterial color="#06030a" emissive="#22d3ee" emissiveIntensity={0.75} metalness={0.56} roughness={0.2} distort={0.08} speed={0.7} />
         </mesh>
       </Float>
-      <Text position={[0, 0.05, 1.35]} fontSize={0.42} color="#ffffff" anchorX="center" anchorY="middle">
-        FERTECH
-      </Text>
-      {cards.map((card, index) => (
-        <Float key={card.label} speed={1.2 + index * 0.2} rotationIntensity={0.16} floatIntensity={0.34}>
-          <group position={card.position}>
-            <mesh>
-              <boxGeometry args={[1.18, 0.58, 0.08]} />
-              <meshStandardMaterial color="#09030a" emissive={card.color} emissiveIntensity={0.38} metalness={0.4} roughness={0.32} />
-            </mesh>
-            <Text position={[0, 0, 0.07]} fontSize={0.16} color={card.color} anchorX="center" anchorY="middle">
-              {card.label}
-            </Text>
-          </group>
-        </Float>
-      ))}
     </group>
   )
 }
@@ -160,49 +209,79 @@ function TerrainWave() {
   )
 }
 
-function GameTarget({ index, onHit }: { index: number; onHit: () => void }) {
+type FpsPlate = {
+  id: number
+  position: [number, number, number]
+  fallen: boolean
+}
+
+function GameTarget({ plate, onHit }: { plate: FpsPlate; onHit: (id: number) => void }) {
   const mesh = useRef<THREE.Mesh>(null)
-  const position = useMemo<[number, number, number]>(() => [
-    -2.8 + Math.random() * 5.6,
-    -1.55 + Math.random() * 3.1,
-    -0.8 + Math.random() * 1.6,
-  ], [index])
 
   useFrame((state) => {
     if (!mesh.current) return
-    mesh.current.rotation.x += 0.02
-    mesh.current.rotation.y += 0.025
-    mesh.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 2 + index) * 0.12
+    const targetRotation = plate.fallen ? -Math.PI / 2 : 0
+    const targetY = plate.fallen ? -1.85 : plate.position[1] + Math.sin(state.clock.elapsedTime * 1.4 + plate.id) * 0.04
+    mesh.current.rotation.x += (targetRotation - mesh.current.rotation.x) * 0.12
+    mesh.current.position.y += (targetY - mesh.current.position.y) * 0.12
   })
 
   return (
-    <mesh ref={mesh} position={position} onClick={(event) => {
+    <mesh ref={mesh} position={plate.position} onClick={(event) => {
       event.stopPropagation()
-      onHit()
+      if (!plate.fallen) onHit(plate.id)
     }}>
-      <octahedronGeometry args={[0.22, 0]} />
-      <meshStandardMaterial color="#ff315f" emissive="#ff315f" emissiveIntensity={1.2} roughness={0.22} metalness={0.34} />
+      <boxGeometry args={[0.62, 0.42, 0.08]} />
+      <meshStandardMaterial
+        color={plate.fallen ? '#24121a' : '#ff315f'}
+        emissive={plate.fallen ? '#12040a' : '#ff315f'}
+        emissiveIntensity={plate.fallen ? 0.18 : 0.95}
+        roughness={0.26}
+        metalness={0.28}
+      />
     </mesh>
   )
 }
 
 function AimGame() {
-  const [score, setScore] = useState(0)
-  const targets = useMemo(() => Array.from({ length: 9 }, (_, index) => index), [score])
+  const [plates, setPlates] = useState<FpsPlate[]>(() =>
+    Array.from({ length: 10 }, (_, index) => ({
+      id: index,
+      position: [
+        -2.35 + (index % 5) * 1.18,
+        -0.95 + Math.floor(index / 5) * 1.15,
+        -1.1 - (index % 2) * 0.35,
+      ],
+      fallen: false,
+    })),
+  )
+
+  const hitPlate = (id: number) => {
+    setPlates((current) => current.map((plate) => (plate.id === id ? { ...plate, fallen: true } : plate)))
+  }
 
   return (
     <group>
-      <Text position={[0, 2.25, 0]} fontSize={0.24} color="#ffffff" anchorX="center">
-        score {score}
-      </Text>
-      {targets.map((target) => (
-        <GameTarget key={`${score}-${target}`} index={target} onHit={() => setScore((value) => value + 1)} />
+      <mesh position={[0, 0, -1.8]}>
+        <boxGeometry args={[6.4, 3.2, 0.04]} />
+        <meshBasicMaterial color="#10060d" transparent opacity={0.5} />
+      </mesh>
+      <mesh position={[0, 0, 0.2]}>
+        <ringGeometry args={[0.08, 0.095, 32]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.9} />
+      </mesh>
+      <mesh position={[0, 0, 0.2]} rotation={[0, 0, Math.PI / 2]}>
+        <ringGeometry args={[0.08, 0.095, 32]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.22} />
+      </mesh>
+      {plates.map((plate) => (
+        <GameTarget key={plate.id} plate={plate} onHit={hitPlate} />
       ))}
     </group>
   )
 }
 
-function ExperimentShell({ children, camera }: { children: React.ReactNode; camera: [number, number, number] }) {
+function ExperimentShell({ children, camera, controls = true }: { children: React.ReactNode; camera: [number, number, number]; controls?: boolean }) {
   return (
     <Canvas camera={{ position: camera, fov: 48 }} dpr={[1, 1.6]}>
       <color attach="background" args={['#050106']} />
@@ -211,7 +290,7 @@ function ExperimentShell({ children, camera }: { children: React.ReactNode; came
       <pointLight position={[-4, 1, -3]} intensity={18} color="#22d3ee" />
       {children}
       <Stars radius={35} depth={20} count={900} factor={2} fade speed={0.35} />
-      <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.35} />
+      {controls && <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.35} />}
     </Canvas>
   )
 }
@@ -237,5 +316,5 @@ export function TerrainWaveExperiment() {
 }
 
 export function AimGameExperiment() {
-  return <ExperimentShell camera={[0, 0, 6]}><AimGame /></ExperimentShell>
+  return <ExperimentShell camera={[0, 0, 5.6]} controls={false}><AimGame /></ExperimentShell>
 }
