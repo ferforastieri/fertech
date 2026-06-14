@@ -1,14 +1,82 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Accordion } from '@/components/ui/layout'
 import { Badge, Skeleton } from '@/components/ui/feedback'
 import { Article, useArticleList } from '@/api/articles/useArticleList'
 import { 
   ArrowRightIcon,
-  BriefcaseIcon,
-  BookOpenIcon,
+  ChevronDownIcon,
 } from '@heroicons/react/24/outline'
 import { useExperiencePath } from '@/contexts/experience/ExperienceContext'
 import { useSiteContent } from '@/api/site/useSiteContent'
+
+function ArticleSection({
+  title,
+  articles,
+  countLabel,
+  readTimeSuffix,
+  getArticlePath,
+}: {
+  title: string
+  articles: Article[]
+  countLabel: string
+  readTimeSuffix: string
+  getArticlePath: (slug: string) => string
+}) {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <section className="rounded-2xl border border-border bg-card/40 p-4 shadow-sm transition-colors md:p-5">
+      <button
+        type="button"
+        onClick={() => setIsOpen((value) => !value)}
+        className="flex w-full items-center justify-between gap-4 rounded-xl px-1 py-1 text-left transition-colors hover:text-primary"
+        aria-expanded={isOpen}
+      >
+        <span>
+          <span className="block text-2xl font-bold text-foreground">{title}</span>
+          <span className="mt-1 block text-sm text-muted-foreground">
+            {articles.length} {countLabel}
+          </span>
+        </span>
+        <ChevronDownIcon
+          className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {isOpen && (
+        <div className="mt-3 divide-y divide-border/60 px-1">
+          {articles.map((article) => (
+            <Link
+              key={article.slug}
+              to={getArticlePath(article.slug)}
+              className="group block py-5 first:pt-1 last:pb-1"
+            >
+              <div className="mb-2 flex items-start justify-between gap-4">
+                <h2 className="text-2xl font-semibold text-foreground transition-colors group-hover:underline">
+                  {article.title}
+                </h2>
+                <ArrowRightIcon className="mt-1 h-5 w-5 flex-shrink-0 text-foreground transition-all group-hover:translate-x-1" />
+              </div>
+              <div className="mb-3 flex flex-wrap items-center gap-3">
+                <Badge variant="outline">
+                  {article.category}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  {article.date}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  • {article.readTime} {readTimeSuffix}
+                </span>
+              </div>
+              <p className="text-base leading-relaxed text-foreground">
+                {article.description}
+              </p>
+            </Link>
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
 
 export default function Blog() {
   const modePath = useExperiencePath()
@@ -66,68 +134,6 @@ export default function Blog() {
     )
   }
 
-  const renderArticles = (articles: Article[]) => (
-    <div className="divide-y divide-border">
-      {articles.map((article) => (
-        <Link
-          key={article.slug}
-          to={modePath(`/blog/${article.slug}`)}
-          className="block group py-5 first:pt-1 last:pb-1"
-        >
-          <div className="flex items-start justify-between gap-4 mb-2">
-            <h2 className="text-2xl font-semibold group-hover:underline transition-colors text-foreground">
-              {article.title}
-            </h2>
-            <ArrowRightIcon className="h-5 w-5 text-foreground group-hover:translate-x-1 transition-all flex-shrink-0 mt-1" />
-          </div>
-          <div className="flex flex-wrap items-center gap-3 mb-3">
-            <Badge variant="outline">
-              {article.category}
-            </Badge>
-            <span className="text-sm text-muted-foreground">
-              {article.date}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              • {article.readTime} {copy.common.readTimeSuffix}
-            </span>
-          </div>
-          <p className="text-base leading-relaxed text-foreground">
-            {article.description}
-          </p>
-        </Link>
-      ))}
-    </div>
-  )
-
-  const accordionItems = [
-    {
-      value: 'work',
-      trigger: (
-        <div className="flex items-center gap-3">
-          <BriefcaseIcon className="h-6 w-6 text-primary" />
-          <span className="text-lg font-semibold text-foreground">
-            {copy.blog.workTitle} ({workArticles.length})
-          </span>
-        </div>
-      ),
-      content: renderArticles(workArticles),
-      defaultOpen: true,
-    },
-    {
-      value: 'personal',
-      trigger: (
-        <div className="flex items-center gap-3">
-          <BookOpenIcon className="h-6 w-6 text-primary" />
-          <span className="text-lg font-semibold text-foreground">
-            {copy.blog.personalTitle} ({personalArticles.length})
-          </span>
-        </div>
-      ),
-      content: renderArticles(personalArticles),
-      defaultOpen: true,
-    },
-  ]
-
   return (
     <div className="container mx-auto px-4 pt-4 pb-12">
       <div className="max-w-6xl mx-auto">
@@ -138,11 +144,22 @@ export default function Blog() {
           </p>
         </div>
 
-        <Accordion 
-          type="multiple" 
-          items={accordionItems}
-          className="space-y-4"
-        />
+        <div className="space-y-6">
+          <ArticleSection
+            title={copy.blog.workTitle}
+            articles={workArticles}
+            countLabel={copy.common.articlesCountLabel}
+            readTimeSuffix={copy.common.readTimeSuffix}
+            getArticlePath={(slug) => modePath(`/blog/${slug}`)}
+          />
+          <ArticleSection
+            title={copy.blog.personalTitle}
+            articles={personalArticles}
+            countLabel={copy.common.articlesCountLabel}
+            readTimeSuffix={copy.common.readTimeSuffix}
+            getArticlePath={(slug) => modePath(`/blog/${slug}`)}
+          />
+        </div>
       </div>
     </div>
   )
