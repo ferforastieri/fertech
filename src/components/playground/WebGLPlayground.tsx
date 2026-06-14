@@ -92,6 +92,8 @@ function PointerCanvas({
 }) {
   const groupRef = useRef<THREE.Group>(null)
   const drawingRef = useRef(false)
+  const pendingTouchRef = useRef(false)
+  const touchStartRef = useRef({ x: 0, y: 0 })
   const lastPointAt = useRef(0)
   const { camera, gl } = useThree()
   const raycaster = useMemo(() => new THREE.Raycaster(), [])
@@ -146,6 +148,12 @@ function PointerCanvas({
     const handleDown = (event: PointerEvent) => {
       if (!settings.drawing) return
 
+      if (event.pointerType === 'touch') {
+        pendingTouchRef.current = true
+        touchStartRef.current = { x: event.clientX, y: event.clientY }
+        return
+      }
+
       event.preventDefault()
       canvas.setPointerCapture?.(event.pointerId)
       drawingRef.current = true
@@ -154,6 +162,24 @@ function PointerCanvas({
     }
 
     const handleMove = (event: PointerEvent) => {
+      if (pendingTouchRef.current) {
+        const deltaX = event.clientX - touchStartRef.current.x
+        const deltaY = event.clientY - touchStartRef.current.y
+        const distance = Math.hypot(deltaX, deltaY)
+
+        if (distance < 8) return
+
+        if (Math.abs(deltaY) > Math.abs(deltaX) * 1.25) {
+          pendingTouchRef.current = false
+          drawingRef.current = false
+          return
+        }
+
+        pendingTouchRef.current = false
+        drawingRef.current = true
+        canvas.setPointerCapture?.(event.pointerId)
+      }
+
       if (drawingRef.current) event.preventDefault()
       const point = pointFromEvent(event)
       if (point) addPoint(point)
@@ -161,12 +187,13 @@ function PointerCanvas({
 
     const handleUp = (event: PointerEvent) => {
       canvas.releasePointerCapture?.(event.pointerId)
+      pendingTouchRef.current = false
       drawingRef.current = false
     }
 
     const canvas = gl.domElement
     const previousTouchAction = canvas.style.touchAction
-    canvas.style.touchAction = settings.drawing ? 'none' : 'pan-y'
+    canvas.style.touchAction = 'pan-y'
     canvas.addEventListener('pointerdown', handleDown, { passive: false })
     canvas.addEventListener('pointermove', handleMove, { passive: false })
     window.addEventListener('pointerup', handleUp)
