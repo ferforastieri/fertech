@@ -35,7 +35,6 @@ export type ProjectDetails = {
   overview: string
   role: string
   period: string
-  repositoryPath: string
   stack: string[]
   highlights: string[]
   responsibilities: string[]

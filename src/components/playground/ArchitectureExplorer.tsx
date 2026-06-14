@@ -1,13 +1,67 @@
+import { useState } from 'react'
 import { motion } from 'motion/react'
 import {
+  ChevronRightIcon,
   CircleStackIcon,
   CloudIcon,
   CodeBracketSquareIcon,
+  DocumentTextIcon,
   FolderIcon,
+  FolderOpenIcon,
   ServerStackIcon,
 } from '@heroicons/react/24/outline'
 import { ProjectArchitecture } from '@/api/projects/useProjectGroups'
 import { SiteContent } from '@/api/site/useSiteContent'
+
+function ArchitectureFolder({ folder, accent, index }: { folder: string; accent: string; index: number }) {
+  const [isOpen, setIsOpen] = useState(index < 2)
+  const parts = folder.split('/').filter(Boolean)
+  const folderName = parts[0] ?? folder
+  const children = parts.slice(1)
+  const Icon = isOpen ? FolderOpenIcon : FolderIcon
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -12 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ delay: 0.18 + index * 0.05 }}
+      className="overflow-hidden border border-white/10 bg-white/[0.035]"
+    >
+      <button
+        type="button"
+        onClick={() => setIsOpen((value) => !value)}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/[0.06]"
+        aria-expanded={isOpen}
+      >
+        <ChevronRightIcon className={`h-4 w-4 shrink-0 text-white/35 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+        <Icon className="h-5 w-5 shrink-0" style={{ color: accent }} />
+        <span className="min-w-0 flex-1 break-all font-mono text-sm text-white/78">{folderName}</span>
+      </button>
+      <motion.div
+        initial={false}
+        animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        className="overflow-hidden"
+      >
+        <div className="space-y-2 border-t border-white/8 px-5 py-3">
+          {(children.length ? children : ['index']).map((child, childIndex) => (
+            <motion.div
+              key={`${child}-${childIndex}`}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: childIndex * 0.04 }}
+              className="flex items-center gap-2 pl-6 font-mono text-xs text-white/55"
+            >
+              <DocumentTextIcon className="h-4 w-4 shrink-0 text-white/28" />
+              <span className="break-all">{child}</span>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
 
 export function ArchitectureExplorer({ architecture: selected, copy }: { architecture: ProjectArchitecture; copy: SiteContent['architecture'] }) {
   const layerMeta = [
@@ -113,18 +167,9 @@ export function ArchitectureExplorer({ architecture: selected, copy }: { archite
                 <FolderIcon className="h-6 w-6" style={{ color: selected.accent }} />
                 <h4 className="text-xl font-bold">{copy.foldersTitle}</h4>
               </div>
-              <div className="grid gap-x-8 gap-y-3 font-mono text-sm md:grid-cols-2">
+              <div className="grid gap-3 md:grid-cols-2">
                 {selected.folders.map((folder, index) => (
-                  <motion.div
-                    key={folder}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.18 + index * 0.07 }}
-                    className="flex min-w-0 items-start gap-3 border-b border-white/8 pb-3 text-white/65"
-                  >
-                    <span style={{ color: selected.accent }}>├─</span>
-                    <span className="break-all">{folder}</span>
-                  </motion.div>
+                  <ArchitectureFolder key={folder} folder={folder} accent={selected.accent} index={index} />
                 ))}
               </div>
             </div>

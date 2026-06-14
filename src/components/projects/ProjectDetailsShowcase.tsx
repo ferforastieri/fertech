@@ -40,11 +40,10 @@ function hasDetails(details: ProjectDetails | undefined) {
   if (!details) return false
 
   return Boolean(
-    details.headline ||
+      details.headline ||
       details.overview ||
       details.role ||
       details.period ||
-      details.repositoryPath ||
       details.stack.length ||
       details.highlights.length ||
       details.responsibilities.length ||
@@ -147,12 +146,6 @@ export function ProjectDetailsShowcase({ project, variant = 'classic' }: Project
                 <div>
                   <p className={`text-xs uppercase tracking-[0.2em] ${styles.eyebrow}`}>Contexto</p>
                   <p className={`mt-1 font-semibold ${styles.title}`}>{details.period}</p>
-                </div>
-              )}
-              {details.repositoryPath && (
-                <div>
-                  <p className={`text-xs uppercase tracking-[0.2em] ${styles.eyebrow}`}>Origem analisada</p>
-                  <p className={`mt-1 break-all font-mono text-sm ${styles.text}`}>{details.repositoryPath}</p>
                 </div>
               )}
             </div>

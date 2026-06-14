@@ -1,6 +1,6 @@
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Float, MeshDistortMaterial, OrbitControls, Stars, Text } from '@react-three/drei'
-import { useMemo, useRef, useState } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Float, MeshDistortMaterial, OrbitControls, Stars } from '@react-three/drei'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 
 function SignalSculpture() {
@@ -215,6 +215,22 @@ type FpsPlate = {
   fallen: boolean
 }
 
+function randomCenteredPosition(): [number, number, number] {
+  return [
+    (Math.random() - 0.5) * 4.35,
+    (Math.random() - 0.5) * 2.05,
+    -1.05 - Math.random() * 0.85,
+  ]
+}
+
+function createPlate(id: number): FpsPlate {
+  return {
+    id,
+    position: randomCenteredPosition(),
+    fallen: false,
+  }
+}
+
 function GameTarget({ plate, onHit }: { plate: FpsPlate; onHit: (id: number) => void }) {
   const mesh = useRef<THREE.Mesh>(null)
 
@@ -243,40 +259,338 @@ function GameTarget({ plate, onHit }: { plate: FpsPlate; onHit: (id: number) => 
   )
 }
 
-function AimGame() {
-  const [plates, setPlates] = useState<FpsPlate[]>(() =>
-    Array.from({ length: 10 }, (_, index) => ({
-      id: index,
-      position: [
-        -2.35 + (index % 5) * 1.18,
-        -0.95 + Math.floor(index / 5) * 1.15,
-        -1.1 - (index % 2) * 0.35,
-      ],
-      fallen: false,
-    })),
+function AimCrosshair() {
+  const group = useRef<THREE.Group>(null)
+  const { camera, gl } = useThree()
+  const cursorPoint = useMemo(() => new THREE.Vector3(), [])
+  const cursorDirection = useMemo(() => new THREE.Vector3(), [])
+  const crosshairZ = 0.28
+
+  useEffect(() => {
+    const previousCursor = gl.domElement.style.cursor
+    gl.domElement.style.cursor = 'none'
+    return () => {
+      gl.domElement.style.cursor = previousCursor
+    }
+  }, [gl.domElement])
+
+  useFrame((state) => {
+    if (!group.current) return
+    cursorPoint.set(state.pointer.x, state.pointer.y, 0.5).unproject(camera)
+    cursorDirection.copy(cursorPoint).sub(camera.position).normalize()
+    const distance = (crosshairZ - camera.position.z) / cursorDirection.z
+    group.current.position.copy(camera.position).add(cursorDirection.multiplyScalar(distance))
+  })
+
+  return (
+    <group ref={group} position={[0, 0, crosshairZ]}>
+      <mesh>
+        <sphereGeometry args={[0.018, 12, 12]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.95} />
+      </mesh>
+      <mesh position={[0.16, 0, 0]}>
+        <boxGeometry args={[0.13, 0.012, 0.01]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.86} />
+      </mesh>
+      <mesh position={[-0.16, 0, 0]}>
+        <boxGeometry args={[0.13, 0.012, 0.01]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.86} />
+      </mesh>
+      <mesh position={[0, 0.16, 0]}>
+        <boxGeometry args={[0.012, 0.13, 0.01]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.86} />
+      </mesh>
+      <mesh position={[0, -0.16, 0]}>
+        <boxGeometry args={[0.012, 0.13, 0.01]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.86} />
+      </mesh>
+    </group>
   )
+}
+
+function AimGame() {
+  const nextPlateId = useRef(9)
+  const respawnTimers = useRef<number[]>([])
+  const [plates, setPlates] = useState<FpsPlate[]>(() => Array.from({ length: 9 }, (_, index) => createPlate(index)))
+
+  useEffect(() => {
+    return () => {
+      respawnTimers.current.forEach((timer) => window.clearTimeout(timer))
+    }
+  }, [])
 
   const hitPlate = (id: number) => {
     setPlates((current) => current.map((plate) => (plate.id === id ? { ...plate, fallen: true } : plate)))
+    const timer = window.setTimeout(() => {
+      setPlates((current) => current.map((plate) => (plate.id === id ? createPlate(nextPlateId.current++) : plate)))
+    }, 650)
+    respawnTimers.current.push(timer)
   }
 
   return (
     <group>
       <mesh position={[0, 0, -1.8]}>
-        <boxGeometry args={[6.4, 3.2, 0.04]} />
+        <boxGeometry args={[5.8, 3.05, 0.04]} />
         <meshBasicMaterial color="#10060d" transparent opacity={0.5} />
       </mesh>
-      <mesh position={[0, 0, 0.2]}>
-        <ringGeometry args={[0.08, 0.095, 32]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.9} />
-      </mesh>
-      <mesh position={[0, 0, 0.2]} rotation={[0, 0, Math.PI / 2]}>
-        <ringGeometry args={[0.08, 0.095, 32]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.22} />
-      </mesh>
+      <AimCrosshair />
       {plates.map((plate) => (
         <GameTarget key={plate.id} plate={plate} onHit={hitPlate} />
       ))}
+    </group>
+  )
+}
+
+type SnakeFood = {
+  id: number
+  position: [number, number, number]
+}
+
+function createSnakeFood(id: number): SnakeFood {
+  return {
+    id,
+    position: [(Math.random() - 0.5) * 4.1, (Math.random() - 0.5) * 2.25, -0.2],
+  }
+}
+
+function SnakeFoodOrb({ food }: { food: SnakeFood }) {
+  const group = useRef<THREE.Group>(null)
+
+  useFrame((state) => {
+    if (!group.current) return
+    const time = state.clock.elapsedTime
+    group.current.rotation.z = time * 1.1 + food.id
+    const scale = 1 + Math.sin(time * 4 + food.id) * 0.12
+    group.current.scale.setScalar(scale)
+  })
+
+  return (
+    <group ref={group} position={food.position}>
+      <mesh>
+        <icosahedronGeometry args={[0.16, 1]} />
+        <meshStandardMaterial
+          color="#f9a8d4"
+          emissive="#ff315f"
+          emissiveIntensity={1.1}
+          roughness={0.22}
+          metalness={0.35}
+        />
+      </mesh>
+      <mesh>
+        <torusGeometry args={[0.3, 0.012, 8, 52]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.36} />
+      </mesh>
+    </group>
+  )
+}
+
+function SnakeSegment({ index, positions }: { index: number; positions: THREE.Vector3[] }) {
+  const mesh = useRef<THREE.Mesh>(null)
+
+  useFrame((state) => {
+    if (!mesh.current) return
+    const time = state.clock.elapsedTime
+    mesh.current.position.copy(positions[index])
+    const scale = index === 0 ? 1.22 : 1 - index * 0.022
+    mesh.current.scale.setScalar(Math.max(scale + Math.sin(time * 4 + index) * 0.03, 0.55))
+  })
+
+  return (
+    <mesh ref={mesh}>
+      <sphereGeometry args={[index === 0 ? 0.2 : 0.16, 24, 24]} />
+      <meshStandardMaterial
+        color={index === 0 ? '#ff315f' : '#22d3ee'}
+        emissive={index === 0 ? '#ff315f' : '#22d3ee'}
+        emissiveIntensity={index === 0 ? 1.25 : 0.9}
+        roughness={0.24}
+        metalness={0.35}
+      />
+    </mesh>
+  )
+}
+
+function SnakeGame() {
+  const nextFoodId = useRef(1)
+  const [snakeLength, setSnakeLength] = useState(8)
+  const segmentPositions = useMemo(() => Array.from({ length: 28 }, () => new THREE.Vector3(0, 0, -0.2)), [])
+  const targetPosition = useMemo(() => new THREE.Vector3(), [])
+  const pointerPoint = useMemo(() => new THREE.Vector3(), [])
+  const pointerDirection = useMemo(() => new THREE.Vector3(), [])
+  const foodPosition = useMemo(() => new THREE.Vector3(), [])
+  const { camera, gl } = useThree()
+  const [food, setFood] = useState<SnakeFood>(() => createSnakeFood(0))
+
+  useEffect(() => {
+    const previousCursor = gl.domElement.style.cursor
+    gl.domElement.style.cursor = 'none'
+    return () => {
+      gl.domElement.style.cursor = previousCursor
+    }
+  }, [gl.domElement])
+
+  useFrame((state) => {
+    pointerPoint.set(state.pointer.x, state.pointer.y, 0.5).unproject(camera)
+    pointerDirection.copy(pointerPoint).sub(camera.position).normalize()
+    const distance = (-0.2 - camera.position.z) / pointerDirection.z
+    targetPosition.copy(camera.position).add(pointerDirection.multiplyScalar(distance))
+    targetPosition.x = THREE.MathUtils.clamp(targetPosition.x, -2.55, 2.55)
+    targetPosition.y = THREE.MathUtils.clamp(targetPosition.y, -1.45, 1.45)
+
+    segmentPositions[0].lerp(targetPosition, 0.2)
+    for (let index = 1; index < segmentPositions.length; index += 1) {
+      segmentPositions[index].lerp(segmentPositions[index - 1], 0.22)
+    }
+
+    if (segmentPositions[0].distanceTo(foodPosition.set(...food.position)) < 0.34) {
+      setFood(createSnakeFood(nextFoodId.current++))
+      setSnakeLength((current) => Math.min(current + 2, segmentPositions.length))
+    }
+  })
+
+  return (
+    <group>
+      <mesh position={[0, 0, -2.15]}>
+        <boxGeometry args={[5.6, 3.1, 0.04]} />
+        <meshBasicMaterial color="#0b0712" transparent opacity={0.62} />
+      </mesh>
+      <SnakeFoodOrb key={food.id} food={food} />
+      {segmentPositions.slice(0, snakeLength).map((_, index) => (
+        <SnakeSegment key={index} index={index} positions={segmentPositions} />
+      ))}
+    </group>
+  )
+}
+
+type DodgeBar = {
+  id: number
+  x: number
+  y: number
+  z: number
+  speed: number
+  width: number
+  height: number
+  rotation: number
+}
+
+function createDodgeBar(id: number, z = -4 - Math.random() * 3): DodgeBar {
+  const horizontal = Math.random() > 0.5
+  return {
+    id,
+    x: (Math.random() - 0.5) * 4.2,
+    y: (Math.random() - 0.5) * 2.2,
+    z,
+    speed: 0.7 + Math.random() * 0.35,
+    width: horizontal ? 1.15 + Math.random() * 0.75 : 0.12,
+    height: horizontal ? 0.12 : 0.75 + Math.random() * 0.8,
+    rotation: (Math.random() - 0.5) * 0.28,
+  }
+}
+
+function OrbitDodgeGame() {
+  const ship = useRef<THREE.Group>(null)
+  const impactRing = useRef<THREE.Mesh>(null)
+  const bars = useRef<THREE.InstancedMesh>(null)
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const barState = useMemo(() => Array.from({ length: 6 }, (_, index) => createDodgeBar(index, -3.5 - index * 1.35)), [])
+  const targetPosition = useMemo(() => new THREE.Vector3(), [])
+  const pointerPoint = useMemo(() => new THREE.Vector3(), [])
+  const pointerDirection = useMemo(() => new THREE.Vector3(), [])
+  const impactAt = useRef(-10)
+  const collisionCooldown = useRef(0)
+  const { camera, gl } = useThree()
+
+  useEffect(() => {
+    const previousCursor = gl.domElement.style.cursor
+    gl.domElement.style.cursor = 'none'
+    return () => {
+      gl.domElement.style.cursor = previousCursor
+    }
+  }, [gl.domElement])
+
+  useFrame((state, delta) => {
+    if (!ship.current) return
+    pointerPoint.set(state.pointer.x, state.pointer.y, 0.5).unproject(camera)
+    pointerDirection.copy(pointerPoint).sub(camera.position).normalize()
+    const distance = (0.35 - camera.position.z) / pointerDirection.z
+    targetPosition.copy(camera.position).add(pointerDirection.multiplyScalar(distance))
+    targetPosition.x = THREE.MathUtils.clamp(targetPosition.x, -2.45, 2.45)
+    targetPosition.y = THREE.MathUtils.clamp(targetPosition.y, -1.35, 1.35)
+    ship.current.position.lerp(targetPosition, 0.18)
+    ship.current.rotation.z = -state.pointer.x * 0.55
+    ship.current.rotation.x = state.pointer.y * 0.22
+    collisionCooldown.current = Math.max(collisionCooldown.current - delta, 0)
+
+    if (!bars.current) return
+    barState.forEach((bar, index) => {
+      bar.z += bar.speed * delta
+      if (bar.z > 1.0) {
+        Object.assign(bar, createDodgeBar(bar.id, -6.2 - Math.random() * 2.4))
+      }
+      const depthScale = THREE.MathUtils.mapLinear(bar.z, -6.5, 1, 0.5, 1.25)
+      dummy.position.set(bar.x, bar.y, bar.z)
+      dummy.rotation.set(0, 0, bar.rotation)
+      dummy.scale.set(bar.width * depthScale, bar.height * depthScale, 0.08)
+      dummy.updateMatrix()
+      bars.current?.setMatrixAt(index, dummy.matrix)
+
+      const closeToShipPlane = Math.abs(bar.z - ship.current!.position.z) < 0.18
+      const shipX = ship.current!.position.x
+      const shipY = ship.current!.position.y
+      const hitX = Math.abs(shipX - bar.x) < bar.width * depthScale * 0.5 + 0.18
+      const hitY = Math.abs(shipY - bar.y) < bar.height * depthScale * 0.5 + 0.18
+      if (closeToShipPlane && hitX && hitY && collisionCooldown.current <= 0) {
+        impactAt.current = state.clock.elapsedTime
+        collisionCooldown.current = 0.85
+        Object.assign(bar, createDodgeBar(bar.id, -6.2 - Math.random() * 2.4))
+      }
+    })
+    bars.current.instanceMatrix.needsUpdate = true
+
+    const impactAge = state.clock.elapsedTime - impactAt.current
+    const impactStrength = Math.max(1 - impactAge / 0.55, 0)
+    if (impactStrength > 0) {
+      const shake = Math.sin(state.clock.elapsedTime * 80) * 0.08 * impactStrength
+      ship.current.position.x += shake
+      ship.current.scale.setScalar(1 + impactStrength * 0.38)
+      ship.current.rotation.y = Math.sin(state.clock.elapsedTime * 55) * 0.45 * impactStrength
+    } else {
+      ship.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.18)
+      ship.current.rotation.y *= 0.82
+    }
+
+    if (impactRing.current) {
+      impactRing.current.position.copy(ship.current.position)
+      impactRing.current.scale.setScalar(0.7 + impactStrength * 2.2)
+      impactRing.current.visible = impactStrength > 0
+      const material = impactRing.current.material as THREE.MeshBasicMaterial
+      material.opacity = impactStrength * 0.78
+    }
+  })
+
+  return (
+    <group>
+      <mesh position={[0, 0, -2.2]}>
+        <boxGeometry args={[5.7, 3.1, 0.04]} />
+        <meshBasicMaterial color="#09030a" transparent opacity={0.56} />
+      </mesh>
+      <instancedMesh ref={bars} args={[undefined, undefined, barState.length]}>
+        <boxGeometry />
+        <meshStandardMaterial color="#ff315f" emissive="#ff315f" emissiveIntensity={0.92} roughness={0.22} metalness={0.28} />
+      </instancedMesh>
+      <group ref={ship} position={[0, 0, 0.35]}>
+        <mesh rotation={[0, 0, Math.PI / 4]}>
+          <octahedronGeometry args={[0.24, 1]} />
+          <meshStandardMaterial color="#ffffff" emissive="#f9a8d4" emissiveIntensity={0.9} metalness={0.55} roughness={0.16} />
+        </mesh>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.36, 0.01, 8, 64]} />
+          <meshBasicMaterial color="#22d3ee" transparent opacity={0.38} />
+        </mesh>
+      </group>
+      <mesh ref={impactRing} visible={false} rotation={[0, 0, 0]}>
+        <ringGeometry args={[0.34, 0.38, 72]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0} depthWrite={false} />
+      </mesh>
     </group>
   )
 }
@@ -317,4 +631,12 @@ export function TerrainWaveExperiment() {
 
 export function AimGameExperiment() {
   return <ExperimentShell camera={[0, 0, 5.6]} controls={false}><AimGame /></ExperimentShell>
+}
+
+export function ReflexGameExperiment() {
+  return <ExperimentShell camera={[0, 0, 5.7]} controls={false}><SnakeGame /></ExperimentShell>
+}
+
+export function OrbitDodgeExperiment() {
+  return <ExperimentShell camera={[0, 0, 5.8]} controls={false}><OrbitDodgeGame /></ExperimentShell>
 }

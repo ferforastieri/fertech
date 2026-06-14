@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, ArrowUpTrayIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { Badge, ThemeToggle } from '@/components/ui/feedback'
 import { Button, Input } from '@/components/ui/forms'
 import { Article, ArticleKind, useArticleList } from '@/api/articles/useArticleList'
@@ -207,23 +207,23 @@ function Textarea({
 
 function FileUploadButton({
   label,
-  helper,
   disabled,
   onFile,
 }: {
   label: string
-  helper?: string
   disabled?: boolean
   onFile: (file: File) => void
 }) {
   return (
     <label
-      className={`flex h-10 cursor-pointer items-center justify-between gap-3 rounded-xl border border-border bg-background px-3 text-sm text-foreground transition hover:bg-accent hover:text-accent-foreground ${
+      className={`grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-xl border border-border bg-background text-foreground transition hover:bg-accent hover:text-accent-foreground ${
         disabled ? 'pointer-events-none opacity-60' : ''
       }`}
+      title={label}
+      aria-label={label}
     >
-      <span className="truncate font-medium">{label}</span>
-      {helper && <span className="hidden truncate text-xs text-muted-foreground sm:block">{helper}</span>}
+      <ArrowUpTrayIcon className="h-4 w-4" />
+      <span className="sr-only">{label}</span>
       <input
         type="file"
         accept="image/png,image/jpeg,image/webp,image/svg+xml"
@@ -239,6 +239,14 @@ function FileUploadButton({
   )
 }
 
+function RemoveIconButton({ label, onClick, className = '' }: { label: string; onClick: () => void; className?: string }) {
+  return (
+    <Button type="button" variant="destructive" className={`h-10 !w-10 shrink-0 px-0 ${className}`} aria-label={label} title={label} onClick={onClick}>
+      <TrashIcon className="h-4 w-4" />
+    </Button>
+  )
+}
+
 function AdminSection({
   title,
   description,
@@ -249,12 +257,12 @@ function AdminSection({
   children: React.ReactNode
 }) {
   return (
-    <section className="space-y-6">
-      <div className="border-b border-border pb-4">
+    <section className="space-y-7">
+      <div className="border-b border-border pb-5">
         <h2 className="text-2xl font-bold text-foreground">{title}</h2>
         {description && <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>}
       </div>
-      <div className="space-y-6">{children}</div>
+      <div className="space-y-7">{children}</div>
     </section>
   )
 }
@@ -271,13 +279,13 @@ function AdminCard({
   action?: React.ReactNode
 }) {
   return (
-    <section className="rounded-2xl border border-border bg-card/40 p-4">
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
+    <section className="rounded-2xl border border-border bg-card/40 p-4 sm:p-5">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           {description && <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>}
         </div>
-        {action}
+        {action && <AdminActions className="sm:shrink-0">{action}</AdminActions>}
       </div>
       {children}
     </section>
@@ -296,16 +304,24 @@ function AdminInlineSection({
   action?: React.ReactNode
 }) {
   return (
-    <section className="space-y-4 border-t border-border/70 pt-5 first:border-t-0 first:pt-0">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+    <section className="space-y-5 border-t border-border/70 pt-6 first:border-t-0 first:pt-0">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           {description && <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>}
         </div>
-        {action}
+        {action && <AdminActions className="sm:shrink-0">{action}</AdminActions>}
       </div>
       {children}
     </section>
+  )
+}
+
+function AdminActions({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3 [&>button]:w-full [&>label]:w-full sm:[&>button]:w-auto sm:[&>label]:w-auto ${className}`}>
+      {children}
+    </div>
   )
 }
 
@@ -327,7 +343,6 @@ function createProjectDetails(): ProjectDetails {
     overview: '',
     role: '',
     period: '',
-    repositoryPath: '',
     stack: [],
     highlights: [],
     responsibilities: [],
@@ -407,9 +422,7 @@ function ProjectArchitectureEditor({
       title="Arquitetura do projeto"
       description="Aparece no detalhe do projeto. Use camadas para explicar clientes, serviços e plataforma."
       action={
-        <Button type="button" variant="destructive" onClick={() => onChange(null)}>
-          Remover arquitetura
-        </Button>
+        <RemoveIconButton label="Remover arquitetura" onClick={() => onChange(null)} />
       }
     >
       <div className="grid gap-4 md:grid-cols-2">
@@ -430,16 +443,19 @@ function ProjectArchitectureEditor({
             <div className="space-y-4">
               {value.layers[layer].map((node, index) => (
                 <div key={`${node.name}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
-                  <Input
-                    label="Nome"
-                    value={node.name}
-                    onChange={(event) =>
-                      updateLayer(
-                        layer,
-                        value.layers[layer].map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)),
-                      )
-                    }
-                  />
+                  <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                    <Input
+                      label="Nome"
+                      value={node.name}
+                      onChange={(event) =>
+                        updateLayer(
+                          layer,
+                          value.layers[layer].map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)),
+                        )
+                      }
+                    />
+                    <RemoveIconButton label="Remover item" onClick={() => updateLayer(layer, value.layers[layer].filter((_, itemIndex) => itemIndex !== index))} />
+                  </div>
                   <Textarea
                     label="Descrição"
                     value={node.description}
@@ -462,14 +478,6 @@ function ProjectArchitectureEditor({
                     }
                     rows={4}
                   />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="w-full"
-                    onClick={() => updateLayer(layer, value.layers[layer].filter((_, itemIndex) => itemIndex !== index))}
-                  >
-                    Remover item
-                  </Button>
                 </div>
               ))}
               <Button type="button" variant="outline" className="w-full" onClick={() => updateLayer(layer, [...value.layers[layer], createArchitectureNode()])}>
@@ -500,7 +508,6 @@ function ProjectDetailsEditor({
         <Input label="Headline da página" value={value.headline} onChange={(event) => onChange({ ...value, headline: event.target.value })} />
         <Input label="Seu papel no projeto" value={value.role} onChange={(event) => onChange({ ...value, role: event.target.value })} />
         <Input label="Período ou contexto" value={value.period} onChange={(event) => onChange({ ...value, period: event.target.value })} />
-        <Input label="Caminho do repositório local" value={value.repositoryPath} onChange={(event) => onChange({ ...value, repositoryPath: event.target.value })} />
         <div className="md:col-span-2">
           <Textarea label="Visão geral detalhada" value={value.overview} onChange={(overview) => onChange({ ...value, overview })} rows={5} />
         </div>
@@ -513,56 +520,56 @@ function ProjectDetailsEditor({
         </div>
       </div>
 
-      <section className="space-y-4 border-t border-border/70 pt-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="space-y-5 border-t border-border/70 pt-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h4 className="text-base font-semibold text-foreground">Módulos do projeto</h4>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">Explique partes como API, app, painel, workers, integrações e infraestrutura.</p>
           </div>
-          <Button type="button" variant="outline" onClick={() => onChange({ ...value, modules: [...value.modules, createDetailModule()] })}>
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Adicionar módulo
-          </Button>
+          <AdminActions className="sm:shrink-0">
+            <Button type="button" variant="outline" onClick={() => onChange({ ...value, modules: [...value.modules, createDetailModule()] })}>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Adicionar módulo
+            </Button>
+          </AdminActions>
         </div>
         <div className="space-y-4">
           {value.modules.map((module, index) => (
             <div key={`${module.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
-              <Input label="Nome do módulo" value={module.title} onChange={(event) => onChange({ ...value, modules: value.modules.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                <Input label="Nome do módulo" value={module.title} onChange={(event) => onChange({ ...value, modules: value.modules.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+                <RemoveIconButton label="Remover módulo" onClick={() => onChange({ ...value, modules: value.modules.filter((_, itemIndex) => itemIndex !== index) })} />
+              </div>
               <Textarea label="Tecnologias do módulo, uma por linha" value={formatTextList(module.technologies)} onChange={(technologies) => onChange({ ...value, modules: value.modules.map((item, itemIndex) => (itemIndex === index ? { ...item, technologies: parseTextList(technologies) } : item)) })} rows={4} />
               <div className="md:col-span-2">
                 <Textarea label="Descrição do módulo" value={module.description} onChange={(description) => onChange({ ...value, modules: value.modules.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
-              </div>
-              <div className="flex justify-end md:col-span-2">
-                <Button type="button" variant="destructive" onClick={() => onChange({ ...value, modules: value.modules.filter((_, itemIndex) => itemIndex !== index) })}>
-                  Remover módulo
-                </Button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="space-y-4 border-t border-border/70 pt-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="space-y-5 border-t border-border/70 pt-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h4 className="text-base font-semibold text-foreground">Fluxos importantes</h4>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">Use para mostrar jornadas como autenticação, upload, integração, notificações ou processamento.</p>
           </div>
-          <Button type="button" variant="outline" onClick={() => onChange({ ...value, flows: [...value.flows, createDetailFlow()] })}>
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Adicionar fluxo
-          </Button>
+          <AdminActions className="sm:shrink-0">
+            <Button type="button" variant="outline" onClick={() => onChange({ ...value, flows: [...value.flows, createDetailFlow()] })}>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Adicionar fluxo
+            </Button>
+          </AdminActions>
         </div>
         <div className="space-y-4">
           {value.flows.map((flow, index) => (
             <div key={`${flow.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
-              <Input label="Nome do fluxo" value={flow.title} onChange={(event) => onChange({ ...value, flows: value.flows.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
-              <Textarea label="Passos do fluxo, um por linha" value={formatTextList(flow.steps)} onChange={(steps) => onChange({ ...value, flows: value.flows.map((item, itemIndex) => (itemIndex === index ? { ...item, steps: parseTextList(steps) } : item)) })} rows={5} />
-              <div className="flex justify-end md:col-span-2">
-                <Button type="button" variant="destructive" onClick={() => onChange({ ...value, flows: value.flows.filter((_, itemIndex) => itemIndex !== index) })}>
-                  Remover fluxo
-                </Button>
+              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                <Input label="Nome do fluxo" value={flow.title} onChange={(event) => onChange({ ...value, flows: value.flows.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+                <RemoveIconButton label="Remover fluxo" onClick={() => onChange({ ...value, flows: value.flows.filter((_, itemIndex) => itemIndex !== index) })} />
               </div>
+              <Textarea label="Passos do fluxo, um por linha" value={formatTextList(flow.steps)} onChange={(steps) => onChange({ ...value, flows: value.flows.map((item, itemIndex) => (itemIndex === index ? { ...item, steps: parseTextList(steps) } : item)) })} rows={5} />
             </div>
           ))}
         </div>
@@ -615,7 +622,10 @@ function TreeNodeEditor({
   return (
     <div className="space-y-3 border-b border-border/60 pb-4 last:border-b-0" style={{ marginLeft: depth ? `${Math.min(depth * 1.25, 3)}rem` : undefined }}>
       <div className="grid gap-3 md:grid-cols-2">
-        <Input label="Nome da pasta ou arquivo" value={node.name} onChange={(event) => onChange({ ...node, name: event.target.value })} />
+        <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+          <Input label="Nome da pasta ou arquivo" value={node.name} onChange={(event) => onChange({ ...node, name: event.target.value })} />
+          <RemoveIconButton label="Remover pasta ou arquivo" onClick={onRemove} />
+        </div>
         <Textarea label="Tecnologias mostradas, uma por linha" value={formatTextList(node.technologies)} onChange={(technologies) => onChange({ ...node, technologies: parseTextList(technologies) })} rows={3} />
         <div className="md:col-span-2">
           <Textarea label="Descrição exibida ao abrir" value={node.description} onChange={(description) => onChange({ ...node, description })} rows={2} />
@@ -632,15 +642,12 @@ function TreeNodeEditor({
           />
         ))}
       </div>
-      <div className="flex flex-wrap justify-end gap-2">
+      <AdminActions>
         <Button type="button" variant="outline" onClick={() => onChange({ ...node, children: [...children, createTreeNode()] })}>
           <PlusIcon className="mr-2 h-4 w-4" />
           Adicionar dentro
         </Button>
-        <Button type="button" variant="destructive" onClick={onRemove}>
-          Remover
-        </Button>
-      </div>
+      </AdminActions>
     </div>
   )
 }
@@ -653,9 +660,36 @@ function SiteContentEditor({
   onChange: (value: SiteContent) => void
 }) {
   const update = <Key extends keyof SiteContent>(key: Key, nextValue: SiteContent[Key]) => onChange({ ...value, [key]: nextValue })
+  const [selectedContentSection, setSelectedContentSection] = useState('navigation')
+  const contentSections = [
+    { id: 'navigation', title: 'Menu e modos', description: 'Navegação, troca de experiência e modal.' },
+    { id: 'gateway', title: 'Entrada', description: 'Tela de escolha entre tradicional e Aurora.' },
+    { id: 'common', title: 'Textos comuns', description: 'Labels, botões, loading e erros globais.' },
+    { id: 'pages', title: 'Páginas', description: 'Blog, Projetos e Currículo.' },
+    { id: 'playground', title: 'Playground', description: 'Topo, controles e experiências WebGL.' },
+    { id: 'playground-architecture', title: 'Playground arquitetura', description: 'Pastas abríveis e design patterns.' },
+    { id: 'project-architecture', title: 'Detalhe arquitetura', description: 'Textos da arquitetura dentro dos projetos.' },
+  ]
 
   return (
-    <div className="space-y-6">
+    <div className="grid gap-6 lg:grid-cols-[18rem_1fr]">
+      <aside className="space-y-2 rounded-xl border border-border p-3">
+        <h3 className="px-2 text-sm font-semibold text-foreground">Selecione a seção</h3>
+        {contentSections.map((section) => (
+          <button
+            key={section.id}
+            type="button"
+            onClick={() => setSelectedContentSection(section.id)}
+            className={`w-full rounded-lg px-3 py-2 text-left transition ${selectedContentSection === section.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+          >
+            <span className="block text-sm font-semibold">{section.title}</span>
+            <span className="block text-xs opacity-75">{section.description}</span>
+          </button>
+        ))}
+      </aside>
+
+      <div className="space-y-6">
+      {selectedContentSection === 'navigation' && (
       <AdminCard title="Menu e troca de modo" description="Muda os textos da navegação nos layouts tradicional e Aurora, incluindo o modal que leva para o playground Aurora.">
         <div className="grid gap-4 md:grid-cols-2">
           <Input label="Menu: Home" value={value.navigation.home} onChange={(event) => update('navigation', { ...value.navigation, home: event.target.value })} />
@@ -672,7 +706,9 @@ function SiteContentEditor({
           <Textarea label="Modal playground: descrição" value={value.navigation.playgroundDialogDescription} onChange={(playgroundDialogDescription) => update('navigation', { ...value.navigation, playgroundDialogDescription })} rows={3} />
         </div>
       </AdminCard>
+      )}
 
+      {selectedContentSection === 'gateway' && (
       <AdminCard title="Tela de escolha de experiência" description="Muda a tela inicial que apresenta os modos tradicional e Aurora antes de redirecionar.">
         <div className="grid gap-4 md:grid-cols-2">
           <Input label="Chamada pequena" value={value.gateway.kicker} onChange={(event) => update('gateway', { ...value.gateway, kicker: event.target.value })} />
@@ -694,7 +730,9 @@ function SiteContentEditor({
           ))}
         </div>
       </AdminCard>
+      )}
 
+      {selectedContentSection === 'common' && (
       <AdminCard title="Textos comuns" description="Muda botões, estados de carregamento, erros e rótulos usados em mais de uma tela.">
         <div className="grid gap-4 md:grid-cols-3">
           {Object.entries(value.common).map(([key, item]) => (
@@ -707,7 +745,9 @@ function SiteContentEditor({
           ))}
         </div>
       </AdminCard>
+      )}
 
+      {selectedContentSection === 'pages' && (
       <div className="grid gap-5 lg:grid-cols-3">
         <AdminCard title="Blog" description="Muda títulos, descrições e mensagens da listagem e detalhe de artigos.">
           <ContentObjectFields value={value.blog} labels={blogContentLabels} onChange={(blog) => update('blog', blog)} />
@@ -719,7 +759,9 @@ function SiteContentEditor({
           <ContentObjectFields value={value.resume} labels={resumeContentLabels} onChange={(resume) => update('resume', resume)} />
         </AdminCard>
       </div>
+      )}
 
+      {selectedContentSection === 'playground' && (
       <AdminCard title="Playground WebGL" description="Muda o topo, controles, cores e cards das experiências WebGL.">
         <div className="grid gap-4 md:grid-cols-2">
           <Input label="Chamada superior" value={value.playground.eyebrow} onChange={(event) => update('playground', { ...value.playground, eyebrow: event.target.value })} />
@@ -750,23 +792,25 @@ function SiteContentEditor({
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {value.playground.experiments.map((experiment, index) => (
             <div key={`${experiment.title}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
-              <Input label={`Experimento ${index + 1}: chamada`} value={experiment.eyebrow} onChange={(event) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, eyebrow: event.target.value } : item)) })} />
+              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                <Input label={`Experimento ${index + 1}: chamada`} value={experiment.eyebrow} onChange={(event) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, eyebrow: event.target.value } : item)) })} />
+                <RemoveIconButton label="Remover experimento" onClick={() => update('playground', { ...value.playground, experiments: value.playground.experiments.filter((_, itemIndex) => itemIndex !== index) })} />
+              </div>
               <Input label="Título" value={experiment.title} onChange={(event) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
               <Textarea label="Descrição" value={experiment.description} onChange={(description) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
-              <Button type="button" variant="destructive" className="w-full" onClick={() => update('playground', { ...value.playground, experiments: value.playground.experiments.filter((_, itemIndex) => itemIndex !== index) })}>
-                Remover experimento
-              </Button>
             </div>
           ))}
         </div>
-        <div className="mt-4 flex justify-end">
+        <AdminActions className="mt-4">
           <Button type="button" variant="outline" onClick={() => update('playground', { ...value.playground, experiments: [...value.playground.experiments, createPlaygroundExperiment(value.playground.experiments.length)] })}>
             <PlusIcon className="mr-2 h-4 w-4" />
             Adicionar experimento
           </Button>
-        </div>
+        </AdminActions>
       </AdminCard>
+      )}
 
+      {selectedContentSection === 'playground-architecture' && (
       <AdminCard title="Playground: arquitetura animada" description="Muda a seção com pastas abríveis e design patterns animados dentro do playground.">
         <div className="grid gap-4 md:grid-cols-2">
           <Input label="Título da árvore de pastas" value={value.playground.architecture.treeTitle} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, treeTitle: event.target.value } })} />
@@ -785,36 +829,38 @@ function SiteContentEditor({
             />
           ))}
         </div>
-        <div className="mt-4 flex justify-end">
+        <AdminActions className="mt-4">
           <Button type="button" variant="outline" onClick={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, tree: [...value.playground.architecture.tree, createTreeNode()] } })}>
             <PlusIcon className="mr-2 h-4 w-4" />
             Adicionar pasta raiz
           </Button>
-        </div>
+        </AdminActions>
         <h4 className="mt-6 text-base font-semibold">Design patterns</h4>
         <div className="mt-3 grid gap-4 md:grid-cols-2">
           {value.playground.architecture.patterns.map((pattern, index) => (
             <div key={`${pattern.id}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
-              <Input label="Identificador" value={pattern.id} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, id: slugify(event.target.value) || event.target.value } : item)) } })} />
+              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                <Input label="Identificador" value={pattern.id} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, id: slugify(event.target.value) || event.target.value } : item)) } })} />
+                <RemoveIconButton label="Remover pattern" onClick={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.filter((_, itemIndex) => itemIndex !== index) } })} />
+              </div>
               <Input label="Nome do pattern" value={pattern.name} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) } })} />
               <Input label="Categoria" value={pattern.category} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, category: event.target.value } : item)) } })} />
               <Textarea label="Descrição" value={pattern.description} onChange={(description) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) } })} rows={3} />
               <Textarea label="Fluxo animado, um passo por linha" value={formatTextList(pattern.flow)} onChange={(flow) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, flow: parseTextList(flow) } : item)) } })} rows={4} />
               <Textarea label="Tecnologias, uma por linha" value={formatTextList(pattern.technologies)} onChange={(technologies) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, technologies: parseTextList(technologies) } : item)) } })} rows={4} />
-              <Button type="button" variant="destructive" className="w-full" onClick={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.filter((_, itemIndex) => itemIndex !== index) } })}>
-                Remover pattern
-              </Button>
             </div>
           ))}
         </div>
-        <div className="mt-4 flex justify-end">
+        <AdminActions className="mt-4">
           <Button type="button" variant="outline" onClick={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: [...value.playground.architecture.patterns, createPattern(value.playground.architecture.patterns.length)] } })}>
             <PlusIcon className="mr-2 h-4 w-4" />
             Adicionar pattern
           </Button>
-        </div>
+        </AdminActions>
       </AdminCard>
+      )}
 
+      {selectedContentSection === 'project-architecture' && (
       <AdminCard title="Detalhe do projeto: seção Arquitetura" description="Muda apenas os textos fixos da seção de arquitetura que aparece dentro de cada projeto com arquitetura ativa. O conteúdo específico de cada projeto fica na aba Projetos.">
         <div className="grid gap-4 md:grid-cols-2">
           <Input label="Chamada superior" value={value.architecture.eyebrow} onChange={(event) => update('architecture', { ...value.architecture, eyebrow: event.target.value })} />
@@ -833,6 +879,8 @@ function SiteContentEditor({
           />
         </div>
       </AdminCard>
+      )}
+      </div>
     </div>
   )
 }
@@ -909,6 +957,9 @@ export default function AdminDashboard() {
   const [status, setStatus] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState('')
+  const [selectedProjectGroupIndex, setSelectedProjectGroupIndex] = useState(0)
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0)
+  const [selectedArticleIndex, setSelectedArticleIndex] = useState(0)
   const { theme, toggleTheme } = useStoredTheme()
 
   const profileQuery = useProfileContent()
@@ -1009,6 +1060,15 @@ export default function AdminDashboard() {
   }, [projectGroupsQuery.data])
 
   useEffect(() => {
+    setSelectedProjectGroupIndex((current) => Math.min(current, Math.max(projectGroupsForm.length - 1, 0)))
+  }, [projectGroupsForm.length])
+
+  useEffect(() => {
+    const selectedGroup = projectGroupsForm[selectedProjectGroupIndex]
+    setSelectedProjectIndex((current) => Math.min(current, Math.max((selectedGroup?.projects.length ?? 1) - 1, 0)))
+  }, [projectGroupsForm, selectedProjectGroupIndex])
+
+  useEffect(() => {
     if (!homeQuery.data) return
     setHomeForm({
       ...homeQuery.data,
@@ -1022,6 +1082,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     setArticleForms(articleQueries.map(mapArticleToForm))
   }, [articleQueries])
+
+  useEffect(() => {
+    setSelectedArticleIndex((current) => Math.min(current, Math.max(articleForms.length - 1, 0)))
+  }, [articleForms.length])
 
   useEffect(() => {
     if (!resumeQuery.data) return
@@ -1334,32 +1398,32 @@ export default function AdminDashboard() {
     }, 'Currículo salvo.')
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 text-foreground">
-      <div className="mx-auto max-w-6xl space-y-6">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div>
+    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-7">
+        <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <Link to="/classic" className="mb-3 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeftIcon className="mr-2 h-4 w-4" />
               Voltar ao site
             </Link>
             <h1 className="text-4xl font-bold">Painel</h1>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-3">
+          <AdminActions className="sm:justify-end">
             {status && <Badge variant={status.includes('Erro') || status.includes('policy') ? 'destructive' : 'secondary'}>{status}</Badge>}
             <ThemeToggle theme={theme} onToggle={toggleTheme} variant="outline" size="lg" />
             <Button type="button" variant="outline" className="min-w-20" onClick={handleLogout}>
               Sair
             </Button>
-          </div>
+          </AdminActions>
         </header>
 
-        <nav className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
+        <nav className="grid gap-2 border-b border-border pb-4 sm:flex sm:flex-wrap sm:items-center">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`h-10 rounded-xl px-4 text-sm font-medium transition ${
+              className={`h-10 w-full rounded-xl px-4 text-sm font-medium transition sm:w-auto ${
                 activeTab === tab.id ? 'bg-foreground text-background' : 'text-muted-foreground hover:bg-accent hover:text-foreground'
               }`}
             >
@@ -1380,39 +1444,32 @@ export default function AdminDashboard() {
                   <Input label="Contato" value={profileForm.contactUrl} onChange={(event) => setProfileForm({ ...profileForm, contactUrl: event.target.value })} />
                   <Input label="Intro" value={profileForm.intro} onChange={(event) => setProfileForm({ ...profileForm, intro: event.target.value })} />
                 </div>
-                <div className="grid gap-4 md:grid-cols-[1fr_auto]">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
                   <Input label="Logo do site" value={profileForm.logoUrl} onChange={(event) => setProfileForm({ ...profileForm, logoUrl: event.target.value })} />
-                  <div className="self-end">
-                    <FileUploadButton
-                      label={uploadingLogo === 'site' ? 'Enviando...' : 'Enviar logo'}
-                      helper="PNG, JPG, WebP ou SVG"
-                      disabled={uploadingLogo === 'site'}
-                      onFile={(file) => void uploadSiteLogo(file)}
-                    />
-                  </div>
+                  <FileUploadButton
+                    label={uploadingLogo === 'site' ? 'Enviando...' : 'Enviar logo'}
+                    disabled={uploadingLogo === 'site'}
+                    onFile={(file) => void uploadSiteLogo(file)}
+                  />
                 </div>
                 <div>
                   <AdminInlineSection title="Redes sociais" description="Aparecem no topo, rodapé ou navegação social do site.">
                     <div className="space-y-4">
                       {profileForm.socialLinks.map((social, index) => (
-                        <div key={`${social.name}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-3">
+                        <div key={`${social.name}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end">
                           <Input label="Nome" value={social.name} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
                           <Input label="URL" value={social.href} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, href: event.target.value } : item)) })} />
                           <Input label="Ícone" value={social.icon} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
-                          <div className="flex justify-end md:col-span-3">
-                            <Button type="button" variant="destructive" onClick={() => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.filter((_, itemIndex) => itemIndex !== index) })}>
-                              Remover rede
-                            </Button>
-                          </div>
+                          <RemoveIconButton label="Remover rede" onClick={() => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.filter((_, itemIndex) => itemIndex !== index) })} />
                         </div>
                       ))}
                     </div>
-                    <div className="mt-3 flex justify-end">
+                    <AdminActions className="mt-3">
                       <Button type="button" variant="outline" onClick={() => setProfileForm({ ...profileForm, socialLinks: [...profileForm.socialLinks, { name: '', href: '', icon: 'link' }] })}>
                         <PlusIcon className="mr-2 h-4 w-4" />
                         Adicionar rede
                       </Button>
-                    </div>
+                    </AdminActions>
                   </AdminInlineSection>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -1423,33 +1480,29 @@ export default function AdminDashboard() {
                   <AdminInlineSection title="Destaques" description="Aparecem na Home tradicional como cards de diferenciais.">
                     <div className="space-y-4">
                       {profileForm.highlights.map((highlight, index) => (
-                        <div key={`${highlight.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
+                        <div key={`${highlight.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto] md:items-end">
                           <Input label="Ícone" value={highlight.icon} onChange={(event) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
                           <Input label="Título" value={highlight.title} onChange={(event) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+                          <RemoveIconButton label="Remover destaque" onClick={() => setProfileForm({ ...profileForm, highlights: profileForm.highlights.filter((_, itemIndex) => itemIndex !== index) })} />
                           <div className="md:col-span-2">
                             <Textarea label="Descrição" value={highlight.description} onChange={(description) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
-                          </div>
-                          <div className="flex justify-end md:col-span-2">
-                            <Button type="button" variant="destructive" onClick={() => setProfileForm({ ...profileForm, highlights: profileForm.highlights.filter((_, itemIndex) => itemIndex !== index) })}>
-                              Remover destaque
-                            </Button>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="mt-3 flex justify-end">
+                    <AdminActions className="mt-3">
                       <Button type="button" variant="outline" onClick={() => setProfileForm({ ...profileForm, highlights: [...profileForm.highlights, { icon: 'sparkles', title: '', description: '' }] })}>
                         <PlusIcon className="mr-2 h-4 w-4" />
                         Adicionar destaque
                       </Button>
-                    </div>
+                    </AdminActions>
                   </AdminInlineSection>
                 </div>
-                <div className="flex justify-end">
+                <AdminActions>
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveProfile}>
                     Salvar perfil
                   </Button>
-                </div>
+                </AdminActions>
               </AdminSection>
             )}
 
@@ -1471,23 +1524,21 @@ export default function AdminDashboard() {
                   <AdminInlineSection title="Grupos da stack" description="Aparecem na Home como blocos de capacidades e tecnologias.">
                     <div className="space-y-4">
                       {homeForm.stackGroups.map((group, index) => (
-                        <div key={`${group.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
+                        <div key={`${group.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_auto] md:items-end">
                           <Input label="Título do grupo" value={group.title} onChange={(event) => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
-                          <Textarea label="Itens, um por linha" value={group.items} onChange={(items) => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.map((item, itemIndex) => (itemIndex === index ? { ...item, items } : item)) })} rows={5} />
-                          <div className="flex justify-end md:col-span-2">
-                            <Button type="button" variant="destructive" onClick={() => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.filter((_, itemIndex) => itemIndex !== index) })}>
-                              Remover grupo
-                            </Button>
+                          <RemoveIconButton label="Remover grupo" onClick={() => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.filter((_, itemIndex) => itemIndex !== index) })} />
+                          <div className="md:col-span-2">
+                            <Textarea label="Itens, um por linha" value={group.items} onChange={(items) => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.map((item, itemIndex) => (itemIndex === index ? { ...item, items } : item)) })} rows={5} />
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="mt-3 flex justify-end">
+                    <AdminActions className="mt-3">
                       <Button type="button" variant="outline" onClick={() => setHomeForm({ ...homeForm, stackGroups: [...homeForm.stackGroups, { title: '', items: '' }] })}>
                         <PlusIcon className="mr-2 h-4 w-4" />
                         Adicionar grupo
                       </Button>
-                    </div>
+                    </AdminActions>
                   </AdminInlineSection>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -1508,95 +1559,124 @@ export default function AdminDashboard() {
                 <div>
                   <Textarea label="Descrição do contato" value={homeForm.contactDescription} onChange={(value) => setHomeForm({ ...homeForm, contactDescription: value })} rows={3} />
                 </div>
-                <div className="flex justify-end">
+                <AdminActions>
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveHome}>
                     Salvar home
                   </Button>
-                </div>
+                </AdminActions>
               </AdminSection>
             )}
 
             {activeTab === 'projects' && (
               <AdminSection title="Projetos" description="Empresas, cards, links e detalhes técnicos exibidos nas páginas de projetos dos dois modos.">
-                <div className="space-y-8">
-                  {projectGroupsForm.map((group, groupIndex) => (
-                    <div key={`${group.id}-${groupIndex}`} className="rounded-xl border border-border p-4">
-                      <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-                        <Input
-                          label="Empresa/grupo"
-                          value={group.title}
-                          onChange={(event) => updateProjectGroup(groupIndex, { title: event.target.value }, projectGroupsForm, setProjectGroupsForm)}
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          className="self-end"
-                          aria-label="Remover empresa ou grupo"
-                          onClick={() => setProjectGroupsForm(projectGroupsForm.filter((_, index) => index !== groupIndex))}
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="mt-4 space-y-4">
-                        {group.projects.map((project, projectIndex) => (
-                          <div key={`${project.id}-${projectIndex}`} className="grid gap-3 rounded-xl bg-muted/40 p-4 md:grid-cols-2">
-                            <Input label="Projeto" value={project.title} onChange={(event) => updateProject(groupIndex, projectIndex, { title: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
-                            <div className="space-y-3">
-                              <Input label="Logo" value={project.logo} onChange={(event) => updateProject(groupIndex, projectIndex, { logo: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
-                              <FileUploadButton
-                                label={uploadingLogo === `${groupIndex}-${projectIndex}` ? 'Enviando logo...' : 'Enviar nova logo'}
-                                helper="PNG, JPG, WebP ou SVG"
-                                disabled={uploadingLogo === `${groupIndex}-${projectIndex}`}
-                                onFile={(file) => void uploadProjectLogo(groupIndex, projectIndex, file)}
-                              />
-                            </div>
-                            <div className="rounded-xl border border-border/70 p-4 text-sm leading-6 text-muted-foreground">
-                              <p className="font-semibold text-foreground">Botão Ver projeto</p>
-                              <p>Abre automaticamente a página interna de detalhes deste projeto. O conteúdo dessa página é controlado abaixo em Detalhes do projeto e Arquitetura.</p>
-                            </div>
-                            <Input label="Link do botão Ver site" value={project.siteUrl} onChange={(event) => updateProject(groupIndex, projectIndex, { siteUrl: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
-                            <Textarea label="Tags, uma por linha" value={project.tags} onChange={(value) => updateProject(groupIndex, projectIndex, { tags: value }, projectGroupsForm, setProjectGroupsForm)} rows={4} />
-                            <div className="md:col-span-2">
-                              <Textarea label="Descrição" value={project.description} onChange={(value) => updateProject(groupIndex, projectIndex, { description: value }, projectGroupsForm, setProjectGroupsForm)} rows={3} />
-                            </div>
-                            <div className="md:col-span-2">
-                              <ProjectDetailsEditor
-                                value={project.details}
-                                onChange={(details) => updateProject(groupIndex, projectIndex, { details }, projectGroupsForm, setProjectGroupsForm)}
-                              />
-                            </div>
-                            <div className="md:col-span-2">
-                              <ProjectArchitectureEditor
-                                value={project.architecture}
-                                onChange={(architecture) => updateProject(groupIndex, projectIndex, { architecture }, projectGroupsForm, setProjectGroupsForm)}
-                              />
-                            </div>
-                            <div className="flex justify-end md:col-span-2">
-                              <Button type="button" variant="destructive" className="min-w-40" onClick={() => removeProject(groupIndex, projectIndex, projectGroupsForm, setProjectGroupsForm)}>
-                                Remover projeto
+                <div className="grid gap-6 lg:grid-cols-[18rem_1fr]">
+                  <aside className="space-y-4 rounded-xl border border-border p-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <h3 className="font-semibold text-foreground">Selecione</h3>
+                    </div>
+                    <div className="space-y-3">
+                      {projectGroupsForm.map((group, groupIndex) => (
+                        <div key={`${group.id}-${groupIndex}`} className="space-y-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedProjectGroupIndex(groupIndex)
+                              setSelectedProjectIndex(0)
+                            }}
+                            className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${selectedProjectGroupIndex === groupIndex ? 'bg-foreground text-background' : 'bg-muted/50 text-foreground hover:bg-muted'}`}
+                          >
+                            {group.title || `Grupo ${groupIndex + 1}`}
+                          </button>
+                          {selectedProjectGroupIndex === groupIndex && (
+                            <div className="space-y-1 pl-2">
+                              {group.projects.map((project, projectIndex) => (
+                                <button
+                                  key={`${project.id}-${projectIndex}`}
+                                  type="button"
+                                  onClick={() => setSelectedProjectIndex(projectIndex)}
+                                  className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${selectedProjectIndex === projectIndex ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+                                >
+                                  {project.title || `Projeto ${projectIndex + 1}`}
+                                </button>
+                              ))}
+                              <Button type="button" variant="outline" className="mt-2 w-full" onClick={() => addProject(groupIndex, projectGroupsForm, setProjectGroupsForm)}>
+                                <PlusIcon className="mr-2 h-4 w-4" />
+                                Projeto
                               </Button>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mt-4 flex justify-end">
-                        <Button type="button" variant="outline" className="min-w-44" onClick={() => addProject(groupIndex, projectGroupsForm, setProjectGroupsForm)}>
-                          <PlusIcon className="mr-2 h-4 w-4" />
-                          Adicionar projeto
-                        </Button>
-                      </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </aside>
+
+                  {projectGroupsForm[selectedProjectGroupIndex] ? (
+                    <div className="space-y-5">
+                      <div className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-[1fr_auto] md:items-end">
+                        <div className="min-w-0">
+                          <Input
+                            label="Empresa/grupo selecionado"
+                            value={projectGroupsForm[selectedProjectGroupIndex].title}
+                            onChange={(event) => updateProjectGroup(selectedProjectGroupIndex, { title: event.target.value }, projectGroupsForm, setProjectGroupsForm)}
+                          />
+                        </div>
+                        <RemoveIconButton label="Remover grupo" onClick={() => setProjectGroupsForm(projectGroupsForm.filter((_, index) => index !== selectedProjectGroupIndex))} />
+                      </div>
+
+                      {projectGroupsForm[selectedProjectGroupIndex].projects[selectedProjectIndex] ? (
+                        <div className="grid gap-5 rounded-xl bg-muted/40 p-4 md:grid-cols-2">
+                          {(() => {
+                            const groupIndex = selectedProjectGroupIndex
+                            const projectIndex = selectedProjectIndex
+                            const project = projectGroupsForm[groupIndex].projects[projectIndex]
+                            return (
+                              <>
+                                <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                                  <Input label="Projeto selecionado" value={project.title} onChange={(event) => updateProject(groupIndex, projectIndex, { title: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
+                                  <RemoveIconButton label="Remover projeto" onClick={() => removeProject(groupIndex, projectIndex, projectGroupsForm, setProjectGroupsForm)} />
+                                </div>
+                                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
+                                  <Input label="Logo" value={project.logo} onChange={(event) => updateProject(groupIndex, projectIndex, { logo: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
+                                  <FileUploadButton
+                                    label={uploadingLogo === `${groupIndex}-${projectIndex}` ? 'Enviando logo...' : 'Enviar nova logo'}
+                                    disabled={uploadingLogo === `${groupIndex}-${projectIndex}`}
+                                    onFile={(file) => void uploadProjectLogo(groupIndex, projectIndex, file)}
+                                  />
+                                </div>
+                                <div className="rounded-xl border border-border/70 p-4 text-sm leading-6 text-muted-foreground">
+                                  <p className="font-semibold text-foreground">Botão Ver projeto</p>
+                                  <p>Abre a página interna quando houver detalhes ou arquitetura preenchidos.</p>
+                                </div>
+                                <Input label="Link do botão Ver site" value={project.siteUrl} onChange={(event) => updateProject(groupIndex, projectIndex, { siteUrl: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
+                                <div className="md:col-span-2">
+                                  <Textarea label="Tags, uma por linha" value={project.tags} onChange={(value) => updateProject(groupIndex, projectIndex, { tags: value }, projectGroupsForm, setProjectGroupsForm)} rows={4} />
+                                </div>
+                                <div className="md:col-span-2">
+                                  <Textarea label="Descrição" value={project.description} onChange={(value) => updateProject(groupIndex, projectIndex, { description: value }, projectGroupsForm, setProjectGroupsForm)} rows={3} />
+                                </div>
+                                <div className="md:col-span-2">
+                                  <ProjectDetailsEditor value={project.details} onChange={(details) => updateProject(groupIndex, projectIndex, { details }, projectGroupsForm, setProjectGroupsForm)} />
+                                </div>
+                                <div className="md:col-span-2">
+                                  <ProjectArchitectureEditor value={project.architecture} onChange={(architecture) => updateProject(groupIndex, projectIndex, { architecture }, projectGroupsForm, setProjectGroupsForm)} />
+                                </div>
+                              </>
+                            )
+                          })()}
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border border-border p-6 text-sm text-muted-foreground">Selecione ou adicione um projeto neste grupo.</div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-border p-6 text-sm text-muted-foreground">Adicione um grupo para começar.</div>
+                  )}
                 </div>
-                <div className="flex flex-wrap justify-end gap-3">
-                  <Button type="button" variant="outline" className="min-w-52" onClick={() => setProjectGroupsForm([...projectGroupsForm, createProjectGroupForm(projectGroupsForm.length)])}>
-                    <PlusIcon className="mr-2 h-4 w-4" />
-                    Adicionar empresa/grupo
-                  </Button>
+                <AdminActions>
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveProjects}>
                     Salvar projetos
                   </Button>
-                </div>
+                </AdminActions>
               </AdminSection>
             )}
 
@@ -1607,58 +1687,81 @@ export default function AdminDashboard() {
                 ) : (
                   <div className="rounded-xl border border-border p-6 text-sm text-muted-foreground">Conteúdo do site ainda não carregou.</div>
                 )}
-                <div className="flex justify-end">
+                <AdminActions>
                   <Button type="button" className="min-w-40" loading={isSaving} onClick={saveSiteContent}>
                     Salvar conteúdo
                   </Button>
-                </div>
+                </AdminActions>
               </AdminSection>
             )}
 
             {activeTab === 'articles' && (
               <AdminSection title="Artigos" description="Posts profissionais e pessoais exibidos no Blog. Use o tipo para controlar em qual grupo o artigo aparece.">
-                <div className="space-y-5">
-                  {articleForms.map((article, index) => (
-                    <div key={`${article.slug}-${index}`} className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-2">
-                      <Input label="Slug" value={article.slug} onChange={(event) => updateArticle(index, { slug: event.target.value }, articleForms, setArticleForms)} />
-                      <label className="space-y-2">
-                        <span className="text-sm font-medium text-foreground">Tipo</span>
-                        <select
-                          value={article.kind}
-                          onChange={(event) => updateArticle(index, { kind: event.target.value as ArticleKind }, articleForms, setArticleForms)}
-                          className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
-                        >
-                          <option value="work">Profissional</option>
-                          <option value="personal">Pessoal</option>
-                        </select>
-                      </label>
-                      <Input label="Título" value={article.title} onChange={(event) => updateArticle(index, { title: event.target.value }, articleForms, setArticleForms)} />
-                      <Input label="Categoria" value={article.category} onChange={(event) => updateArticle(index, { category: event.target.value }, articleForms, setArticleForms)} />
-                      <Input label="Data" value={article.date} onChange={(event) => updateArticle(index, { date: event.target.value }, articleForms, setArticleForms)} />
-                      <Input label="Tempo de leitura" value={article.readTime} onChange={(event) => updateArticle(index, { readTime: event.target.value }, articleForms, setArticleForms)} />
-                      <div className="md:col-span-2">
-                        <Textarea label="Descrição" value={article.description} onChange={(value) => updateArticle(index, { description: value }, articleForms, setArticleForms)} rows={3} />
-                      </div>
-                      <div className="md:col-span-2">
-                        <Textarea label="Conteúdo Markdown" value={article.content} onChange={(value) => updateArticle(index, { content: value }, articleForms, setArticleForms)} rows={12} />
-                      </div>
-                      <div className="flex justify-end md:col-span-2">
-                        <Button type="button" variant="destructive" className="min-w-40" onClick={() => setArticleForms(articleForms.filter((_, itemIndex) => itemIndex !== index))}>
-                          Remover artigo
-                        </Button>
-                      </div>
+                <div className="grid gap-6 lg:grid-cols-[18rem_1fr]">
+                  <aside className="space-y-3 rounded-xl border border-border p-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <h3 className="font-semibold text-foreground">Selecione</h3>
                     </div>
-                  ))}
+                    <div className="space-y-1">
+                      {articleForms.map((article, index) => (
+                        <button
+                          key={`${article.slug}-${index}`}
+                          type="button"
+                          onClick={() => setSelectedArticleIndex(index)}
+                          className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${selectedArticleIndex === index ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+                        >
+                          <span className="block font-semibold">{article.title || `Artigo ${index + 1}`}</span>
+                          <span className="text-xs opacity-75">{article.kind === 'work' ? 'Profissional' : 'Pessoal'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </aside>
+
+                  {articleForms[selectedArticleIndex] ? (
+                    <div className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-2">
+                      {(() => {
+                        const index = selectedArticleIndex
+                        const article = articleForms[index]
+                        return (
+                          <>
+                            <div className="grid gap-3 md:col-span-2 md:grid-cols-[1fr_auto] md:items-end">
+                              <Input label="Título" value={article.title} onChange={(event) => updateArticle(index, { title: event.target.value }, articleForms, setArticleForms)} />
+                              <RemoveIconButton label="Remover artigo" onClick={() => setArticleForms(articleForms.filter((_, itemIndex) => itemIndex !== index))} />
+                            </div>
+                            <Input label="Slug" value={article.slug} onChange={(event) => updateArticle(index, { slug: event.target.value }, articleForms, setArticleForms)} />
+                            <label className="space-y-2">
+                              <span className="text-sm font-medium text-foreground">Tipo</span>
+                              <select
+                                value={article.kind}
+                                onChange={(event) => updateArticle(index, { kind: event.target.value as ArticleKind }, articleForms, setArticleForms)}
+                                className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
+                              >
+                                <option value="work">Profissional</option>
+                                <option value="personal">Pessoal</option>
+                              </select>
+                            </label>
+                            <Input label="Categoria" value={article.category} onChange={(event) => updateArticle(index, { category: event.target.value }, articleForms, setArticleForms)} />
+                            <Input label="Data" value={article.date} onChange={(event) => updateArticle(index, { date: event.target.value }, articleForms, setArticleForms)} />
+                            <Input label="Tempo de leitura" value={article.readTime} onChange={(event) => updateArticle(index, { readTime: event.target.value }, articleForms, setArticleForms)} />
+                            <div className="md:col-span-2">
+                              <Textarea label="Descrição" value={article.description} onChange={(value) => updateArticle(index, { description: value }, articleForms, setArticleForms)} rows={3} />
+                            </div>
+                            <div className="md:col-span-2">
+                              <Textarea label="Conteúdo Markdown" value={article.content} onChange={(value) => updateArticle(index, { content: value }, articleForms, setArticleForms)} rows={12} />
+                            </div>
+                          </>
+                        )
+                      })()}
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-border p-6 text-sm text-muted-foreground">Selecione ou adicione um artigo.</div>
+                  )}
                 </div>
-                <div className="flex flex-wrap justify-end gap-3">
-                  <Button type="button" variant="outline" className="min-w-44" onClick={() => setArticleForms([...articleForms, createArticleForm(articleForms.length)])}>
-                    <PlusIcon className="mr-2 h-4 w-4" />
-                    Adicionar artigo
-                  </Button>
+                <AdminActions>
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveArticles}>
                     Salvar artigos
                   </Button>
-                </div>
+                </AdminActions>
               </AdminSection>
             )}
 
@@ -1672,23 +1775,19 @@ export default function AdminDashboard() {
                   <AdminInlineSection title="Idiomas" description="Aparecem na seção de idiomas do currículo e no PDF.">
                     <div className="space-y-4">
                       {resumeForm.languages.map((language, index) => (
-                        <div key={`${language.name}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
+                        <div key={`${language.name}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto] md:items-end">
                           <Input label="Idioma" value={language.name} onChange={(event) => setResumeForm({ ...resumeForm, languages: resumeForm.languages.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
                           <Input label="Descrição" value={language.description} onChange={(event) => setResumeForm({ ...resumeForm, languages: resumeForm.languages.map((item, itemIndex) => (itemIndex === index ? { ...item, description: event.target.value } : item)) })} />
-                          <div className="flex justify-end md:col-span-2">
-                            <Button type="button" variant="destructive" onClick={() => setResumeForm({ ...resumeForm, languages: resumeForm.languages.filter((_, itemIndex) => itemIndex !== index) })}>
-                              Remover idioma
-                            </Button>
-                          </div>
+                          <RemoveIconButton label="Remover idioma" onClick={() => setResumeForm({ ...resumeForm, languages: resumeForm.languages.filter((_, itemIndex) => itemIndex !== index) })} />
                         </div>
                       ))}
                     </div>
-                    <div className="mt-3 flex justify-end">
+                    <AdminActions className="mt-3">
                       <Button type="button" variant="outline" onClick={() => setResumeForm({ ...resumeForm, languages: [...resumeForm.languages, { name: '', description: '' }] })}>
                         <PlusIcon className="mr-2 h-4 w-4" />
                         Adicionar idioma
                       </Button>
-                    </div>
+                    </AdminActions>
                   </AdminInlineSection>
 
                   <AdminInlineSection title="Seções do currículo" description="Controla ordem, título e visibilidade das seções no currículo.">
@@ -1720,42 +1819,39 @@ export default function AdminDashboard() {
                 <h2 className="mt-8 text-2xl font-bold">Educação</h2>
                 <div className="mt-4 space-y-4">
                   {resumeForm.education.map((item, index) => (
-                    <div key={`${item.id}-${index}`} className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-2">
+                    <div key={`${item.id}-${index}`} className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
                       <Input label="Instituição" value={item.institution} onChange={(event) => updateEducation(index, { institution: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Curso" value={item.course} onChange={(event) => updateEducation(index, { course: event.target.value }, resumeForm, setResumeForm)} />
+                      <RemoveIconButton label="Remover educação" onClick={() => setResumeForm({ ...resumeForm, education: resumeForm.education.filter((_, itemIndex) => itemIndex !== index) })} />
                       <Input label="Local" value={item.location} onChange={(event) => updateEducation(index, { location: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Período" value={item.period} onChange={(event) => updateEducation(index, { period: event.target.value }, resumeForm, setResumeForm)} />
-                      <div className="flex justify-end md:col-span-2">
-                        <Button type="button" variant="destructive" className="min-w-40" onClick={() => setResumeForm({ ...resumeForm, education: resumeForm.education.filter((_, itemIndex) => itemIndex !== index) })}>
-                          Remover educação
-                        </Button>
-                      </div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 flex justify-end">
+                <AdminActions className="mt-4">
                   <Button type="button" variant="outline" className="min-w-44" onClick={() => setResumeForm({ ...resumeForm, education: [...resumeForm.education, createEducationForm(resumeForm.education.length)] })}>
                     <PlusIcon className="mr-2 h-4 w-4" />
                     Adicionar educação
                   </Button>
-                </div>
+                </AdminActions>
 
                 <h2 className="mt-8 text-2xl font-bold">Experiências</h2>
                 <div className="mt-4 space-y-4">
                   {resumeForm.experiences.map((experience, index) => (
-                    <div key={`${experience.id}-${index}`} className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-2">
+                    <div key={`${experience.id}-${index}`} className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
                       <Input label="Empresa" value={experience.company} onChange={(event) => updateExperience(index, { company: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Cargo principal" value={experience.position} onChange={(event) => updateExperience(index, { position: event.target.value }, resumeForm, setResumeForm)} />
+                      <RemoveIconButton label="Remover experiência" onClick={() => setResumeForm({ ...resumeForm, experiences: resumeForm.experiences.filter((_, itemIndex) => itemIndex !== index) })} />
                       <Input label="Local" value={experience.location} onChange={(event) => updateExperience(index, { location: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Período" value={experience.period} onChange={(event) => updateExperience(index, { period: event.target.value }, resumeForm, setResumeForm)} />
-                      <section className="space-y-3 md:col-span-2">
+                      <section className="space-y-3 md:col-span-3">
                         <div>
                           <h3 className="text-base font-semibold text-foreground">Timeline de cargos</h3>
                           <p className="mt-1 text-sm leading-6 text-muted-foreground">Aparece dentro desta experiência, em ordem.</p>
                         </div>
                         <div className="space-y-4">
                           {experience.roles.map((role, roleIndex) => (
-                            <div key={`${role.position}-${roleIndex}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
+                            <div key={`${role.position}-${roleIndex}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto] md:items-end">
                               <Input
                                 label="Cargo"
                                 value={role.position}
@@ -1780,35 +1876,24 @@ export default function AdminDashboard() {
                                   )
                                 }
                               />
-                              <div className="flex justify-end md:col-span-2">
-                                <Button
-                                  type="button"
-                                  variant="destructive"
-                                  onClick={() => updateExperience(index, { roles: experience.roles.filter((_, itemIndex) => itemIndex !== roleIndex) }, resumeForm, setResumeForm)}
-                                >
-                                  Remover cargo
-                                </Button>
-                              </div>
+                              <RemoveIconButton label="Remover cargo" onClick={() => updateExperience(index, { roles: experience.roles.filter((_, itemIndex) => itemIndex !== roleIndex) }, resumeForm, setResumeForm)} />
                             </div>
                           ))}
                         </div>
-                        <div className="mt-3 flex justify-end">
+                        <AdminActions className="mt-3">
                           <Button type="button" variant="outline" onClick={() => updateExperience(index, { roles: [...experience.roles, { position: '', period: '' }] }, resumeForm, setResumeForm)}>
                             <PlusIcon className="mr-2 h-4 w-4" />
                             Adicionar cargo
                           </Button>
-                        </div>
+                        </AdminActions>
                       </section>
-                      <Textarea label="Responsabilidades, uma por linha" value={experience.responsibilities} onChange={(value) => updateExperience(index, { responsibilities: value }, resumeForm, setResumeForm)} rows={5} />
-                      <div className="flex justify-end md:col-span-2">
-                        <Button type="button" variant="destructive" className="min-w-44" onClick={() => setResumeForm({ ...resumeForm, experiences: resumeForm.experiences.filter((_, itemIndex) => itemIndex !== index) })}>
-                          Remover experiência
-                        </Button>
+                      <div className="md:col-span-3">
+                        <Textarea label="Responsabilidades, uma por linha" value={experience.responsibilities} onChange={(value) => updateExperience(index, { responsibilities: value }, resumeForm, setResumeForm)} rows={5} />
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 flex flex-wrap justify-end gap-3">
+                <AdminActions className="mt-5">
                   <Button type="button" variant="outline" className="min-w-48" onClick={() => setResumeForm({ ...resumeForm, experiences: [...resumeForm.experiences, createExperienceForm(resumeForm.experiences.length)] })}>
                     <PlusIcon className="mr-2 h-4 w-4" />
                     Adicionar experiência
@@ -1816,7 +1901,7 @@ export default function AdminDashboard() {
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveResume}>
                     Salvar currículo
                   </Button>
-                </div>
+                </AdminActions>
               </AdminSection>
             )}
           </>

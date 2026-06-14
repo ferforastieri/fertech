@@ -25,7 +25,6 @@ function hasProjectDetail(project: Project) {
       details?.overview?.trim() ||
       details?.role?.trim() ||
       details?.period?.trim() ||
-      details?.repositoryPath?.trim() ||
       hasListItems(details?.stack) ||
       hasListItems(details?.highlights) ||
       hasListItems(details?.responsibilities) ||
