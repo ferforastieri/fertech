@@ -1,1 +1,0 @@
--- Intentionally left without data changes. Public site copy is managed in Supabase via the admin panel.

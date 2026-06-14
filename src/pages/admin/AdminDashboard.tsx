@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeftIcon, ArrowPathIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { Badge, ThemeToggle } from '@/components/ui/feedback'
 import { Button, Input } from '@/components/ui/forms'
 import { Article, ArticleKind, useArticleList } from '@/api/articles/useArticleList'
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { useHomeContent } from '@/api/home/useHomeContent'
-import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
+import { ArchitectureNode, Project, ProjectArchitecture, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeContent'
 import { supabase } from '@/config/supabase/client'
 import { formatTextList, parseTextList } from '@/features/admin/textList'
 import { useStoredTheme } from '@/hooks/useStoredTheme'
-import { useSiteContent } from '@/api/site/useSiteContent'
+import { PlaygroundPattern, PlaygroundTreeNode, SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 
 type AdminTab = 'profile' | 'home' | 'content' | 'projects' | 'articles' | 'resume'
@@ -23,10 +23,22 @@ type ProfileForm = {
   intro: string
   contactUrl: string
   logoUrl: string
-  socialLinks: string
+  socialLinks: SocialLinkForm[]
   technologies: string
   aboutParagraphs: string
-  highlights: string
+  highlights: HighlightForm[]
+}
+
+type SocialLinkForm = {
+  name: string
+  href: string
+  icon: string
+}
+
+type HighlightForm = {
+  icon: string
+  title: string
+  description: string
 }
 
 type HomeForm = {
@@ -36,7 +48,7 @@ type HomeForm = {
   projectsButtonLabel: string
   resumeButtonLabel: string
   contactButtonLabel: string
-  stackGroups: string
+  stackGroups: StackGroupForm[]
   classicAboutTitle: string
   classicHighlightsTitle: string
   classicCapabilitiesTitle: string
@@ -51,6 +63,11 @@ type HomeForm = {
   blogTitle: string
   contactTitle: string
   contactDescription: string
+}
+
+type StackGroupForm = {
+  title: string
+  items: string
 }
 
 type ProjectGroupForm = {
@@ -69,7 +86,7 @@ type ProjectForm = {
   tags: string
   projectUrl: string
   siteUrl: string
-  architecture: string
+  architecture: ProjectArchitecture | null
   sortOrder: number
 }
 
@@ -88,8 +105,8 @@ type ArticleForm = {
 type ResumeForm = {
   technologies: string
   aboutParagraphs: string
-  languages: string
-  sections: string
+  languages: LanguageForm[]
+  sections: ResumeSectionForm[]
   location: string
   downloadLabel: string
   generatingLabel: string
@@ -97,6 +114,17 @@ type ResumeForm = {
   projectTechnologiesLabel: string
   education: EducationForm[]
   experiences: ExperienceForm[]
+}
+
+type LanguageForm = {
+  name: string
+  description: string
+}
+
+type ResumeSectionForm = {
+  key: ResumeSectionKey
+  title: string
+  enabled: boolean
 }
 
 type EducationForm = {
@@ -115,8 +143,13 @@ type ExperienceForm = {
   location: string
   period: string
   responsibilities: string
-  roles: string
+  roles: ResumeRoleForm[]
   sortOrder: number
+}
+
+type ResumeRoleForm = {
+  position: string
+  period: string
 }
 
 const tabs: Array<{ id: AdminTab; label: string }> = [
@@ -178,6 +211,485 @@ function AdminSection({
   )
 }
 
+function AdminCard({
+  title,
+  description,
+  children,
+  action,
+}: {
+  title: string
+  description?: string
+  children: React.ReactNode
+  action?: React.ReactNode
+}) {
+  return (
+    <section className="rounded-2xl border border-border bg-card/40 p-4">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+          {description && <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>}
+        </div>
+        {action}
+      </div>
+      {children}
+    </section>
+  )
+}
+
+function cloneSiteContent(content: SiteContent): SiteContent {
+  return structuredClone(content)
+}
+
+function cloneArchitecture(architecture: ProjectArchitecture | undefined): ProjectArchitecture | null {
+  return architecture ? structuredClone(architecture) : null
+}
+
+function createArchitecture(): ProjectArchitecture {
+  return {
+    name: '',
+    summary: '',
+    accent: '#fb7185',
+    layers: {
+      clients: [],
+      services: [],
+      platform: [],
+    },
+    folders: [],
+  }
+}
+
+function createArchitectureNode(): ArchitectureNode {
+  return {
+    name: '',
+    description: '',
+    technologies: [],
+  }
+}
+
+function ProjectArchitectureEditor({
+  value,
+  onChange,
+}: {
+  value: ProjectArchitecture | null
+  onChange: (value: ProjectArchitecture | null) => void
+}) {
+  if (!value) {
+    return (
+      <AdminCard
+        title="Arquitetura do projeto"
+        description="Aparece na página de detalhe do projeto, abaixo da apresentação. Ative somente quando quiser mostrar camadas, tecnologias e pastas desse projeto."
+        action={
+          <Button type="button" variant="outline" onClick={() => onChange(createArchitecture())}>
+            Adicionar arquitetura
+          </Button>
+        }
+      >
+        <p className="text-sm text-muted-foreground">Este projeto ainda não tem seção de arquitetura.</p>
+      </AdminCard>
+    )
+  }
+
+  const updateLayer = (layer: keyof ProjectArchitecture['layers'], nodes: ArchitectureNode[]) => {
+    onChange({ ...value, layers: { ...value.layers, [layer]: nodes } })
+  }
+
+  return (
+    <AdminCard
+      title="Arquitetura do projeto"
+      description="Aparece no detalhe do projeto. Use camadas para explicar clientes, serviços e plataforma."
+      action={
+        <Button type="button" variant="destructive" onClick={() => onChange(null)}>
+          Remover arquitetura
+        </Button>
+      }
+    >
+      <div className="grid gap-4 md:grid-cols-2">
+        <Input label="Nome exibido na seção" value={value.name} onChange={(event) => onChange({ ...value, name: event.target.value })} />
+        <Input label="Cor de destaque" value={value.accent} onChange={(event) => onChange({ ...value, accent: event.target.value })} />
+        <div className="md:col-span-2">
+          <Textarea label="Resumo da arquitetura" value={value.summary} onChange={(summary) => onChange({ ...value, summary })} rows={3} />
+        </div>
+        <div className="md:col-span-2">
+          <Textarea label="Pastas exibidas, uma por linha" value={formatTextList(value.folders)} onChange={(folders) => onChange({ ...value, folders: parseTextList(folders) })} rows={5} />
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-3">
+        {(['clients', 'services', 'platform'] as Array<keyof ProjectArchitecture['layers']>).map((layer) => (
+          <AdminCard key={layer} title={layer === 'clients' ? 'Camada cliente' : layer === 'services' ? 'Camada serviços' : 'Camada plataforma'}>
+            <div className="space-y-4">
+              {value.layers[layer].map((node, index) => (
+                <div key={`${node.name}-${index}`} className="space-y-3 rounded-xl border border-border bg-background p-3">
+                  <Input
+                    label="Nome"
+                    value={node.name}
+                    onChange={(event) =>
+                      updateLayer(
+                        layer,
+                        value.layers[layer].map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)),
+                      )
+                    }
+                  />
+                  <Textarea
+                    label="Descrição"
+                    value={node.description}
+                    onChange={(description) =>
+                      updateLayer(
+                        layer,
+                        value.layers[layer].map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)),
+                      )
+                    }
+                    rows={3}
+                  />
+                  <Textarea
+                    label="Tecnologias, uma por linha"
+                    value={formatTextList(node.technologies)}
+                    onChange={(technologies) =>
+                      updateLayer(
+                        layer,
+                        value.layers[layer].map((item, itemIndex) => (itemIndex === index ? { ...item, technologies: parseTextList(technologies) } : item)),
+                      )
+                    }
+                    rows={4}
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="w-full"
+                    onClick={() => updateLayer(layer, value.layers[layer].filter((_, itemIndex) => itemIndex !== index))}
+                  >
+                    Remover item
+                  </Button>
+                </div>
+              ))}
+              <Button type="button" variant="outline" className="w-full" onClick={() => updateLayer(layer, [...value.layers[layer], createArchitectureNode()])}>
+                <PlusIcon className="mr-2 h-4 w-4" />
+                Adicionar item
+              </Button>
+            </div>
+          </AdminCard>
+        ))}
+      </div>
+    </AdminCard>
+  )
+}
+
+function createTreeNode(): PlaygroundTreeNode {
+  return {
+    name: '',
+    description: '',
+    technologies: [],
+    children: [],
+  }
+}
+
+function createPattern(index: number): PlaygroundPattern {
+  return {
+    id: `pattern-${index + 1}`,
+    name: '',
+    category: '',
+    description: '',
+    flow: [],
+    technologies: [],
+  }
+}
+
+function TreeNodeEditor({
+  node,
+  depth = 0,
+  onChange,
+  onRemove,
+}: {
+  node: PlaygroundTreeNode
+  depth?: number
+  onChange: (node: PlaygroundTreeNode) => void
+  onRemove: () => void
+}) {
+  const children = node.children ?? []
+
+  return (
+    <div className="space-y-3 rounded-xl border border-border bg-background p-3" style={{ marginLeft: depth ? `${Math.min(depth * 1.25, 3)}rem` : undefined }}>
+      <div className="grid gap-3 md:grid-cols-2">
+        <Input label="Nome da pasta ou arquivo" value={node.name} onChange={(event) => onChange({ ...node, name: event.target.value })} />
+        <Textarea label="Tecnologias mostradas, uma por linha" value={formatTextList(node.technologies)} onChange={(technologies) => onChange({ ...node, technologies: parseTextList(technologies) })} rows={3} />
+        <div className="md:col-span-2">
+          <Textarea label="Descrição exibida ao abrir" value={node.description} onChange={(description) => onChange({ ...node, description })} rows={2} />
+        </div>
+      </div>
+      <div className="space-y-3">
+        {children.map((child, index) => (
+          <TreeNodeEditor
+            key={`${child.name}-${index}`}
+            node={child}
+            depth={depth + 1}
+            onChange={(nextChild) => onChange({ ...node, children: children.map((item, itemIndex) => (itemIndex === index ? nextChild : item)) })}
+            onRemove={() => onChange({ ...node, children: children.filter((_, itemIndex) => itemIndex !== index) })}
+          />
+        ))}
+      </div>
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button type="button" variant="outline" onClick={() => onChange({ ...node, children: [...children, createTreeNode()] })}>
+          <PlusIcon className="mr-2 h-4 w-4" />
+          Adicionar dentro
+        </Button>
+        <Button type="button" variant="destructive" onClick={onRemove}>
+          Remover
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function SiteContentEditor({
+  value,
+  onChange,
+}: {
+  value: SiteContent
+  onChange: (value: SiteContent) => void
+}) {
+  const update = <Key extends keyof SiteContent>(key: Key, nextValue: SiteContent[Key]) => onChange({ ...value, [key]: nextValue })
+
+  return (
+    <div className="space-y-6">
+      <AdminCard title="Menu e troca de modo" description="Muda os textos da navegação nos layouts tradicional e Aurora, incluindo o modal que leva para o playground Aurora.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Input label="Menu: Home" value={value.navigation.home} onChange={(event) => update('navigation', { ...value.navigation, home: event.target.value })} />
+          <Input label="Menu: Blog" value={value.navigation.blog} onChange={(event) => update('navigation', { ...value.navigation, blog: event.target.value })} />
+          <Input label="Menu: Projetos" value={value.navigation.projects} onChange={(event) => update('navigation', { ...value.navigation, projects: event.target.value })} />
+          <Input label="Menu: Currículo" value={value.navigation.resume} onChange={(event) => update('navigation', { ...value.navigation, resume: event.target.value })} />
+          <Input label="Menu: Playground" value={value.navigation.playground} onChange={(event) => update('navigation', { ...value.navigation, playground: event.target.value })} />
+          <Input label="Botão para Aurora" value={value.navigation.switchToAurora} onChange={(event) => update('navigation', { ...value.navigation, switchToAurora: event.target.value })} />
+          <Input label="Botão para tradicional" value={value.navigation.switchToClassic} onChange={(event) => update('navigation', { ...value.navigation, switchToClassic: event.target.value })} />
+          <Input label="Rótulo de redes sociais" value={value.navigation.socialLinks} onChange={(event) => update('navigation', { ...value.navigation, socialLinks: event.target.value })} />
+          <Input label="Modal playground: título" value={value.navigation.playgroundDialogTitle} onChange={(event) => update('navigation', { ...value.navigation, playgroundDialogTitle: event.target.value })} />
+          <Input label="Modal playground: botão cancelar" value={value.navigation.cancel} onChange={(event) => update('navigation', { ...value.navigation, cancel: event.target.value })} />
+          <Input label="Modal playground: botão continuar" value={value.navigation.goToAurora} onChange={(event) => update('navigation', { ...value.navigation, goToAurora: event.target.value })} />
+          <Textarea label="Modal playground: descrição" value={value.navigation.playgroundDialogDescription} onChange={(playgroundDialogDescription) => update('navigation', { ...value.navigation, playgroundDialogDescription })} rows={3} />
+        </div>
+      </AdminCard>
+
+      <AdminCard title="Tela de escolha de experiência" description="Muda a tela inicial que apresenta os modos tradicional e Aurora antes de redirecionar.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Input label="Chamada pequena" value={value.gateway.kicker} onChange={(event) => update('gateway', { ...value.gateway, kicker: event.target.value })} />
+          <Input label="Título linha 1" value={value.gateway.titleLine1} onChange={(event) => update('gateway', { ...value.gateway, titleLine1: event.target.value })} />
+          <Input label="Título linha 2" value={value.gateway.titleLine2} onChange={(event) => update('gateway', { ...value.gateway, titleLine2: event.target.value })} />
+          <Input label="Segundos para redirecionar" value={String(value.gateway.redirectSeconds)} onChange={(event) => update('gateway', { ...value.gateway, redirectSeconds: Number(event.target.value) || 0 })} />
+          <div className="md:col-span-2">
+            <Textarea label="Descrição. Use {seconds} onde entra a contagem regressiva." value={value.gateway.descriptionTemplate} onChange={(descriptionTemplate) => update('gateway', { ...value.gateway, descriptionTemplate })} rows={3} />
+          </div>
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          {value.gateway.modes.map((mode, index) => (
+            <div key={mode.id} className="space-y-3 rounded-xl border border-border bg-background p-3">
+              <Input label={`Modo ${mode.id}: nome`} value={mode.name} onChange={(event) => update('gateway', { ...value.gateway, modes: value.gateway.modes.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
+              <Input label="Público" value={mode.audience} onChange={(event) => update('gateway', { ...value.gateway, modes: value.gateway.modes.map((item, itemIndex) => (itemIndex === index ? { ...item, audience: event.target.value } : item)) })} />
+              <Input label="Destino" value={mode.href} onChange={(event) => update('gateway', { ...value.gateway, modes: value.gateway.modes.map((item, itemIndex) => (itemIndex === index ? { ...item, href: event.target.value } : item)) })} />
+              <Textarea label="Descrição" value={mode.description} onChange={(description) => update('gateway', { ...value.gateway, modes: value.gateway.modes.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
+            </div>
+          ))}
+        </div>
+      </AdminCard>
+
+      <AdminCard title="Textos comuns" description="Muda botões, estados de carregamento, erros e rótulos usados em mais de uma tela.">
+        <div className="grid gap-4 md:grid-cols-3">
+          {Object.entries(value.common).map(([key, item]) => (
+            <Input
+              key={key}
+              label={commonContentLabels[key] ?? key}
+              value={String(item)}
+              onChange={(event) => update('common', { ...value.common, [key]: event.target.value })}
+            />
+          ))}
+        </div>
+      </AdminCard>
+
+      <AdminCard title="Blog, Projetos e Currículo" description="Muda títulos, descrições e mensagens das páginas de listagem e detalhe nos dois modos.">
+        <div className="grid gap-5 lg:grid-cols-3">
+          <AdminCard title="Blog">
+            <ContentObjectFields value={value.blog} labels={blogContentLabels} onChange={(blog) => update('blog', blog)} />
+          </AdminCard>
+          <AdminCard title="Projetos">
+            <ContentObjectFields value={value.projects} labels={projectsContentLabels} onChange={(projects) => update('projects', projects)} />
+          </AdminCard>
+          <AdminCard title="Currículo">
+            <ContentObjectFields value={value.resume} labels={resumeContentLabels} onChange={(resume) => update('resume', resume)} />
+          </AdminCard>
+        </div>
+      </AdminCard>
+
+      <AdminCard title="Playground WebGL" description="Muda o topo, controles, cores e cards das experiências WebGL.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Input label="Chamada superior" value={value.playground.eyebrow} onChange={(event) => update('playground', { ...value.playground, eyebrow: event.target.value })} />
+          <Input label="Título" value={value.playground.title} onChange={(event) => update('playground', { ...value.playground, title: event.target.value })} />
+          <Textarea label="Descrição" value={value.playground.description} onChange={(description) => update('playground', { ...value.playground, description })} rows={3} />
+          <Textarea label="Cores, uma por linha" value={formatTextList(value.playground.colors)} onChange={(colors) => update('playground', { ...value.playground, colors: parseTextList(colors) })} rows={5} />
+          <Input label="Título dos controles" value={value.playground.controlsTitle} onChange={(event) => update('playground', { ...value.playground, controlsTitle: event.target.value })} />
+          <Input label="Botão pausar" value={value.playground.pause} onChange={(event) => update('playground', { ...value.playground, pause: event.target.value })} />
+          <Input label="Botão continuar" value={value.playground.resume} onChange={(event) => update('playground', { ...value.playground, resume: event.target.value })} />
+          <Input label="Botão randomizar" value={value.playground.randomize} onChange={(event) => update('playground', { ...value.playground, randomize: event.target.value })} />
+          <Input label="Botão limpar" value={value.playground.clear} onChange={(event) => update('playground', { ...value.playground, clear: event.target.value })} />
+          <Input label="Controle: pincel" value={value.playground.brush} onChange={(event) => update('playground', { ...value.playground, brush: event.target.value })} />
+          <Input label="Controle: elementos" value={value.playground.elements} onChange={(event) => update('playground', { ...value.playground, elements: event.target.value })} />
+          <Input label="Controle: velocidade" value={value.playground.speed} onChange={(event) => update('playground', { ...value.playground, speed: event.target.value })} />
+          <Input label="Status desenho ativo" value={value.playground.drawingEnabled} onChange={(event) => update('playground', { ...value.playground, drawingEnabled: event.target.value })} />
+          <Input label="Botão ativar desenho" value={value.playground.enableDrawing} onChange={(event) => update('playground', { ...value.playground, enableDrawing: event.target.value })} />
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          {value.playground.modes.map((mode, index) => (
+            <Input
+              key={mode.id}
+              label={`Modo visual: ${mode.id}`}
+              value={mode.label}
+              onChange={(event) => update('playground', { ...value.playground, modes: value.playground.modes.map((item, itemIndex) => (itemIndex === index ? { ...item, label: event.target.value } : item)) })}
+            />
+          ))}
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          {value.playground.experiments.map((experiment, index) => (
+            <div key={`${experiment.title}-${index}`} className="space-y-3 rounded-xl border border-border bg-background p-3">
+              <Input label={`Experimento ${index + 1}: chamada`} value={experiment.eyebrow} onChange={(event) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, eyebrow: event.target.value } : item)) })} />
+              <Input label="Título" value={experiment.title} onChange={(event) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+              <Textarea label="Descrição" value={experiment.description} onChange={(description) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
+            </div>
+          ))}
+        </div>
+      </AdminCard>
+
+      <AdminCard title="Playground: arquitetura animada" description="Muda a seção com pastas abríveis e design patterns animados dentro do playground.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Input label="Título da árvore de pastas" value={value.playground.architecture.treeTitle} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, treeTitle: event.target.value } })} />
+          <Input label="Rótulo da raiz" value={value.playground.architecture.rootLabel} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, rootLabel: event.target.value } })} />
+          <Input label="Título dos design patterns" value={value.playground.architecture.patternsTitle} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patternsTitle: event.target.value } })} />
+          <Input label="Rodapé da seção" value={value.playground.architecture.footer} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, footer: event.target.value } })} />
+        </div>
+        <h4 className="mt-6 text-base font-semibold">Pastas e tecnologias</h4>
+        <div className="mt-3 space-y-3">
+          {value.playground.architecture.tree.map((node, index) => (
+            <TreeNodeEditor
+              key={`${node.name}-${index}`}
+              node={node}
+              onChange={(nextNode) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, tree: value.playground.architecture.tree.map((item, itemIndex) => (itemIndex === index ? nextNode : item)) } })}
+              onRemove={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, tree: value.playground.architecture.tree.filter((_, itemIndex) => itemIndex !== index) } })}
+            />
+          ))}
+        </div>
+        <div className="mt-4 flex justify-end">
+          <Button type="button" variant="outline" onClick={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, tree: [...value.playground.architecture.tree, createTreeNode()] } })}>
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Adicionar pasta raiz
+          </Button>
+        </div>
+        <h4 className="mt-6 text-base font-semibold">Design patterns</h4>
+        <div className="mt-3 grid gap-4 md:grid-cols-2">
+          {value.playground.architecture.patterns.map((pattern, index) => (
+            <div key={`${pattern.id}-${index}`} className="space-y-3 rounded-xl border border-border bg-background p-3">
+              <Input label="Identificador" value={pattern.id} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, id: slugify(event.target.value) || event.target.value } : item)) } })} />
+              <Input label="Nome do pattern" value={pattern.name} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) } })} />
+              <Input label="Categoria" value={pattern.category} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, category: event.target.value } : item)) } })} />
+              <Textarea label="Descrição" value={pattern.description} onChange={(description) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) } })} rows={3} />
+              <Textarea label="Fluxo animado, um passo por linha" value={formatTextList(pattern.flow)} onChange={(flow) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, flow: parseTextList(flow) } : item)) } })} rows={4} />
+              <Textarea label="Tecnologias, uma por linha" value={formatTextList(pattern.technologies)} onChange={(technologies) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, technologies: parseTextList(technologies) } : item)) } })} rows={4} />
+              <Button type="button" variant="destructive" className="w-full" onClick={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.filter((_, itemIndex) => itemIndex !== index) } })}>
+                Remover pattern
+              </Button>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 flex justify-end">
+          <Button type="button" variant="outline" onClick={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: [...value.playground.architecture.patterns, createPattern(value.playground.architecture.patterns.length)] } })}>
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Adicionar pattern
+          </Button>
+        </div>
+      </AdminCard>
+
+      <AdminCard title="Detalhe do projeto: seção Arquitetura" description="Muda apenas os textos fixos da seção de arquitetura que aparece dentro de cada projeto com arquitetura ativa. O conteúdo específico de cada projeto fica na aba Projetos.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Input label="Chamada superior" value={value.architecture.eyebrow} onChange={(event) => update('architecture', { ...value.architecture, eyebrow: event.target.value })} />
+          <Input label="Título" value={value.architecture.title} onChange={(event) => update('architecture', { ...value.architecture, title: event.target.value })} />
+          <Input label="Rótulo do fluxo" value={value.architecture.flowLabel} onChange={(event) => update('architecture', { ...value.architecture, flowLabel: event.target.value })} />
+          <Input label="Título das pastas" value={value.architecture.foldersTitle} onChange={(event) => update('architecture', { ...value.architecture, foldersTitle: event.target.value })} />
+          <Textarea label="Descrição da seção" value={value.architecture.description} onChange={(description) => update('architecture', { ...value.architecture, description })} rows={3} />
+          <Textarea
+            label="Títulos das camadas, um por linha"
+            value={value.architecture.layerTitles.join('\n')}
+            onChange={(layerTitles) => {
+              const [first = '', second = '', third = ''] = parseTextList(layerTitles)
+              update('architecture', { ...value.architecture, layerTitles: [first, second, third] })
+            }}
+            rows={3}
+          />
+        </div>
+      </AdminCard>
+    </div>
+  )
+}
+
+function ContentObjectFields<T extends Record<string, string>>({
+  value,
+  labels,
+  onChange,
+}: {
+  value: T
+  labels: Record<string, string>
+  onChange: (value: T) => void
+}) {
+  return (
+    <div className="space-y-3">
+      {Object.entries(value).map(([key, item]) =>
+        item.length > 90 ? (
+          <Textarea key={key} label={labels[key] ?? key} value={item} onChange={(nextValue) => onChange({ ...value, [key]: nextValue })} rows={3} />
+        ) : (
+          <Input key={key} label={labels[key] ?? key} value={item} onChange={(event) => onChange({ ...value, [key]: event.target.value })} />
+        ),
+      )}
+    </div>
+  )
+}
+
+const commonContentLabels: Record<string, string> = {
+  readTimeSuffix: 'Sufixo de tempo de leitura',
+  articlesCountLabel: 'Legenda de quantidade de artigos',
+  projectsCountLabel: 'Legenda de quantidade de projetos',
+  viewProject: 'Botão: Ver projeto',
+  viewSite: 'Botão: Ver site',
+  loadingPage: 'Carregando página',
+  homeLoading: 'Carregando home',
+  contentLoadError: 'Erro ao carregar conteúdo',
+  closeNavigation: 'Acessibilidade: fechar navegação',
+}
+
+const blogContentLabels: Record<string, string> = {
+  title: 'Título da página Blog',
+  description: 'Descrição da página Blog',
+  auroraEyebrow: 'Chamada no modo Aurora',
+  workTitle: 'Título da lista profissional',
+  personalTitle: 'Título da lista pessoal',
+  loading: 'Carregando',
+  error: 'Erro',
+  notFoundTitle: 'Artigo não encontrado',
+  backToBlog: 'Voltar para blog',
+  backToArticles: 'Voltar para artigos',
+}
+
+const projectsContentLabels: Record<string, string> = {
+  title: 'Título da página Projetos',
+  description: 'Descrição da página Projetos',
+  auroraEyebrow: 'Chamada no modo Aurora',
+  loading: 'Carregando',
+  error: 'Erro',
+  notFound: 'Projeto não encontrado',
+  backToProjects: 'Voltar para projetos',
+}
+
+const resumeContentLabels: Record<string, string> = {
+  loading: 'Carregando',
+  error: 'Erro',
+  logoAlt: 'Texto alternativo da logo',
+  pdfSuccess: 'PDF gerado com sucesso',
+  pdfError: 'Erro ao gerar PDF',
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -194,7 +706,7 @@ export default function AdminDashboard() {
   const personalArticlesQuery = useArticleList('personal')
   const resumeQuery = useResumeContent()
   const siteContentQuery = useSiteContent()
-  const [siteContentForm, setSiteContentForm] = useState('')
+  const [siteContentForm, setSiteContentForm] = useState<SiteContent | null>(null)
 
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     name: '',
@@ -202,10 +714,10 @@ export default function AdminDashboard() {
     intro: '',
     contactUrl: '',
     logoUrl: '',
-    socialLinks: '',
+    socialLinks: [],
     technologies: '',
     aboutParagraphs: '',
-    highlights: '',
+    highlights: [],
   })
   const [projectGroupsForm, setProjectGroupsForm] = useState<ProjectGroupForm[]>([])
   const [homeForm, setHomeForm] = useState<HomeForm>({
@@ -215,7 +727,7 @@ export default function AdminDashboard() {
     projectsButtonLabel: '',
     resumeButtonLabel: '',
     contactButtonLabel: '',
-    stackGroups: '',
+    stackGroups: [],
     classicAboutTitle: '',
     classicHighlightsTitle: '',
     classicCapabilitiesTitle: '',
@@ -235,8 +747,8 @@ export default function AdminDashboard() {
   const [resumeForm, setResumeForm] = useState<ResumeForm>({
     technologies: '',
     aboutParagraphs: '',
-    languages: '',
-    sections: '',
+    languages: [],
+    sections: [],
     location: '',
     downloadLabel: '',
     generatingLabel: '',
@@ -261,7 +773,7 @@ export default function AdminDashboard() {
   )
 
   useEffect(() => {
-    if (siteContentQuery.data) setSiteContentForm(JSON.stringify(siteContentQuery.data, null, 2))
+    if (siteContentQuery.data) setSiteContentForm(cloneSiteContent(siteContentQuery.data))
   }, [siteContentQuery.data])
 
   useEffect(() => {
@@ -272,14 +784,10 @@ export default function AdminDashboard() {
       intro: profileQuery.data.intro,
       contactUrl: profileQuery.data.contactUrl,
       logoUrl: profileQuery.data.logoUrl,
-      socialLinks: profileQuery.data.socialLinks
-        .map((social) => `${social.name}|${social.href}|${social.icon}`)
-        .join('\n'),
+      socialLinks: profileQuery.data.socialLinks.map((social) => ({ ...social })),
       technologies: formatTextList(profileQuery.data.technologies),
       aboutParagraphs: formatTextList(profileQuery.data.aboutParagraphs),
-      highlights: profileQuery.data.highlights
-        .map((highlight) => `${highlight.icon}|${highlight.title}|${highlight.description}`)
-        .join('\n'),
+      highlights: profileQuery.data.highlights.map((highlight) => ({ ...highlight })),
     })
   }, [profileQuery.data])
 
@@ -292,9 +800,10 @@ export default function AdminDashboard() {
     if (!homeQuery.data) return
     setHomeForm({
       ...homeQuery.data,
-      stackGroups: homeQuery.data.stackGroups
-        .map((group) => `${group.title}|${group.items.join(';')}`)
-        .join('\n'),
+      stackGroups: homeQuery.data.stackGroups.map((group) => ({
+        title: group.title,
+        items: formatTextList(group.items),
+      })),
     })
   }, [homeQuery.data])
 
@@ -307,8 +816,8 @@ export default function AdminDashboard() {
     setResumeForm({
       technologies: formatTextList(resumeQuery.data.technologies),
       aboutParagraphs: formatTextList(resumeQuery.data.aboutParagraphs),
-      languages: resumeQuery.data.languages.map((language) => `${language.name}|${language.description}`).join('\n'),
-      sections: resumeQuery.data.sections.map((section) => `${section.key}|${section.title}|${section.enabled}`).join('\n'),
+      languages: resumeQuery.data.languages.map((language) => ({ ...language })),
+      sections: resumeQuery.data.sections.map((section) => ({ ...section })),
       location: resumeQuery.data.location,
       downloadLabel: resumeQuery.data.downloadLabel,
       generatingLabel: resumeQuery.data.generatingLabel,
@@ -322,7 +831,7 @@ export default function AdminDashboard() {
         location: experience.location,
         period: experience.period,
         responsibilities: formatTextList(experience.responsibilities),
-        roles: (experience.roles ?? []).map((role) => `${role.position}|${role.period}`).join('\n'),
+        roles: (experience.roles ?? []).map((role) => ({ ...role })),
         sortOrder: experience.sortOrder,
       })),
     })
@@ -360,8 +869,8 @@ export default function AdminDashboard() {
 
   const saveSiteContent = () =>
     runSave(async () => {
-      const content = JSON.parse(siteContentForm)
-      const { error } = await supabase.from('site_content').upsert({ id: 'main', content })
+      if (!siteContentForm) throw new Error('Conteúdo do site ainda não carregou.')
+      const { error } = await supabase.from('site_content').upsert({ id: 'main', content: siteContentForm })
       if (error) throw error
     }, 'Conteúdo do site salvo.')
 
@@ -421,31 +930,6 @@ export default function AdminDashboard() {
 
   const saveProfile = () =>
     runSave(async () => {
-      const highlights = profileForm.highlights
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => {
-          const [icon = 'sparkles', title = '', description = ''] = line.split('|')
-          return {
-            icon: icon.trim(),
-            title: title.trim(),
-            description: description.trim(),
-          }
-        })
-      const socialLinks = profileForm.socialLinks
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => {
-          const [name = '', href = '', icon = 'link'] = line.split('|')
-          return {
-            name: name.trim(),
-            href: href.trim(),
-            icon: icon.trim(),
-          }
-        })
-
       const { error } = await supabase.from('profile').upsert({
         id: 'main',
         name: profileForm.name,
@@ -453,10 +937,10 @@ export default function AdminDashboard() {
         intro: profileForm.intro,
         contact_url: profileForm.contactUrl,
         logo_url: profileForm.logoUrl,
-        social_links: socialLinks,
+        social_links: profileForm.socialLinks,
         technologies: parseTextList(profileForm.technologies),
         about_paragraphs: parseTextList(profileForm.aboutParagraphs),
-        highlights,
+        highlights: profileForm.highlights,
       })
 
       if (error) throw error
@@ -464,18 +948,6 @@ export default function AdminDashboard() {
 
   const saveHome = () =>
     runSave(async () => {
-      const stackGroups = homeForm.stackGroups
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => {
-          const [title = '', items = ''] = line.split('|')
-          return {
-            title: title.trim(),
-            items: items.split(';').map((item) => item.trim()).filter(Boolean),
-          }
-        })
-
       const { error } = await supabase.from('home_content').upsert({
         id: 'main',
         hero_eyebrow: homeForm.heroEyebrow,
@@ -484,7 +956,10 @@ export default function AdminDashboard() {
         projects_button_label: homeForm.projectsButtonLabel,
         resume_button_label: homeForm.resumeButtonLabel,
         contact_button_label: homeForm.contactButtonLabel,
-        stack_groups: stackGroups,
+        stack_groups: homeForm.stackGroups.map((group) => ({
+          title: group.title,
+          items: parseTextList(group.items),
+        })),
         classic_about_title: homeForm.classicAboutTitle,
         classic_highlights_title: homeForm.classicHighlightsTitle,
         classic_capabilities_title: homeForm.classicCapabilitiesTitle,
@@ -522,7 +997,7 @@ export default function AdminDashboard() {
           project_url: project.projectUrl || null,
           site_url: project.siteUrl || null,
           url: project.siteUrl || null,
-          architecture: project.architecture.trim() ? JSON.parse(project.architecture) : null,
+          architecture: project.architecture,
           sort_order: projectIndex,
         })),
       )
@@ -576,13 +1051,12 @@ export default function AdminDashboard() {
         sort_order: index,
       }))
       const roles = resumeForm.experiences.flatMap((experience, experienceIndex) =>
-        parseTextList(experience.roles).map((roleLine, roleIndex) => {
-          const [position = '', period = ''] = roleLine.split('|')
+        experience.roles.map((role, roleIndex) => {
           return {
-            id: `${experiences[experienceIndex].id}-${roleIndex + 1}-${slugify(position)}`,
+            id: `${experiences[experienceIndex].id}-${roleIndex + 1}-${slugify(role.position)}`,
             experience_id: experiences[experienceIndex].id,
-            position: position.trim(),
-            period: period.trim(),
+            position: role.position.trim(),
+            period: role.period.trim(),
             sort_order: roleIndex,
           }
         }),
@@ -599,26 +1073,11 @@ export default function AdminDashboard() {
         name,
         sort_order: index,
       }))
-      const languages = resumeForm.languages
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => {
-          const [name = '', description = ''] = line.split('|')
-          return { name: name.trim(), description: description.trim() }
-        })
-      const sections = resumeForm.sections
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => {
-          const [key = '', title = '', enabled = 'true'] = line.split('|')
-          return {
-            key: key.trim() as ResumeSectionKey,
-            title: title.trim(),
-            enabled: enabled.trim().toLowerCase() !== 'false',
-          }
-        })
+      const languages = resumeForm.languages.map((language) => ({
+        name: language.name.trim(),
+        description: language.description.trim(),
+      }))
+      const sections = resumeForm.sections.map((section) => ({ ...section }))
 
       const deleteSteps = [
         supabase.from('resume_roles').delete().neq('id', ''),
@@ -675,10 +1134,6 @@ export default function AdminDashboard() {
           <div className="flex flex-wrap items-center justify-end gap-3">
             {status && <Badge variant={status.includes('Erro') || status.includes('policy') ? 'destructive' : 'secondary'}>{status}</Badge>}
             <ThemeToggle theme={theme} onToggle={toggleTheme} variant="outline" size="lg" />
-            <Button type="button" variant="outline" className="min-w-32" onClick={() => window.location.reload()}>
-              <ArrowPathIcon className="mr-2 h-4 w-4" />
-              Recarregar
-            </Button>
             <Button type="button" variant="ghost" className="min-w-20" onClick={handleLogout}>
               Sair
             </Button>
@@ -731,15 +1186,57 @@ export default function AdminDashboard() {
                     />
                   </label>
                 </div>
-                <div className="mt-4">
-                  <Textarea label="Redes sociais: nome|url|icone (x, github, linkedin ou link)" value={profileForm.socialLinks} onChange={(value) => setProfileForm({ ...profileForm, socialLinks: value })} rows={4} />
-                </div>
+                <AdminCard title="Redes sociais" description="Aparecem no topo, rodapé ou navegação social do site.">
+                  <div className="space-y-3">
+                    {profileForm.socialLinks.map((social, index) => (
+                      <div key={`${social.name}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-3">
+                        <Input label="Nome" value={social.name} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
+                        <Input label="URL" value={social.href} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, href: event.target.value } : item)) })} />
+                        <Input label="Ícone" value={social.icon} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
+                        <div className="flex justify-end md:col-span-3">
+                          <Button type="button" variant="destructive" onClick={() => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.filter((_, itemIndex) => itemIndex !== index) })}>
+                            Remover rede
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex justify-end">
+                    <Button type="button" variant="outline" onClick={() => setProfileForm({ ...profileForm, socialLinks: [...profileForm.socialLinks, { name: '', href: '', icon: 'link' }] })}>
+                      <PlusIcon className="mr-2 h-4 w-4" />
+                      Adicionar rede
+                    </Button>
+                  </div>
+                </AdminCard>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                   <Textarea label="Tecnologias, uma por linha" value={profileForm.technologies} onChange={(value) => setProfileForm({ ...profileForm, technologies: value })} rows={8} />
                   <Textarea label="Sobre, um parágrafo por linha" value={profileForm.aboutParagraphs} onChange={(value) => setProfileForm({ ...profileForm, aboutParagraphs: value })} rows={8} />
                 </div>
                 <div className="mt-4">
-                  <Textarea label="Destaques: icon|titulo|descrição" value={profileForm.highlights} onChange={(value) => setProfileForm({ ...profileForm, highlights: value })} rows={5} />
+                  <AdminCard title="Destaques" description="Aparecem na Home tradicional como cards de diferenciais.">
+                    <div className="space-y-3">
+                      {profileForm.highlights.map((highlight, index) => (
+                        <div key={`${highlight.title}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
+                          <Input label="Ícone" value={highlight.icon} onChange={(event) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
+                          <Input label="Título" value={highlight.title} onChange={(event) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+                          <div className="md:col-span-2">
+                            <Textarea label="Descrição" value={highlight.description} onChange={(description) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
+                          </div>
+                          <div className="flex justify-end md:col-span-2">
+                            <Button type="button" variant="destructive" onClick={() => setProfileForm({ ...profileForm, highlights: profileForm.highlights.filter((_, itemIndex) => itemIndex !== index) })}>
+                              Remover destaque
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 flex justify-end">
+                      <Button type="button" variant="outline" onClick={() => setProfileForm({ ...profileForm, highlights: [...profileForm.highlights, { icon: 'sparkles', title: '', description: '' }] })}>
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        Adicionar destaque
+                      </Button>
+                    </div>
+                  </AdminCard>
                 </div>
                 <div className="mt-5 flex justify-end">
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveProfile}>
@@ -764,7 +1261,27 @@ export default function AdminDashboard() {
                   <Input label="Botão de contato" value={homeForm.contactButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, contactButtonLabel: event.target.value })} />
                 </div>
                 <div className="mt-4">
-                  <Textarea label="Grupos da stack: titulo|item;item;item" value={homeForm.stackGroups} onChange={(value) => setHomeForm({ ...homeForm, stackGroups: value })} rows={7} />
+                  <AdminCard title="Grupos da stack" description="Aparecem na Home como blocos de capacidades e tecnologias.">
+                    <div className="space-y-3">
+                      {homeForm.stackGroups.map((group, index) => (
+                        <div key={`${group.title}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
+                          <Input label="Título do grupo" value={group.title} onChange={(event) => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+                          <Textarea label="Itens, um por linha" value={group.items} onChange={(items) => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.map((item, itemIndex) => (itemIndex === index ? { ...item, items } : item)) })} rows={5} />
+                          <div className="flex justify-end md:col-span-2">
+                            <Button type="button" variant="destructive" onClick={() => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.filter((_, itemIndex) => itemIndex !== index) })}>
+                              Remover grupo
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 flex justify-end">
+                      <Button type="button" variant="outline" onClick={() => setHomeForm({ ...homeForm, stackGroups: [...homeForm.stackGroups, { title: '', items: '' }] })}>
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        Adicionar grupo
+                      </Button>
+                    </div>
+                  </AdminCard>
                 </div>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                   <Input label="Tradicional: título sobre" value={homeForm.classicAboutTitle} onChange={(event) => setHomeForm({ ...homeForm, classicAboutTitle: event.target.value })} />
@@ -845,11 +1362,9 @@ export default function AdminDashboard() {
                               <Textarea label="Descrição" value={project.description} onChange={(value) => updateProject(groupIndex, projectIndex, { description: value }, projectGroupsForm, setProjectGroupsForm)} rows={3} />
                             </div>
                             <div className="md:col-span-2">
-                              <Textarea
-                                label="Arquitetura (JSON)"
+                              <ProjectArchitectureEditor
                                 value={project.architecture}
-                                onChange={(value) => updateProject(groupIndex, projectIndex, { architecture: value }, projectGroupsForm, setProjectGroupsForm)}
-                                rows={12}
+                                onChange={(architecture) => updateProject(groupIndex, projectIndex, { architecture }, projectGroupsForm, setProjectGroupsForm)}
                               />
                             </div>
                             <div className="flex justify-end md:col-span-2">
@@ -883,10 +1398,11 @@ export default function AdminDashboard() {
 
             {activeTab === 'content' && (
               <AdminSection title="Conteúdo público do site">
-                <p className="mb-4 text-sm leading-6 text-muted-foreground">
-                  Este JSON controla navegação, gateway, Blog, Projetos, estados de tela, Playground e textos de arquitetura nos modos tradicional e Aurora.
-                </p>
-                <Textarea label="Conteúdo JSON" value={siteContentForm} onChange={setSiteContentForm} rows={36} />
+                {siteContentForm ? (
+                  <SiteContentEditor value={siteContentForm} onChange={setSiteContentForm} />
+                ) : (
+                  <div className="rounded-xl border border-border p-6 text-sm text-muted-foreground">Conteúdo do site ainda não carregou.</div>
+                )}
                 <div className="mt-5 flex justify-end">
                   <Button type="button" className="min-w-40" loading={isSaving} onClick={saveSiteContent}>
                     Salvar conteúdo
@@ -946,9 +1462,49 @@ export default function AdminDashboard() {
               <AdminSection title="Currículo">
                 <div className="grid gap-4 md:grid-cols-2">
                   <Textarea label="Sobre do currículo, um parágrafo por linha" value={resumeForm.aboutParagraphs} onChange={(value) => setResumeForm({ ...resumeForm, aboutParagraphs: value })} rows={6} />
-                  <Textarea label="Idiomas: nome|descrição" value={resumeForm.languages} onChange={(value) => setResumeForm({ ...resumeForm, languages: value })} rows={6} />
-                  <Textarea label="Seções em ordem: chave|título|true/false" value={resumeForm.sections} onChange={(value) => setResumeForm({ ...resumeForm, sections: value })} rows={8} />
                   <Textarea label="Habilidades técnicas, uma por linha" value={resumeForm.technologies} onChange={(value) => setResumeForm({ ...resumeForm, technologies: value })} rows={8} />
+                </div>
+                <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                  <AdminCard title="Idiomas" description="Aparecem na seção de idiomas do currículo e no PDF.">
+                    <div className="space-y-3">
+                      {resumeForm.languages.map((language, index) => (
+                        <div key={`${language.name}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
+                          <Input label="Idioma" value={language.name} onChange={(event) => setResumeForm({ ...resumeForm, languages: resumeForm.languages.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
+                          <Input label="Descrição" value={language.description} onChange={(event) => setResumeForm({ ...resumeForm, languages: resumeForm.languages.map((item, itemIndex) => (itemIndex === index ? { ...item, description: event.target.value } : item)) })} />
+                          <div className="flex justify-end md:col-span-2">
+                            <Button type="button" variant="destructive" onClick={() => setResumeForm({ ...resumeForm, languages: resumeForm.languages.filter((_, itemIndex) => itemIndex !== index) })}>
+                              Remover idioma
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 flex justify-end">
+                      <Button type="button" variant="outline" onClick={() => setResumeForm({ ...resumeForm, languages: [...resumeForm.languages, { name: '', description: '' }] })}>
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        Adicionar idioma
+                      </Button>
+                    </div>
+                  </AdminCard>
+
+                  <AdminCard title="Seções do currículo" description="Controla ordem, título e visibilidade das seções no currículo.">
+                    <div className="space-y-3">
+                      {resumeForm.sections.map((section, index) => (
+                        <div key={`${section.key}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-[1fr_1fr_auto]">
+                          <Input label="Chave técnica" value={section.key} onChange={(event) => setResumeForm({ ...resumeForm, sections: resumeForm.sections.map((item, itemIndex) => (itemIndex === index ? { ...item, key: event.target.value as ResumeSectionKey } : item)) })} />
+                          <Input label="Título exibido" value={section.title} onChange={(event) => setResumeForm({ ...resumeForm, sections: resumeForm.sections.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+                          <label className="flex items-center gap-2 self-end rounded-xl border border-border px-3 py-2 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={section.enabled}
+                              onChange={(event) => setResumeForm({ ...resumeForm, sections: resumeForm.sections.map((item, itemIndex) => (itemIndex === index ? { ...item, enabled: event.target.checked } : item)) })}
+                            />
+                            Visível
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </AdminCard>
                 </div>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                   <Input label="Localização no PDF" value={resumeForm.location} onChange={(event) => setResumeForm({ ...resumeForm, location: event.target.value })} />
@@ -988,7 +1544,53 @@ export default function AdminDashboard() {
                       <Input label="Cargo principal" value={experience.position} onChange={(event) => updateExperience(index, { position: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Local" value={experience.location} onChange={(event) => updateExperience(index, { location: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Período" value={experience.period} onChange={(event) => updateExperience(index, { period: event.target.value }, resumeForm, setResumeForm)} />
-                      <Textarea label="Timeline: cargo|período" value={experience.roles} onChange={(value) => updateExperience(index, { roles: value }, resumeForm, setResumeForm)} rows={4} />
+                      <AdminCard title="Timeline de cargos" description="Aparece dentro desta experiência, em ordem.">
+                        <div className="space-y-3">
+                          {experience.roles.map((role, roleIndex) => (
+                            <div key={`${role.position}-${roleIndex}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
+                              <Input
+                                label="Cargo"
+                                value={role.position}
+                                onChange={(event) =>
+                                  updateExperience(
+                                    index,
+                                    { roles: experience.roles.map((item, itemIndex) => (itemIndex === roleIndex ? { ...item, position: event.target.value } : item)) },
+                                    resumeForm,
+                                    setResumeForm,
+                                  )
+                                }
+                              />
+                              <Input
+                                label="Período"
+                                value={role.period}
+                                onChange={(event) =>
+                                  updateExperience(
+                                    index,
+                                    { roles: experience.roles.map((item, itemIndex) => (itemIndex === roleIndex ? { ...item, period: event.target.value } : item)) },
+                                    resumeForm,
+                                    setResumeForm,
+                                  )
+                                }
+                              />
+                              <div className="flex justify-end md:col-span-2">
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  onClick={() => updateExperience(index, { roles: experience.roles.filter((_, itemIndex) => itemIndex !== roleIndex) }, resumeForm, setResumeForm)}
+                                >
+                                  Remover cargo
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-3 flex justify-end">
+                          <Button type="button" variant="outline" onClick={() => updateExperience(index, { roles: [...experience.roles, { position: '', period: '' }] }, resumeForm, setResumeForm)}>
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            Adicionar cargo
+                          </Button>
+                        </div>
+                      </AdminCard>
                       <Textarea label="Responsabilidades, uma por linha" value={experience.responsibilities} onChange={(value) => updateExperience(index, { responsibilities: value }, resumeForm, setResumeForm)} rows={5} />
                       <div className="flex justify-end md:col-span-2">
                         <Button type="button" variant="destructive" className="min-w-44" onClick={() => setResumeForm({ ...resumeForm, experiences: resumeForm.experiences.filter((_, itemIndex) => itemIndex !== index) })}>
@@ -1030,7 +1632,7 @@ function mapProjectGroupToForm(group: ProjectGroup): ProjectGroupForm {
       tags: formatTextList(project.tags),
       projectUrl: project.projectUrl ?? '',
       siteUrl: project.siteUrl ?? '',
-      architecture: project.architecture ? JSON.stringify(project.architecture, null, 2) : '',
+      architecture: cloneArchitecture(project.architecture),
       sortOrder: project.sortOrder,
     })),
   }
@@ -1069,7 +1671,7 @@ function createProjectForm(groupId: string, index: number): ProjectForm {
     tags: '',
     projectUrl: '',
     siteUrl: '',
-    architecture: '',
+    architecture: null,
     sortOrder: index,
   }
 }
@@ -1107,7 +1709,7 @@ function createExperienceForm(index: number): ExperienceForm {
     location: '',
     period: '',
     responsibilities: '',
-    roles: '',
+    roles: [],
     sortOrder: index,
   }
 }
