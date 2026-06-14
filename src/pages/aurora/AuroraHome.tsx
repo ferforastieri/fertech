@@ -12,6 +12,7 @@ import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
 import { useSiteContent } from '@/api/site/useSiteContent'
+import { renderSocialIcon } from '@/components/profile/renderSocialIcon'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -222,7 +223,7 @@ export default function AuroraHome() {
             rel="noopener noreferrer"
             className="mt-8 inline-flex items-center rounded-full bg-rose-900 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5"
           >
-            <span className="mr-2">X</span>
+            <span className="mr-2">{renderSocialIcon({ icon: 'linkedin', name: 'LinkedIn' })}</span>
             {homeContent.contactButtonLabel}
             <ArrowRightIcon className="ml-2 h-5 w-5" />
           </a>
