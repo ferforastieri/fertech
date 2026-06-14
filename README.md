@@ -35,7 +35,7 @@ VITE_SUPABASE_ANON_KEY=
 - `src/api`: hooks de dados, integracao Supabase, query client e geracao de PDF.
 - `src/components`: componentes reutilizaveis por modulo.
 - `src/components/playground`: experimentos WebGL e mini games do playground.
-- `src/components/seo`: metadados por rota sem biblioteca externa.
+- `src/components/seo`: metadados por rota.
 - `src/config/supabase`: cliente Supabase e migrations do banco.
 - `src/contexts`: contextos globais.
 - `src/hooks`: hooks compartilhados.
@@ -57,7 +57,7 @@ Antes de alterar schema ou dados iniciais:
 
 O painel administrativo fica em `src/pages/admin/AdminDashboard.tsx`. Ele organiza conteudo de perfil, home, site, projetos, artigos e curriculo. Os controles devem manter alinhamento consistente, botoes com largura adequada no mobile e acoes de remocao como icone na mesma linha do item removido.
 
-## SEO sem biblioteca nova
+## SEO
 
 O projeto aplica SEO em duas camadas:
 
