@@ -326,7 +326,8 @@ function ProjectArchitectureEditor({
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
         {(['clients', 'services', 'platform'] as Array<keyof ProjectArchitecture['layers']>).map((layer) => (
-          <AdminCard key={layer} title={layer === 'clients' ? 'Camada cliente' : layer === 'services' ? 'Camada serviços' : 'Camada plataforma'}>
+          <section key={layer} className="space-y-3">
+            <h4 className="text-base font-semibold text-foreground">{layer === 'clients' ? 'Camada cliente' : layer === 'services' ? 'Camada serviços' : 'Camada plataforma'}</h4>
             <div className="space-y-4">
               {value.layers[layer].map((node, index) => (
                 <div key={`${node.name}-${index}`} className="space-y-3 rounded-xl border border-border bg-background p-3">
@@ -377,7 +378,7 @@ function ProjectArchitectureEditor({
                 Adicionar item
               </Button>
             </div>
-          </AdminCard>
+          </section>
         ))}
       </div>
     </AdminCard>
@@ -513,19 +514,17 @@ function SiteContentEditor({
         </div>
       </AdminCard>
 
-      <AdminCard title="Blog, Projetos e Currículo" description="Muda títulos, descrições e mensagens das páginas de listagem e detalhe nos dois modos.">
-        <div className="grid gap-5 lg:grid-cols-3">
-          <AdminCard title="Blog">
-            <ContentObjectFields value={value.blog} labels={blogContentLabels} onChange={(blog) => update('blog', blog)} />
-          </AdminCard>
-          <AdminCard title="Projetos">
-            <ContentObjectFields value={value.projects} labels={projectsContentLabels} onChange={(projects) => update('projects', projects)} />
-          </AdminCard>
-          <AdminCard title="Currículo">
-            <ContentObjectFields value={value.resume} labels={resumeContentLabels} onChange={(resume) => update('resume', resume)} />
-          </AdminCard>
-        </div>
-      </AdminCard>
+      <div className="grid gap-5 lg:grid-cols-3">
+        <AdminCard title="Blog" description="Muda títulos, descrições e mensagens da listagem e detalhe de artigos.">
+          <ContentObjectFields value={value.blog} labels={blogContentLabels} onChange={(blog) => update('blog', blog)} />
+        </AdminCard>
+        <AdminCard title="Projetos" description="Muda títulos, descrições e mensagens da listagem e detalhe de projetos.">
+          <ContentObjectFields value={value.projects} labels={projectsContentLabels} onChange={(projects) => update('projects', projects)} />
+        </AdminCard>
+        <AdminCard title="Currículo" description="Muda mensagens e textos auxiliares do currículo.">
+          <ContentObjectFields value={value.resume} labels={resumeContentLabels} onChange={(resume) => update('resume', resume)} />
+        </AdminCard>
+      </div>
 
       <AdminCard title="Playground WebGL" description="Muda o topo, controles, cores e cards das experiências WebGL.">
         <div className="grid gap-4 md:grid-cols-2">
@@ -1554,7 +1553,11 @@ export default function AdminDashboard() {
                       <Input label="Cargo principal" value={experience.position} onChange={(event) => updateExperience(index, { position: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Local" value={experience.location} onChange={(event) => updateExperience(index, { location: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Período" value={experience.period} onChange={(event) => updateExperience(index, { period: event.target.value }, resumeForm, setResumeForm)} />
-                      <AdminCard title="Timeline de cargos" description="Aparece dentro desta experiência, em ordem.">
+                      <section className="space-y-3 md:col-span-2">
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">Timeline de cargos</h3>
+                          <p className="mt-1 text-sm leading-6 text-muted-foreground">Aparece dentro desta experiência, em ordem.</p>
+                        </div>
                         <div className="space-y-3">
                           {experience.roles.map((role, roleIndex) => (
                             <div key={`${role.position}-${roleIndex}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
@@ -1600,7 +1603,7 @@ export default function AdminDashboard() {
                             Adicionar cargo
                           </Button>
                         </div>
-                      </AdminCard>
+                      </section>
                       <Textarea label="Responsabilidades, uma por linha" value={experience.responsibilities} onChange={(value) => updateExperience(index, { responsibilities: value }, resumeForm, setResumeForm)} rows={5} />
                       <div className="flex justify-end md:col-span-2">
                         <Button type="button" variant="destructive" className="min-w-44" onClick={() => setResumeForm({ ...resumeForm, experiences: resumeForm.experiences.filter((_, itemIndex) => itemIndex !== index) })}>
