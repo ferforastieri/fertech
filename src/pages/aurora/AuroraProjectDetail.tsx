@@ -6,6 +6,7 @@ import { projectSlug } from '@/api/projects/projectRoutes'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
 import { useSiteContent } from '@/api/site/useSiteContent'
+import { ProjectDetailsShowcase } from '@/components/projects/ProjectDetailsShowcase'
 
 export default function AuroraProjectDetail() {
   const { projectId } = useParams()
@@ -46,6 +47,7 @@ export default function AuroraProjectDetail() {
             </a>
           )}
         </article>
+        <ProjectDetailsShowcase project={project} variant="aurora" />
         {project.architecture && <ArchitectureExplorer architecture={project.architecture} copy={copy.architecture} />}
       </div>
     </AuroraPageReveal>

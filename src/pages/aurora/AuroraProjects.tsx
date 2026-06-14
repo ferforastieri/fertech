@@ -7,13 +7,13 @@ import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProje
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
-import { isExternalUrl, projectDetailPath } from '@/api/projects/projectRoutes'
+import { projectDetailPath } from '@/api/projects/projectRoutes'
 import { SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 
 gsap.registerPlugin(ScrollTrigger)
 
 function ProjectRow({ project, copy }: { project: Project; copy: SiteContent }) {
-  const detailUrl = project.projectUrl || projectDetailPath(project, true)
+  const detailUrl = projectDetailPath(project, true)
 
   return (
     <article className="project-reveal py-10 transition duration-300 first:pt-4 last:pb-4">
@@ -34,15 +34,9 @@ function ProjectRow({ project, copy }: { project: Project; copy: SiteContent }) 
         ))}
       </div>
       <div className="mt-6 flex flex-wrap gap-3">
-        {isExternalUrl(detailUrl) ? (
-          <a href={detailUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-rose-900 px-5 py-2.5 text-sm font-semibold text-white">
-            {copy.common.viewProject} <ArrowRightIcon className="h-4 w-4" />
-          </a>
-        ) : (
-          <Link to={detailUrl} className="inline-flex items-center gap-2 rounded-full bg-rose-900 px-5 py-2.5 text-sm font-semibold text-white">
-            {copy.common.viewProject} <ArrowRightIcon className="h-4 w-4" />
-          </Link>
-        )}
+        <Link to={detailUrl} className="inline-flex items-center gap-2 rounded-full bg-rose-900 px-5 py-2.5 text-sm font-semibold text-white">
+          {copy.common.viewProject} <ArrowRightIcon className="h-4 w-4" />
+        </Link>
         {project.siteUrl && (
           <a href={project.siteUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/16 px-5 py-2.5 text-sm font-semibold text-white">
             {copy.common.viewSite} <ArrowTopRightOnSquareIcon className="h-4 w-4" />

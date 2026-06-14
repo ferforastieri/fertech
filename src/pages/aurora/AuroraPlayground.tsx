@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import {
   ArrowPathIcon,
   CursorArrowRaysIcon,
@@ -14,11 +14,83 @@ import {
 } from '@/components/playground/WebGLPlayground'
 import {
   PulseGridExperiment,
+  AimGameExperiment,
+  LandingHeroExperiment,
+  ParticleTunnelExperiment,
   SignalSculptureExperiment,
+  TerrainWaveExperiment,
 } from '@/components/playground/WebGLExperiments'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
-import { ArchitectureLab } from '@/components/playground/ArchitectureLab'
 import { useSiteContent } from '@/api/site/useSiteContent'
+
+type ExperimentCopy = {
+  eyebrow: string
+  title: string
+  description: string
+}
+
+const experimentFallbacks: ExperimentCopy[] = [
+  {
+    eyebrow: 'Interactive field',
+    title: 'Canvas de partículas',
+    description: 'Cena interativa com desenho, órbita, ondas e caos procedural.',
+  },
+  {
+    eyebrow: 'Landing page',
+    title: 'Hero 3D modular',
+    description: 'Mini landing page com cards flutuantes, texto em WebGL e objeto central distorcido.',
+  },
+  {
+    eyebrow: 'Sculpture',
+    title: 'Escultura de sinal',
+    description: 'Forma orgânica com distorção, luz emissiva e rotação lenta para página editorial.',
+  },
+  {
+    eyebrow: 'Data pulse',
+    title: 'Grid de pulsos',
+    description: 'Visualização generativa para dados, infra e sinais de produto.',
+  },
+  {
+    eyebrow: 'Particles',
+    title: 'Túnel de partículas',
+    description: 'Partículas em profundidade com movimento contínuo, inspirado em shaders e experiências imersivas.',
+  },
+  {
+    eyebrow: 'Terrain',
+    title: 'Terreno procedural',
+    description: 'Malha WebGL deformada em tempo real para simular superfície, água ou topografia.',
+  },
+  {
+    eyebrow: 'Mini game',
+    title: 'Aim trainer',
+    description: 'Micro jogo clicável com alvos 3D, pontuação e reposicionamento procedural.',
+  },
+]
+
+function getExperimentCopy(experiments: ExperimentCopy[], index: number) {
+  return experiments[index] ?? experimentFallbacks[index] ?? experimentFallbacks[0]
+}
+
+function ExperimentCard({
+  copy,
+  accent = 'text-rose-400',
+  children,
+}: {
+  copy: ExperimentCopy
+  accent?: string
+  children: ReactNode
+}) {
+  return (
+    <article className="overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.04]">
+      <div className="p-6 md:p-8">
+        <p className={`text-xs uppercase tracking-[0.28em] ${accent}`}>{copy.eyebrow}</p>
+        <h2 className="mt-3 text-3xl font-bold">{copy.title}</h2>
+        <p className="mt-3 text-white/60">{copy.description}</p>
+      </div>
+      <div className="h-[32rem] border-t border-white/10">{children}</div>
+    </article>
+  )
+}
 
 export default function AuroraPlayground() {
   const { data: siteContent } = useSiteContent()
@@ -72,18 +144,18 @@ export default function AuroraPlayground() {
       <div className="mx-auto max-w-6xl space-y-10">
       <section className="overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.04]">
         <div className="border-b border-white/10 p-6 md:p-8">
-          <p className="text-xs uppercase tracking-[0.28em] text-rose-400">{copy.experiments[0].eyebrow}</p>
-          <h2 className="mt-3 text-3xl font-bold md:text-4xl">{copy.experiments[0].title}</h2>
-          <p className="mt-3 max-w-2xl text-white/60">{copy.experiments[0].description}</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-rose-400">{getExperimentCopy(copy.experiments, 0).eyebrow}</p>
+          <h2 className="mt-3 text-3xl font-bold md:text-4xl">{getExperimentCopy(copy.experiments, 0).title}</h2>
+          <p className="mt-3 max-w-2xl text-white/60">{getExperimentCopy(copy.experiments, 0).description}</p>
         </div>
-        <div className="relative h-[72svh] min-h-[620px] overflow-hidden">
-        <div className="absolute inset-0">
+        <div className="grid gap-0 lg:grid-cols-[1fr_24rem]">
+        <div className="h-[70svh] min-h-[560px] overflow-hidden">
           <WebGLPlayground settings={settings} clearToken={clearToken} />
         </div>
 
         <aside
           data-playground-controls
-          className="absolute bottom-3 left-3 right-3 z-20 rounded-2xl border border-white/14 bg-black/78 p-4 text-white shadow-2xl backdrop-blur-xl md:bottom-6 md:left-6 md:right-auto md:w-[25rem]"
+          className="border-t border-white/10 bg-black/48 p-5 text-white backdrop-blur-xl lg:border-l lg:border-t-0"
         >
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -138,7 +210,9 @@ export default function AuroraPlayground() {
           ))}
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/42">Paleta fora da animação</p>
+        <div className="mt-3 flex flex-wrap gap-2">
           {colors.map((color) => (
             <button
               key={color}
@@ -152,6 +226,7 @@ export default function AuroraPlayground() {
               aria-label={`Usar cor ${color}`}
             />
           ))}
+        </div>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -208,26 +283,25 @@ export default function AuroraPlayground() {
       </section>
 
       <section className="grid gap-10 lg:grid-cols-2">
-        <article className="overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.04]">
-          <div className="p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-rose-400">{copy.experiments[1].eyebrow}</p>
-            <h2 className="mt-3 text-3xl font-bold">{copy.experiments[1].title}</h2>
-            <p className="mt-3 text-white/60">{copy.experiments[1].description}</p>
-          </div>
-          <div className="h-[32rem] border-t border-white/10"><SignalSculptureExperiment /></div>
-        </article>
-
-        <article className="overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.04]">
-          <div className="p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-violet-400">{copy.experiments[2].eyebrow}</p>
-            <h2 className="mt-3 text-3xl font-bold">{copy.experiments[2].title}</h2>
-            <p className="mt-3 text-white/60">{copy.experiments[2].description}</p>
-          </div>
-          <div className="h-[32rem] border-t border-white/10"><PulseGridExperiment /></div>
-        </article>
+        <ExperimentCard copy={getExperimentCopy(copy.experiments, 1)} accent="text-cyan-300">
+          <LandingHeroExperiment />
+        </ExperimentCard>
+        <ExperimentCard copy={getExperimentCopy(copy.experiments, 2)} accent="text-rose-400">
+          <SignalSculptureExperiment />
+        </ExperimentCard>
+        <ExperimentCard copy={getExperimentCopy(copy.experiments, 3)} accent="text-violet-400">
+          <PulseGridExperiment />
+        </ExperimentCard>
+        <ExperimentCard copy={getExperimentCopy(copy.experiments, 4)} accent="text-cyan-300">
+          <ParticleTunnelExperiment />
+        </ExperimentCard>
+        <ExperimentCard copy={getExperimentCopy(copy.experiments, 5)} accent="text-violet-300">
+          <TerrainWaveExperiment />
+        </ExperimentCard>
+        <ExperimentCard copy={getExperimentCopy(copy.experiments, 6)} accent="text-rose-300">
+          <AimGameExperiment />
+        </ExperimentCard>
       </section>
-
-      <ArchitectureLab copy={copy} />
       </div>
     </div>
     </AuroraPageReveal>

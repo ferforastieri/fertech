@@ -2,11 +2,11 @@ import { Badge, Skeleton } from '@/components/ui/feedback'
 import { Link, useLocation } from 'react-router-dom'
 import { ArrowRightIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Project, useProjectGroups } from '@/api/projects/useProjectGroups'
-import { isExternalUrl, projectDetailPath } from '@/api/projects/projectRoutes'
+import { projectDetailPath } from '@/api/projects/projectRoutes'
 import { SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 
 function ProjectItem({ project, classic, copy }: { project: Project; classic: boolean; copy: SiteContent }) {
-  const detailUrl = project.projectUrl || `${classic ? '/classic' : ''}${projectDetailPath(project)}`
+  const detailUrl = `${classic ? '/classic' : ''}${projectDetailPath(project)}`
 
   return (
     <article className="py-10 first:pt-6 last:pb-6 transition-colors">
@@ -35,15 +35,9 @@ function ProjectItem({ project, classic, copy }: { project: Project; classic: bo
             ))}
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
-            {isExternalUrl(detailUrl) ? (
-              <a href={detailUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-                {copy.common.viewProject} <ArrowRightIcon className="h-4 w-4" />
-              </a>
-            ) : (
-              <Link to={detailUrl} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-                {copy.common.viewProject} <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-            )}
+            <Link to={detailUrl} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+              {copy.common.viewProject} <ArrowRightIcon className="h-4 w-4" />
+            </Link>
             {project.siteUrl && (
               <a href={project.siteUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground">
                 {copy.common.viewSite} <ArrowTopRightOnSquareIcon className="h-4 w-4" />

@@ -65,6 +65,7 @@ create table if not exists public.projects (
   project_url text,
   site_url text,
   architecture jsonb,
+  details jsonb,
   sort_order integer not null default 0,
   updated_at timestamptz not null default now()
 );
@@ -72,6 +73,7 @@ create table if not exists public.projects (
 alter table public.projects add column if not exists project_url text;
 alter table public.projects add column if not exists site_url text;
 alter table public.projects add column if not exists architecture jsonb;
+alter table public.projects add column if not exists details jsonb;
 
 update public.projects
 set site_url = url

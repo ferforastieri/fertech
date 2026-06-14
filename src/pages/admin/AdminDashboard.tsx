@@ -7,7 +7,7 @@ import { Button, Input } from '@/components/ui/forms'
 import { Article, ArticleKind, useArticleList } from '@/api/articles/useArticleList'
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { useHomeContent } from '@/api/home/useHomeContent'
-import { ArchitectureNode, Project, ProjectArchitecture, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
+import { ArchitectureNode, Project, ProjectArchitecture, ProjectDetails, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeContent'
 import { supabase } from '@/config/supabase/client'
 import { useStoredTheme } from '@/hooks/theme/useStoredTheme'
@@ -86,6 +86,7 @@ type ProjectForm = {
   projectUrl: string
   siteUrl: string
   architecture: ProjectArchitecture | null
+  details: ProjectDetails
   sortOrder: number
 }
 
@@ -204,19 +205,56 @@ function Textarea({
   )
 }
 
+function FileUploadButton({
+  label,
+  helper,
+  disabled,
+  onFile,
+}: {
+  label: string
+  helper?: string
+  disabled?: boolean
+  onFile: (file: File) => void
+}) {
+  return (
+    <label
+      className={`flex h-10 cursor-pointer items-center justify-between gap-3 rounded-xl border border-border bg-background px-3 text-sm text-foreground transition hover:bg-accent hover:text-accent-foreground ${
+        disabled ? 'pointer-events-none opacity-60' : ''
+      }`}
+    >
+      <span className="truncate font-medium">{label}</span>
+      {helper && <span className="hidden truncate text-xs text-muted-foreground sm:block">{helper}</span>}
+      <input
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+        className="sr-only"
+        disabled={disabled}
+        onChange={(event) => {
+          const file = event.target.files?.[0]
+          if (file) onFile(file)
+          event.target.value = ''
+        }}
+      />
+    </label>
+  )
+}
+
 function AdminSection({
   title,
+  description,
   children,
 }: {
   title: string
+  description?: string
   children: React.ReactNode
 }) {
   return (
-    <section className="space-y-5">
-      <div className="pb-1">
+    <section className="space-y-6">
+      <div className="border-b border-border pb-4">
         <h2 className="text-2xl font-bold text-foreground">{title}</h2>
+        {description && <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>}
       </div>
-      <div>{children}</div>
+      <div className="space-y-6">{children}</div>
     </section>
   )
 }
@@ -246,12 +284,73 @@ function AdminCard({
   )
 }
 
+function AdminInlineSection({
+  title,
+  description,
+  children,
+  action,
+}: {
+  title: string
+  description?: string
+  children: React.ReactNode
+  action?: React.ReactNode
+}) {
+  return (
+    <section className="space-y-4 border-t border-border/70 pt-5 first:border-t-0 first:pt-0">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+          {description && <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>}
+        </div>
+        {action}
+      </div>
+      {children}
+    </section>
+  )
+}
+
 function cloneSiteContent(content: SiteContent): SiteContent {
   return structuredClone(content)
 }
 
 function cloneArchitecture(architecture: ProjectArchitecture | undefined): ProjectArchitecture | null {
   return architecture ? structuredClone(architecture) : null
+}
+
+function cloneProjectDetails(details: ProjectDetails | undefined): ProjectDetails {
+  return details ? structuredClone(details) : createProjectDetails()
+}
+
+function createProjectDetails(): ProjectDetails {
+  return {
+    headline: '',
+    overview: '',
+    role: '',
+    period: '',
+    repositoryPath: '',
+    stack: [],
+    highlights: [],
+    responsibilities: [],
+    modules: [],
+    flows: [],
+    metrics: [],
+    learnings: [],
+  }
+}
+
+function createDetailModule() {
+  return {
+    title: '',
+    description: '',
+    technologies: [],
+  }
+}
+
+function createDetailFlow() {
+  return {
+    title: '',
+    steps: [],
+  }
 }
 
 function createArchitecture(): ProjectArchitecture {
@@ -285,7 +384,7 @@ function ProjectArchitectureEditor({
 }) {
   if (!value) {
     return (
-      <AdminCard
+      <AdminInlineSection
         title="Arquitetura do projeto"
         description="Aparece na página de detalhe do projeto, abaixo da apresentação. Ative somente quando quiser mostrar camadas, tecnologias e pastas desse projeto."
         action={
@@ -295,7 +394,7 @@ function ProjectArchitectureEditor({
         }
       >
         <p className="text-sm text-muted-foreground">Este projeto ainda não tem seção de arquitetura.</p>
-      </AdminCard>
+      </AdminInlineSection>
     )
   }
 
@@ -304,7 +403,7 @@ function ProjectArchitectureEditor({
   }
 
   return (
-    <AdminCard
+    <AdminInlineSection
       title="Arquitetura do projeto"
       description="Aparece no detalhe do projeto. Use camadas para explicar clientes, serviços e plataforma."
       action={
@@ -330,7 +429,7 @@ function ProjectArchitectureEditor({
             <h4 className="text-base font-semibold text-foreground">{layer === 'clients' ? 'Camada cliente' : layer === 'services' ? 'Camada serviços' : 'Camada plataforma'}</h4>
             <div className="space-y-4">
               {value.layers[layer].map((node, index) => (
-                <div key={`${node.name}-${index}`} className="space-y-3 rounded-xl border border-border bg-background p-3">
+                <div key={`${node.name}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
                   <Input
                     label="Nome"
                     value={node.name}
@@ -381,7 +480,94 @@ function ProjectArchitectureEditor({
           </section>
         ))}
       </div>
-    </AdminCard>
+    </AdminInlineSection>
+  )
+}
+
+function ProjectDetailsEditor({
+  value,
+  onChange,
+}: {
+  value: ProjectDetails
+  onChange: (value: ProjectDetails) => void
+}) {
+  return (
+    <AdminInlineSection
+      title="Detalhes do projeto"
+      description="Aparece na página interna de detalhe quando o usuário clica em Ver projeto. Use estes campos para explicar profundamente contexto, módulos, fluxos e decisões técnicas."
+    >
+      <div className="grid gap-4 md:grid-cols-2">
+        <Input label="Headline da página" value={value.headline} onChange={(event) => onChange({ ...value, headline: event.target.value })} />
+        <Input label="Seu papel no projeto" value={value.role} onChange={(event) => onChange({ ...value, role: event.target.value })} />
+        <Input label="Período ou contexto" value={value.period} onChange={(event) => onChange({ ...value, period: event.target.value })} />
+        <Input label="Caminho do repositório local" value={value.repositoryPath} onChange={(event) => onChange({ ...value, repositoryPath: event.target.value })} />
+        <div className="md:col-span-2">
+          <Textarea label="Visão geral detalhada" value={value.overview} onChange={(overview) => onChange({ ...value, overview })} rows={5} />
+        </div>
+        <Textarea label="Stack principal, uma por linha" value={formatTextList(value.stack)} onChange={(stack) => onChange({ ...value, stack: parseTextList(stack) })} rows={6} />
+        <Textarea label="Destaques técnicos, um por linha" value={formatTextList(value.highlights)} onChange={(highlights) => onChange({ ...value, highlights: parseTextList(highlights) })} rows={6} />
+        <Textarea label="Responsabilidades, uma por linha" value={formatTextList(value.responsibilities)} onChange={(responsibilities) => onChange({ ...value, responsibilities: parseTextList(responsibilities) })} rows={6} />
+        <Textarea label="Métricas/resultados, um por linha" value={formatTextList(value.metrics)} onChange={(metrics) => onChange({ ...value, metrics: parseTextList(metrics) })} rows={6} />
+        <div className="md:col-span-2">
+          <Textarea label="Aprendizados e decisões, um por linha" value={formatTextList(value.learnings)} onChange={(learnings) => onChange({ ...value, learnings: parseTextList(learnings) })} rows={5} />
+        </div>
+      </div>
+
+      <section className="space-y-4 border-t border-border/70 pt-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h4 className="text-base font-semibold text-foreground">Módulos do projeto</h4>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">Explique partes como API, app, painel, workers, integrações e infraestrutura.</p>
+          </div>
+          <Button type="button" variant="outline" onClick={() => onChange({ ...value, modules: [...value.modules, createDetailModule()] })}>
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Adicionar módulo
+          </Button>
+        </div>
+        <div className="space-y-4">
+          {value.modules.map((module, index) => (
+            <div key={`${module.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
+              <Input label="Nome do módulo" value={module.title} onChange={(event) => onChange({ ...value, modules: value.modules.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+              <Textarea label="Tecnologias do módulo, uma por linha" value={formatTextList(module.technologies)} onChange={(technologies) => onChange({ ...value, modules: value.modules.map((item, itemIndex) => (itemIndex === index ? { ...item, technologies: parseTextList(technologies) } : item)) })} rows={4} />
+              <div className="md:col-span-2">
+                <Textarea label="Descrição do módulo" value={module.description} onChange={(description) => onChange({ ...value, modules: value.modules.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
+              </div>
+              <div className="flex justify-end md:col-span-2">
+                <Button type="button" variant="destructive" onClick={() => onChange({ ...value, modules: value.modules.filter((_, itemIndex) => itemIndex !== index) })}>
+                  Remover módulo
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-4 border-t border-border/70 pt-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h4 className="text-base font-semibold text-foreground">Fluxos importantes</h4>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">Use para mostrar jornadas como autenticação, upload, integração, notificações ou processamento.</p>
+          </div>
+          <Button type="button" variant="outline" onClick={() => onChange({ ...value, flows: [...value.flows, createDetailFlow()] })}>
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Adicionar fluxo
+          </Button>
+        </div>
+        <div className="space-y-4">
+          {value.flows.map((flow, index) => (
+            <div key={`${flow.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
+              <Input label="Nome do fluxo" value={flow.title} onChange={(event) => onChange({ ...value, flows: value.flows.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
+              <Textarea label="Passos do fluxo, um por linha" value={formatTextList(flow.steps)} onChange={(steps) => onChange({ ...value, flows: value.flows.map((item, itemIndex) => (itemIndex === index ? { ...item, steps: parseTextList(steps) } : item)) })} rows={5} />
+              <div className="flex justify-end md:col-span-2">
+                <Button type="button" variant="destructive" onClick={() => onChange({ ...value, flows: value.flows.filter((_, itemIndex) => itemIndex !== index) })}>
+                  Remover fluxo
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </AdminInlineSection>
   )
 }
 
@@ -405,6 +591,14 @@ function createPattern(index: number): PlaygroundPattern {
   }
 }
 
+function createPlaygroundExperiment(index: number) {
+  return {
+    eyebrow: `Experimento ${index + 1}`,
+    title: '',
+    description: '',
+  }
+}
+
 function TreeNodeEditor({
   node,
   depth = 0,
@@ -419,7 +613,7 @@ function TreeNodeEditor({
   const children = node.children ?? []
 
   return (
-    <div className="space-y-3 rounded-xl border border-border bg-background p-3" style={{ marginLeft: depth ? `${Math.min(depth * 1.25, 3)}rem` : undefined }}>
+    <div className="space-y-3 border-b border-border/60 pb-4 last:border-b-0" style={{ marginLeft: depth ? `${Math.min(depth * 1.25, 3)}rem` : undefined }}>
       <div className="grid gap-3 md:grid-cols-2">
         <Input label="Nome da pasta ou arquivo" value={node.name} onChange={(event) => onChange({ ...node, name: event.target.value })} />
         <Textarea label="Tecnologias mostradas, uma por linha" value={formatTextList(node.technologies)} onChange={(technologies) => onChange({ ...node, technologies: parseTextList(technologies) })} rows={3} />
@@ -491,7 +685,7 @@ function SiteContentEditor({
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {value.gateway.modes.map((mode, index) => (
-            <div key={mode.id} className="space-y-3 rounded-xl border border-border bg-background p-3">
+            <div key={mode.id} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
               <Input label={`Modo ${mode.id}: nome`} value={mode.name} onChange={(event) => update('gateway', { ...value.gateway, modes: value.gateway.modes.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
               <Input label="Público" value={mode.audience} onChange={(event) => update('gateway', { ...value.gateway, modes: value.gateway.modes.map((item, itemIndex) => (itemIndex === index ? { ...item, audience: event.target.value } : item)) })} />
               <Input label="Destino" value={mode.href} onChange={(event) => update('gateway', { ...value.gateway, modes: value.gateway.modes.map((item, itemIndex) => (itemIndex === index ? { ...item, href: event.target.value } : item)) })} />
@@ -555,12 +749,21 @@ function SiteContentEditor({
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {value.playground.experiments.map((experiment, index) => (
-            <div key={`${experiment.title}-${index}`} className="space-y-3 rounded-xl border border-border bg-background p-3">
+            <div key={`${experiment.title}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
               <Input label={`Experimento ${index + 1}: chamada`} value={experiment.eyebrow} onChange={(event) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, eyebrow: event.target.value } : item)) })} />
               <Input label="Título" value={experiment.title} onChange={(event) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
               <Textarea label="Descrição" value={experiment.description} onChange={(description) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
+              <Button type="button" variant="destructive" className="w-full" onClick={() => update('playground', { ...value.playground, experiments: value.playground.experiments.filter((_, itemIndex) => itemIndex !== index) })}>
+                Remover experimento
+              </Button>
             </div>
           ))}
+        </div>
+        <div className="mt-4 flex justify-end">
+          <Button type="button" variant="outline" onClick={() => update('playground', { ...value.playground, experiments: [...value.playground.experiments, createPlaygroundExperiment(value.playground.experiments.length)] })}>
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Adicionar experimento
+          </Button>
         </div>
       </AdminCard>
 
@@ -591,7 +794,7 @@ function SiteContentEditor({
         <h4 className="mt-6 text-base font-semibold">Design patterns</h4>
         <div className="mt-3 grid gap-4 md:grid-cols-2">
           {value.playground.architecture.patterns.map((pattern, index) => (
-            <div key={`${pattern.id}-${index}`} className="space-y-3 rounded-xl border border-border bg-background p-3">
+            <div key={`${pattern.id}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
               <Input label="Identificador" value={pattern.id} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, id: slugify(event.target.value) || event.target.value } : item)) } })} />
               <Input label="Nome do pattern" value={pattern.name} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) } })} />
               <Input label="Categoria" value={pattern.category} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, category: event.target.value } : item)) } })} />
@@ -1003,10 +1206,11 @@ export default function AdminDashboard() {
           description: project.description,
           logo: project.logo,
           tags: parseTextList(project.tags),
-          project_url: project.projectUrl || null,
+          project_url: null,
           site_url: project.siteUrl || null,
           url: project.siteUrl || null,
           architecture: project.architecture,
+          details: project.details,
           sort_order: projectIndex,
         })),
       )
@@ -1143,7 +1347,7 @@ export default function AdminDashboard() {
           <div className="flex flex-wrap items-center justify-end gap-3">
             {status && <Badge variant={status.includes('Erro') || status.includes('policy') ? 'destructive' : 'secondary'}>{status}</Badge>}
             <ThemeToggle theme={theme} onToggle={toggleTheme} variant="outline" size="lg" />
-            <Button type="button" variant="ghost" className="min-w-20" onClick={handleLogout}>
+            <Button type="button" variant="outline" className="min-w-20" onClick={handleLogout}>
               Sair
             </Button>
           </div>
@@ -1169,63 +1373,57 @@ export default function AdminDashboard() {
         ) : (
           <>
             {activeTab === 'profile' && (
-              <AdminSection title="Perfil">
+              <AdminSection title="Perfil" description="Dados principais usados no topo do site, navegação social, apresentação pessoal e destaques da Home tradicional.">
                 <div className="grid gap-4 md:grid-cols-2">
                   <Input label="Nome" value={profileForm.name} onChange={(event) => setProfileForm({ ...profileForm, name: event.target.value })} />
                   <Input label="Cargo" value={profileForm.role} onChange={(event) => setProfileForm({ ...profileForm, role: event.target.value })} />
                   <Input label="Contato" value={profileForm.contactUrl} onChange={(event) => setProfileForm({ ...profileForm, contactUrl: event.target.value })} />
                   <Input label="Intro" value={profileForm.intro} onChange={(event) => setProfileForm({ ...profileForm, intro: event.target.value })} />
                 </div>
-                <div className="mt-4 grid gap-4 md:grid-cols-[1fr_auto]">
+                <div className="grid gap-4 md:grid-cols-[1fr_auto]">
                   <Input label="Logo do site" value={profileForm.logoUrl} onChange={(event) => setProfileForm({ ...profileForm, logoUrl: event.target.value })} />
-                  <label className="self-end">
-                    <span className="sr-only">Enviar logo do site</span>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                      className="block h-10 rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground"
+                  <div className="self-end">
+                    <FileUploadButton
+                      label={uploadingLogo === 'site' ? 'Enviando...' : 'Enviar logo'}
+                      helper="PNG, JPG, WebP ou SVG"
                       disabled={uploadingLogo === 'site'}
-                      onChange={(event) => {
-                        const file = event.target.files?.[0]
-                        if (file) {
-                          void uploadSiteLogo(file)
-                        }
-                        event.target.value = ''
-                      }}
+                      onFile={(file) => void uploadSiteLogo(file)}
                     />
-                  </label>
+                  </div>
                 </div>
-                <AdminCard title="Redes sociais" description="Aparecem no topo, rodapé ou navegação social do site.">
-                  <div className="space-y-3">
-                    {profileForm.socialLinks.map((social, index) => (
-                      <div key={`${social.name}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-3">
-                        <Input label="Nome" value={social.name} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
-                        <Input label="URL" value={social.href} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, href: event.target.value } : item)) })} />
-                        <Input label="Ícone" value={social.icon} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
-                        <div className="flex justify-end md:col-span-3">
-                          <Button type="button" variant="destructive" onClick={() => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.filter((_, itemIndex) => itemIndex !== index) })}>
-                            Remover rede
-                          </Button>
+                <div>
+                  <AdminInlineSection title="Redes sociais" description="Aparecem no topo, rodapé ou navegação social do site.">
+                    <div className="space-y-4">
+                      {profileForm.socialLinks.map((social, index) => (
+                        <div key={`${social.name}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-3">
+                          <Input label="Nome" value={social.name} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
+                          <Input label="URL" value={social.href} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, href: event.target.value } : item)) })} />
+                          <Input label="Ícone" value={social.icon} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
+                          <div className="flex justify-end md:col-span-3">
+                            <Button type="button" variant="destructive" onClick={() => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.filter((_, itemIndex) => itemIndex !== index) })}>
+                              Remover rede
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-3 flex justify-end">
-                    <Button type="button" variant="outline" onClick={() => setProfileForm({ ...profileForm, socialLinks: [...profileForm.socialLinks, { name: '', href: '', icon: 'link' }] })}>
-                      <PlusIcon className="mr-2 h-4 w-4" />
-                      Adicionar rede
-                    </Button>
-                  </div>
-                </AdminCard>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                      ))}
+                    </div>
+                    <div className="mt-3 flex justify-end">
+                      <Button type="button" variant="outline" onClick={() => setProfileForm({ ...profileForm, socialLinks: [...profileForm.socialLinks, { name: '', href: '', icon: 'link' }] })}>
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        Adicionar rede
+                      </Button>
+                    </div>
+                  </AdminInlineSection>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
                   <Textarea label="Tecnologias, uma por linha" value={profileForm.technologies} onChange={(value) => setProfileForm({ ...profileForm, technologies: value })} rows={8} />
                   <Textarea label="Sobre, um parágrafo por linha" value={profileForm.aboutParagraphs} onChange={(value) => setProfileForm({ ...profileForm, aboutParagraphs: value })} rows={8} />
                 </div>
-                <div className="mt-4">
-                  <AdminCard title="Destaques" description="Aparecem na Home tradicional como cards de diferenciais.">
-                    <div className="space-y-3">
+                <div>
+                  <AdminInlineSection title="Destaques" description="Aparecem na Home tradicional como cards de diferenciais.">
+                    <div className="space-y-4">
                       {profileForm.highlights.map((highlight, index) => (
-                        <div key={`${highlight.title}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
+                        <div key={`${highlight.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
                           <Input label="Ícone" value={highlight.icon} onChange={(event) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
                           <Input label="Título" value={highlight.title} onChange={(event) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
                           <div className="md:col-span-2">
@@ -1245,9 +1443,9 @@ export default function AdminDashboard() {
                         Adicionar destaque
                       </Button>
                     </div>
-                  </AdminCard>
+                  </AdminInlineSection>
                 </div>
-                <div className="mt-5 flex justify-end">
+                <div className="flex justify-end">
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveProfile}>
                     Salvar perfil
                   </Button>
@@ -1256,24 +1454,24 @@ export default function AdminDashboard() {
             )}
 
             {activeTab === 'home' && (
-              <AdminSection title="Home">
+              <AdminSection title="Home" description="Textos e blocos que aparecem na página inicial dos modos tradicional e Aurora.">
                 <div className="grid gap-4 md:grid-cols-2">
                   <Input label="Chamada superior" value={homeForm.heroEyebrow} onChange={(event) => setHomeForm({ ...homeForm, heroEyebrow: event.target.value })} />
                   <Input label="Título de impacto" value={homeForm.heroHeadline} onChange={(event) => setHomeForm({ ...homeForm, heroHeadline: event.target.value })} />
                 </div>
-                <div className="mt-4">
+                <div>
                   <Textarea label="Apresentação principal" value={homeForm.heroDescription} onChange={(value) => setHomeForm({ ...homeForm, heroDescription: value })} rows={4} />
                 </div>
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-3">
                   <Input label="Botão de projetos" value={homeForm.projectsButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsButtonLabel: event.target.value })} />
                   <Input label="Botão de currículo" value={homeForm.resumeButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, resumeButtonLabel: event.target.value })} />
                   <Input label="Botão de contato" value={homeForm.contactButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, contactButtonLabel: event.target.value })} />
                 </div>
-                <div className="mt-4">
-                  <AdminCard title="Grupos da stack" description="Aparecem na Home como blocos de capacidades e tecnologias.">
-                    <div className="space-y-3">
+                <div>
+                  <AdminInlineSection title="Grupos da stack" description="Aparecem na Home como blocos de capacidades e tecnologias.">
+                    <div className="space-y-4">
                       {homeForm.stackGroups.map((group, index) => (
-                        <div key={`${group.title}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
+                        <div key={`${group.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
                           <Input label="Título do grupo" value={group.title} onChange={(event) => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
                           <Textarea label="Itens, um por linha" value={group.items} onChange={(items) => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.map((item, itemIndex) => (itemIndex === index ? { ...item, items } : item)) })} rows={5} />
                           <div className="flex justify-end md:col-span-2">
@@ -1290,9 +1488,9 @@ export default function AdminDashboard() {
                         Adicionar grupo
                       </Button>
                     </div>
-                  </AdminCard>
+                  </AdminInlineSection>
                 </div>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   <Input label="Tradicional: título sobre" value={homeForm.classicAboutTitle} onChange={(event) => setHomeForm({ ...homeForm, classicAboutTitle: event.target.value })} />
                   <Input label="Tradicional: título diferenciais" value={homeForm.classicHighlightsTitle} onChange={(event) => setHomeForm({ ...homeForm, classicHighlightsTitle: event.target.value })} />
                   <Input label="Tradicional: título capacidades" value={homeForm.classicCapabilitiesTitle} onChange={(event) => setHomeForm({ ...homeForm, classicCapabilitiesTitle: event.target.value })} />
@@ -1307,10 +1505,10 @@ export default function AdminDashboard() {
                   <Input label="Título do blog" value={homeForm.blogTitle} onChange={(event) => setHomeForm({ ...homeForm, blogTitle: event.target.value })} />
                   <Input label="Título do contato" value={homeForm.contactTitle} onChange={(event) => setHomeForm({ ...homeForm, contactTitle: event.target.value })} />
                 </div>
-                <div className="mt-4">
+                <div>
                   <Textarea label="Descrição do contato" value={homeForm.contactDescription} onChange={(value) => setHomeForm({ ...homeForm, contactDescription: value })} rows={3} />
                 </div>
-                <div className="mt-5 flex justify-end">
+                <div className="flex justify-end">
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveHome}>
                     Salvar home
                   </Button>
@@ -1319,7 +1517,7 @@ export default function AdminDashboard() {
             )}
 
             {activeTab === 'projects' && (
-              <AdminSection title="Projetos">
+              <AdminSection title="Projetos" description="Empresas, cards, links e detalhes técnicos exibidos nas páginas de projetos dos dois modos.">
                 <div className="space-y-8">
                   {projectGroupsForm.map((group, groupIndex) => (
                     <div key={`${group.id}-${groupIndex}`} className="rounded-xl border border-border p-4">
@@ -1345,30 +1543,27 @@ export default function AdminDashboard() {
                             <Input label="Projeto" value={project.title} onChange={(event) => updateProject(groupIndex, projectIndex, { title: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
                             <div className="space-y-3">
                               <Input label="Logo" value={project.logo} onChange={(event) => updateProject(groupIndex, projectIndex, { logo: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
-                              <label className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-3 py-2 text-sm">
-                                <span className="truncate text-muted-foreground">
-                                  {uploadingLogo === `${groupIndex}-${projectIndex}` ? 'Enviando logo...' : 'Enviar nova logo'}
-                                </span>
-                                <input
-                                  type="file"
-                                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                                  className="max-w-44 text-xs"
-                                  disabled={uploadingLogo === `${groupIndex}-${projectIndex}`}
-                                  onChange={(event) => {
-                                    const file = event.target.files?.[0]
-                                    if (file) {
-                                      void uploadProjectLogo(groupIndex, projectIndex, file)
-                                    }
-                                    event.target.value = ''
-                                  }}
-                                />
-                              </label>
+                              <FileUploadButton
+                                label={uploadingLogo === `${groupIndex}-${projectIndex}` ? 'Enviando logo...' : 'Enviar nova logo'}
+                                helper="PNG, JPG, WebP ou SVG"
+                                disabled={uploadingLogo === `${groupIndex}-${projectIndex}`}
+                                onFile={(file) => void uploadProjectLogo(groupIndex, projectIndex, file)}
+                              />
                             </div>
-                            <Input label="Link de Ver projeto" value={project.projectUrl} onChange={(event) => updateProject(groupIndex, projectIndex, { projectUrl: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
-                            <Input label="Link de Ver site" value={project.siteUrl} onChange={(event) => updateProject(groupIndex, projectIndex, { siteUrl: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
+                            <div className="rounded-xl border border-border/70 p-4 text-sm leading-6 text-muted-foreground">
+                              <p className="font-semibold text-foreground">Botão Ver projeto</p>
+                              <p>Abre automaticamente a página interna de detalhes deste projeto. O conteúdo dessa página é controlado abaixo em Detalhes do projeto e Arquitetura.</p>
+                            </div>
+                            <Input label="Link do botão Ver site" value={project.siteUrl} onChange={(event) => updateProject(groupIndex, projectIndex, { siteUrl: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
                             <Textarea label="Tags, uma por linha" value={project.tags} onChange={(value) => updateProject(groupIndex, projectIndex, { tags: value }, projectGroupsForm, setProjectGroupsForm)} rows={4} />
                             <div className="md:col-span-2">
                               <Textarea label="Descrição" value={project.description} onChange={(value) => updateProject(groupIndex, projectIndex, { description: value }, projectGroupsForm, setProjectGroupsForm)} rows={3} />
+                            </div>
+                            <div className="md:col-span-2">
+                              <ProjectDetailsEditor
+                                value={project.details}
+                                onChange={(details) => updateProject(groupIndex, projectIndex, { details }, projectGroupsForm, setProjectGroupsForm)}
+                              />
                             </div>
                             <div className="md:col-span-2">
                               <ProjectArchitectureEditor
@@ -1393,7 +1588,7 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 flex flex-wrap justify-end gap-3">
+                <div className="flex flex-wrap justify-end gap-3">
                   <Button type="button" variant="outline" className="min-w-52" onClick={() => setProjectGroupsForm([...projectGroupsForm, createProjectGroupForm(projectGroupsForm.length)])}>
                     <PlusIcon className="mr-2 h-4 w-4" />
                     Adicionar empresa/grupo
@@ -1406,13 +1601,13 @@ export default function AdminDashboard() {
             )}
 
             {activeTab === 'content' && (
-              <AdminSection title="Conteúdo público do site">
+              <AdminSection title="Conteúdo público do site" description="Textos globais, navegação, mensagens de erro, labels e conteúdo do Playground usado no tradicional e no Aurora.">
                 {siteContentForm ? (
                   <SiteContentEditor value={siteContentForm} onChange={setSiteContentForm} />
                 ) : (
                   <div className="rounded-xl border border-border p-6 text-sm text-muted-foreground">Conteúdo do site ainda não carregou.</div>
                 )}
-                <div className="mt-5 flex justify-end">
+                <div className="flex justify-end">
                   <Button type="button" className="min-w-40" loading={isSaving} onClick={saveSiteContent}>
                     Salvar conteúdo
                   </Button>
@@ -1421,7 +1616,7 @@ export default function AdminDashboard() {
             )}
 
             {activeTab === 'articles' && (
-              <AdminSection title="Artigos">
+              <AdminSection title="Artigos" description="Posts profissionais e pessoais exibidos no Blog. Use o tipo para controlar em qual grupo o artigo aparece.">
                 <div className="space-y-5">
                   {articleForms.map((article, index) => (
                     <div key={`${article.slug}-${index}`} className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-2">
@@ -1455,7 +1650,7 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 flex flex-wrap justify-end gap-3">
+                <div className="flex flex-wrap justify-end gap-3">
                   <Button type="button" variant="outline" className="min-w-44" onClick={() => setArticleForms([...articleForms, createArticleForm(articleForms.length)])}>
                     <PlusIcon className="mr-2 h-4 w-4" />
                     Adicionar artigo
@@ -1468,16 +1663,16 @@ export default function AdminDashboard() {
             )}
 
             {activeTab === 'resume' && (
-              <AdminSection title="Currículo">
+              <AdminSection title="Currículo" description="Conteúdo usado na página de currículo e no PDF gerado pelo painel.">
                 <div className="grid gap-4 md:grid-cols-2">
                   <Textarea label="Sobre do currículo, um parágrafo por linha" value={resumeForm.aboutParagraphs} onChange={(value) => setResumeForm({ ...resumeForm, aboutParagraphs: value })} rows={6} />
                   <Textarea label="Habilidades técnicas, uma por linha" value={resumeForm.technologies} onChange={(value) => setResumeForm({ ...resumeForm, technologies: value })} rows={8} />
                 </div>
-                <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                  <AdminCard title="Idiomas" description="Aparecem na seção de idiomas do currículo e no PDF.">
-                    <div className="space-y-3">
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <AdminInlineSection title="Idiomas" description="Aparecem na seção de idiomas do currículo e no PDF.">
+                    <div className="space-y-4">
                       {resumeForm.languages.map((language, index) => (
-                        <div key={`${language.name}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
+                        <div key={`${language.name}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
                           <Input label="Idioma" value={language.name} onChange={(event) => setResumeForm({ ...resumeForm, languages: resumeForm.languages.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
                           <Input label="Descrição" value={language.description} onChange={(event) => setResumeForm({ ...resumeForm, languages: resumeForm.languages.map((item, itemIndex) => (itemIndex === index ? { ...item, description: event.target.value } : item)) })} />
                           <div className="flex justify-end md:col-span-2">
@@ -1494,12 +1689,12 @@ export default function AdminDashboard() {
                         Adicionar idioma
                       </Button>
                     </div>
-                  </AdminCard>
+                  </AdminInlineSection>
 
-                  <AdminCard title="Seções do currículo" description="Controla ordem, título e visibilidade das seções no currículo.">
-                    <div className="space-y-3">
+                  <AdminInlineSection title="Seções do currículo" description="Controla ordem, título e visibilidade das seções no currículo.">
+                    <div className="space-y-4">
                       {resumeForm.sections.map((section, index) => (
-                        <div key={`${section.key}-${index}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-[1fr_1fr_auto]">
+                        <div key={`${section.key}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto]">
                           <Input label="Chave técnica" value={section.key} onChange={(event) => setResumeForm({ ...resumeForm, sections: resumeForm.sections.map((item, itemIndex) => (itemIndex === index ? { ...item, key: event.target.value as ResumeSectionKey } : item)) })} />
                           <Input label="Título exibido" value={section.title} onChange={(event) => setResumeForm({ ...resumeForm, sections: resumeForm.sections.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
                           <label className="flex items-center gap-2 self-end rounded-xl border border-border px-3 py-2 text-sm">
@@ -1513,9 +1708,9 @@ export default function AdminDashboard() {
                         </div>
                       ))}
                     </div>
-                  </AdminCard>
+                  </AdminInlineSection>
                 </div>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   <Input label="Localização no PDF" value={resumeForm.location} onChange={(event) => setResumeForm({ ...resumeForm, location: event.target.value })} />
                   <Input label="Nome do arquivo PDF" value={resumeForm.pdfFilename} onChange={(event) => setResumeForm({ ...resumeForm, pdfFilename: event.target.value })} />
                   <Input label="Texto do botão de download" value={resumeForm.downloadLabel} onChange={(event) => setResumeForm({ ...resumeForm, downloadLabel: event.target.value })} />
@@ -1558,9 +1753,9 @@ export default function AdminDashboard() {
                           <h3 className="text-base font-semibold text-foreground">Timeline de cargos</h3>
                           <p className="mt-1 text-sm leading-6 text-muted-foreground">Aparece dentro desta experiência, em ordem.</p>
                         </div>
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                           {experience.roles.map((role, roleIndex) => (
-                            <div key={`${role.position}-${roleIndex}`} className="grid gap-3 rounded-xl border border-border bg-background p-3 md:grid-cols-2">
+                            <div key={`${role.position}-${roleIndex}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
                               <Input
                                 label="Cargo"
                                 value={role.position}
@@ -1646,6 +1841,7 @@ function mapProjectGroupToForm(group: ProjectGroup): ProjectGroupForm {
       projectUrl: project.projectUrl ?? '',
       siteUrl: project.siteUrl ?? '',
       architecture: cloneArchitecture(project.architecture),
+      details: cloneProjectDetails(project.details),
       sortOrder: project.sortOrder,
     })),
   }
@@ -1685,6 +1881,7 @@ function createProjectForm(groupId: string, index: number): ProjectForm {
     projectUrl: '',
     siteUrl: '',
     architecture: null,
+    details: createProjectDetails(),
     sortOrder: index,
   }
 }

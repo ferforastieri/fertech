@@ -19,6 +19,32 @@ export type ProjectArchitecture = {
   folders: string[]
 }
 
+export type ProjectDetailModule = {
+  title: string
+  description: string
+  technologies: string[]
+}
+
+export type ProjectDetailFlow = {
+  title: string
+  steps: string[]
+}
+
+export type ProjectDetails = {
+  headline: string
+  overview: string
+  role: string
+  period: string
+  repositoryPath: string
+  stack: string[]
+  highlights: string[]
+  responsibilities: string[]
+  modules: ProjectDetailModule[]
+  flows: ProjectDetailFlow[]
+  metrics: string[]
+  learnings: string[]
+}
+
 export type Project = {
   id: string
   groupId: string
@@ -29,6 +55,7 @@ export type Project = {
   projectUrl?: string
   siteUrl?: string
   architecture?: ProjectArchitecture
+  details?: ProjectDetails
   sortOrder: number
 }
 
@@ -56,6 +83,7 @@ type ProjectRow = {
   project_url: string | null
   site_url: string | null
   architecture: ProjectArchitecture | null
+  details: ProjectDetails | null
   sort_order: number
 }
 
@@ -70,6 +98,7 @@ function mapProject(row: ProjectRow): Project {
     projectUrl: row.project_url ?? undefined,
     siteUrl: row.site_url ?? row.url ?? undefined,
     architecture: row.architecture ?? undefined,
+    details: row.details ?? undefined,
     sortOrder: row.sort_order,
   }
 }
@@ -79,7 +108,7 @@ async function getProjectGroups(): Promise<ProjectGroup[]> {
     supabase.from('project_groups').select('id,title,sort_order').order('sort_order', { ascending: true }),
     supabase
       .from('projects')
-      .select('id,group_id,title,description,logo,tags,url,project_url,site_url,architecture,sort_order')
+      .select('id,group_id,title,description,logo,tags,url,project_url,site_url,architecture,details,sort_order')
       .order('sort_order', { ascending: true }),
   ])
 

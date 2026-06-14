@@ -5,6 +5,7 @@ import { useProjectGroups } from '@/api/projects/useProjectGroups'
 import { projectSlug } from '@/api/projects/projectRoutes'
 import { ArchitectureExplorer } from '@/components/playground/ArchitectureExplorer'
 import { useSiteContent } from '@/api/site/useSiteContent'
+import { ProjectDetailsShowcase } from '@/components/projects/ProjectDetailsShowcase'
 
 export default function ProjectDetail() {
   const { projectId } = useParams()
@@ -51,6 +52,7 @@ export default function ProjectDetail() {
         </a>
       )}
     </article>
+    <ProjectDetailsShowcase project={project} variant="classic" />
     {project.architecture && <ArchitectureExplorer architecture={project.architecture} copy={copy.architecture} />}
     </div>
   )
