@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/config/supabase/client'
+import { localizeRow, TranslationMap } from '@/api/i18n/translations'
+import { Locale, useLanguage } from '@/contexts/language/LanguageContext'
 
 export type HomeStackGroup = {
   title: string
@@ -29,6 +31,7 @@ export type HomeContent = {
   blogTitle: string
   contactTitle: string
   contactDescription: string
+  translations?: TranslationMap<HomeContent>
 }
 
 type HomeContentRow = {
@@ -54,10 +57,11 @@ type HomeContentRow = {
   blog_title: string
   contact_title: string
   contact_description: string
+  translations: TranslationMap<HomeContent> | null
 }
 
-function mapHomeContent(row: HomeContentRow): HomeContent {
-  return {
+function mapHomeContent(row: HomeContentRow, locale: Locale): HomeContent {
+  const base = {
     heroEyebrow: row.hero_eyebrow,
     heroHeadline: row.hero_headline,
     heroDescription: row.hero_description,
@@ -81,9 +85,11 @@ function mapHomeContent(row: HomeContentRow): HomeContent {
     contactTitle: row.contact_title,
     contactDescription: row.contact_description,
   }
+
+  return localizeRow(base, row.translations, locale, 'home_content/main')
 }
 
-async function getHomeContent(): Promise<HomeContent> {
+async function getHomeContent(locale: Locale): Promise<HomeContent> {
   const { data, error } = await supabase
     .from('home_content')
     .select(`
@@ -108,19 +114,22 @@ async function getHomeContent(): Promise<HomeContent> {
       blog_eyebrow,
       blog_title,
       contact_title,
-      contact_description
+      contact_description,
+      translations
     `)
     .eq('id', 'main')
     .single()
 
   if (error) throw error
 
-  return mapHomeContent(data as HomeContentRow)
+  return mapHomeContent(data as HomeContentRow, locale)
 }
 
 export function useHomeContent() {
+  const { locale } = useLanguage()
+
   return useQuery({
-    queryKey: ['home', 'main'],
-    queryFn: getHomeContent,
+    queryKey: ['home', 'main', locale],
+    queryFn: () => getHomeContent(locale),
   })
 }

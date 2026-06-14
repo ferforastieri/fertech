@@ -6,14 +6,17 @@ import App from './App'
 import { queryClient } from './api/queryClient'
 import './index.css'
 import { ToastProvider } from './components/ui/feedback'
+import { LanguageProvider } from './contexts/language/LanguageContext'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <LanguageProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </LanguageProvider>
       </ToastProvider>
     </QueryClientProvider>
   </React.StrictMode>,

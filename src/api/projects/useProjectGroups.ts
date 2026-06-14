@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/config/supabase/client'
+import { localizeRow, TranslationMap } from '@/api/i18n/translations'
+import { Locale, useLanguage } from '@/contexts/language/LanguageContext'
 
 export type ArchitectureNode = {
   name: string
@@ -69,6 +71,7 @@ type ProjectGroupRow = {
   id: string
   title: string
   sort_order: number
+  translations: TranslationMap<ProjectGroup> | null
 }
 
 type ProjectRow = {
@@ -84,10 +87,11 @@ type ProjectRow = {
   architecture: ProjectArchitecture | null
   details: ProjectDetails | null
   sort_order: number
+  translations: TranslationMap<Project> | null
 }
 
-function mapProject(row: ProjectRow): Project {
-  return {
+function mapProject(row: ProjectRow, locale: Locale): Project {
+  const base = {
     id: row.id,
     groupId: row.group_id,
     title: row.title,
@@ -100,14 +104,16 @@ function mapProject(row: ProjectRow): Project {
     details: row.details ?? undefined,
     sortOrder: row.sort_order,
   }
+
+  return localizeRow(base, row.translations, locale, `projects/${row.id}`)
 }
 
-async function getProjectGroups(): Promise<ProjectGroup[]> {
+async function getProjectGroups(locale: Locale): Promise<ProjectGroup[]> {
   const [groupsResult, projectsResult] = await Promise.all([
-    supabase.from('project_groups').select('id,title,sort_order').order('sort_order', { ascending: true }),
+    supabase.from('project_groups').select('id,title,sort_order,translations').order('sort_order', { ascending: true }),
     supabase
       .from('projects')
-      .select('id,group_id,title,description,logo,tags,url,project_url,site_url,architecture,details,sort_order')
+      .select('id,group_id,title,description,logo,tags,url,project_url,site_url,architecture,details,sort_order,translations')
       .order('sort_order', { ascending: true }),
   ])
 
@@ -117,21 +123,30 @@ async function getProjectGroups(): Promise<ProjectGroup[]> {
   const projectsByGroup = new Map<string, Project[]>()
   ;((projectsResult.data ?? []) as ProjectRow[]).forEach((project) => {
     const groupProjects = projectsByGroup.get(project.group_id) ?? []
-    groupProjects.push(mapProject(project))
+    groupProjects.push(mapProject(project, locale))
     projectsByGroup.set(project.group_id, groupProjects)
   })
 
   return ((groupsResult.data ?? []) as ProjectGroupRow[]).map((group) => ({
-    id: group.id,
-    title: group.title,
-    sortOrder: group.sort_order,
-    projects: projectsByGroup.get(group.id) ?? [],
+    ...localizeRow(
+      {
+        id: group.id,
+        title: group.title,
+        sortOrder: group.sort_order,
+        projects: projectsByGroup.get(group.id) ?? [],
+      },
+      group.translations,
+      locale,
+      `project_groups/${group.id}`,
+    ),
   }))
 }
 
 export function useProjectGroups() {
+  const { locale } = useLanguage()
+
   return useQuery({
-    queryKey: ['projects', 'groups'],
-    queryFn: getProjectGroups,
+    queryKey: ['projects', 'groups', locale],
+    queryFn: () => getProjectGroups(locale),
   })
 }

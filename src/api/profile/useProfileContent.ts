@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/config/supabase/client'
+import { localizeRow, TranslationMap } from '@/api/i18n/translations'
+import { Locale, useLanguage } from '@/contexts/language/LanguageContext'
 
 export type ProfileHighlight = {
   icon: 'code' | 'rocket' | 'sparkles'
@@ -23,6 +25,7 @@ export type ProfileContent = {
   technologies: string[]
   aboutParagraphs: string[]
   highlights: ProfileHighlight[]
+  translations?: TranslationMap<ProfileContent>
 }
 
 type ProfileRow = {
@@ -36,10 +39,11 @@ type ProfileRow = {
   technologies: string[]
   about_paragraphs: string[]
   highlights: ProfileHighlight[]
+  translations: TranslationMap<ProfileContent> | null
 }
 
-function mapProfile(row: ProfileRow): ProfileContent {
-  return {
+function mapProfile(row: ProfileRow, locale: Locale): ProfileContent {
+  const base = {
     name: row.name,
     role: row.role,
     intro: row.intro,
@@ -50,23 +54,27 @@ function mapProfile(row: ProfileRow): ProfileContent {
     aboutParagraphs: row.about_paragraphs ?? [],
     highlights: row.highlights ?? [],
   }
+
+  return localizeRow(base, row.translations, locale, 'profile/main')
 }
 
-async function getProfileContent(): Promise<ProfileContent> {
+async function getProfileContent(locale: Locale): Promise<ProfileContent> {
   const { data, error } = await supabase
     .from('profile')
-    .select('id,name,role,intro,contact_url,logo_url,social_links,technologies,about_paragraphs,highlights')
+    .select('id,name,role,intro,contact_url,logo_url,social_links,technologies,about_paragraphs,highlights,translations')
     .eq('id', 'main')
     .single()
 
   if (error) throw error
 
-  return mapProfile(data as ProfileRow)
+  return mapProfile(data as ProfileRow, locale)
 }
 
 export function useProfileContent() {
+  const { locale } = useLanguage()
+
   return useQuery({
-    queryKey: ['profile', 'main'],
-    queryFn: getProfileContent,
+    queryKey: ['profile', 'main', locale],
+    queryFn: () => getProfileContent(locale),
   })
 }

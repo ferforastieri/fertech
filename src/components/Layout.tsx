@@ -16,6 +16,7 @@ import {
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { renderSocialIcon } from '@/components/profile/renderSocialIcon'
 import { useSiteContent } from '@/api/site/useSiteContent'
+import { LanguageSelect } from '@/components/language/LanguageSelect'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -108,6 +109,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
               variant="ghost"
               size="sm"
             />
+            <LanguageSelect compact className="h-9 w-10" />
             <button
               type="button"
               onClick={switchToAurora}
@@ -180,6 +182,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
                 </a>
               ))}
               <div className="h-6 w-px bg-border" />
+              <LanguageSelect compact />
               <ThemeToggle
                 theme={isDark ? 'dark' : 'light'}
                 onToggle={toggleTheme}
@@ -204,8 +207,8 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
       </nav>
 
       {/* Mobile Bottom Navigation - Simplified */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background">
-        <div className="flex items-center justify-around h-16 px-2">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background md:hidden">
+        <div className="flex h-16 items-center justify-around gap-1 px-3">
           {navigationItems.map((item) => {
             const Icon = item.icon
             const isActive = location.pathname === item.href
@@ -214,14 +217,14 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  'relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 flex-1 max-w-[80px]',
+                  'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 transition-all duration-200',
                   isActive
                     ? 'text-foreground'
                     : 'text-muted-foreground'
                 )}
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
-                <span className="text-[10px] font-medium leading-tight text-center">{item.name}</span>
+                <span className="max-w-full truncate text-center text-[10px] font-medium leading-tight">{item.name}</span>
                 {isActive && (
                   <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-foreground" />
                 )}

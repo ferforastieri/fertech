@@ -24,6 +24,7 @@ import { useProfileContent } from '@/api/profile/useProfileContent'
 import { renderSocialIcon } from '@/components/profile/renderSocialIcon'
 import { AuroraLoading } from './AuroraLoading'
 import { useSiteContent } from '@/api/site/useSiteContent'
+import { LanguageSelect } from '@/components/language/LanguageSelect'
 
 type AuroraNavPosition = 'top' | 'right' | 'bottom' | 'left'
 
@@ -208,6 +209,17 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
           </a>
         ),
       })),
+      {
+        key: 'language',
+        hideOnMobileBar: false,
+        mobileBarOnly: false,
+        node: (
+          <LanguageSelect
+            compact
+            className="h-8 w-10 sm:h-10"
+          />
+        ),
+      },
       {
         key: 'theme',
         hideOnMobileBar: false,
@@ -422,7 +434,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
           <header
             className={cn(
               'fixed z-50',
-              !isVerticalNav && 'px-4',
+              !isVerticalNav && 'px-2 sm:px-4',
               navPosition === 'top' && 'left-0 right-0 top-4',
               navPosition === 'bottom' && 'bottom-4 left-0 right-0',
               navPosition === 'left' && 'bottom-4 left-4 top-4',
@@ -439,7 +451,7 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
                 'relative mx-auto flex border shadow-2xl backdrop-blur-xl',
                 isVerticalNav
                   ? 'h-full max-h-[calc(100vh-2rem)] w-16 flex-col items-center justify-between rounded-[2rem] px-2 py-3'
-                  : 'h-12 w-fit max-w-full items-center justify-center gap-0.5 rounded-full px-1 sm:h-14 sm:w-full sm:max-w-5xl sm:justify-between sm:gap-0 sm:px-3',
+                  : 'h-12 w-full max-w-[calc(100vw-1rem)] items-center justify-start gap-1 overflow-x-auto rounded-full px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:h-14 sm:max-w-5xl sm:justify-between sm:gap-0 sm:px-3',
                 isDark
                   ? 'border-rose-900/45 bg-black/60 shadow-rose-950/45'
                   : 'border-rose-900/25 bg-white/95 shadow-rose-950/15',

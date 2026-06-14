@@ -13,6 +13,8 @@ import { supabase } from '@/config/supabase/client'
 import { useStoredTheme } from '@/hooks/theme/useStoredTheme'
 import { PlaygroundPattern, PlaygroundTreeNode, SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
+import { LanguageSelect } from '@/components/language/LanguageSelect'
+import { DEFAULT_LOCALE, Locale, useLanguage } from '@/contexts/language/LanguageContext'
 
 type AdminTab = 'profile' | 'home' | 'content' | 'projects' | 'articles' | 'resume'
 
@@ -954,6 +956,7 @@ const resumeContentLabels: Record<string, string> = {
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { locale } = useLanguage()
   const [activeTab, setActiveTab] = useState<AdminTab>('profile')
   const [status, setStatus] = useState('')
   const [isSaving, setIsSaving] = useState(false)
@@ -1135,6 +1138,34 @@ export default function AdminDashboard() {
     }
   }
 
+  const saveTranslation = async (
+    table: string,
+    filters: Record<string, string | number>,
+    translation: Record<string, unknown>,
+    activeLocale: Exclude<Locale, 'pt-BR'>,
+  ) => {
+    let selectQuery = supabase.from(table).select('translations')
+    Object.entries(filters).forEach(([key, value]) => {
+      selectQuery = selectQuery.eq(key, value)
+    })
+
+    const { data, error } = await selectQuery.single()
+    if (error) throw error
+
+    const nextTranslations = {
+      ...((data as { translations?: Record<string, unknown> } | null)?.translations ?? {}),
+      [activeLocale]: translation,
+    }
+
+    let updateQuery = supabase.from(table).update({ translations: nextTranslations })
+    Object.entries(filters).forEach(([key, value]) => {
+      updateQuery = updateQuery.eq(key, value)
+    })
+
+    const { error: updateError } = await updateQuery
+    if (updateError) throw updateError
+  }
+
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) {
@@ -1148,6 +1179,10 @@ export default function AdminDashboard() {
   const saveSiteContent = () =>
     runSave(async () => {
       if (!siteContentForm) throw new Error('Conteúdo do site ainda não carregou.')
+      if (locale !== DEFAULT_LOCALE) {
+        await saveTranslation('site_content', { id: 'main' }, siteContentForm as unknown as Record<string, unknown>, locale)
+        return
+      }
       const { error } = await supabase.from('site_content').upsert({ id: 'main', content: siteContentForm })
       if (error) throw error
     }, 'Conteúdo do site salvo.')
@@ -1208,6 +1243,18 @@ export default function AdminDashboard() {
 
   const saveProfile = () =>
     runSave(async () => {
+      if (locale !== DEFAULT_LOCALE) {
+        await saveTranslation('profile', { id: 'main' }, {
+          name: profileForm.name,
+          role: profileForm.role,
+          intro: profileForm.intro,
+          technologies: parseTextList(profileForm.technologies),
+          aboutParagraphs: parseTextList(profileForm.aboutParagraphs),
+          highlights: profileForm.highlights,
+        }, locale)
+        return
+      }
+
       const { error } = await supabase.from('profile').upsert({
         id: 'main',
         name: profileForm.name,
@@ -1226,6 +1273,39 @@ export default function AdminDashboard() {
 
   const saveHome = () =>
     runSave(async () => {
+      const homeTranslation = {
+        heroEyebrow: homeForm.heroEyebrow,
+        heroHeadline: homeForm.heroHeadline,
+        heroDescription: homeForm.heroDescription,
+        projectsButtonLabel: homeForm.projectsButtonLabel,
+        resumeButtonLabel: homeForm.resumeButtonLabel,
+        contactButtonLabel: homeForm.contactButtonLabel,
+        stackTitle: homeForm.stackTitle,
+        stackGroups: homeForm.stackGroups.map((group) => ({
+          title: group.title,
+          items: parseTextList(group.items),
+        })),
+        classicAboutTitle: homeForm.classicAboutTitle,
+        classicHighlightsTitle: homeForm.classicHighlightsTitle,
+        classicCapabilitiesTitle: homeForm.classicCapabilitiesTitle,
+        languageNote: homeForm.languageNote,
+        auroraAboutEyebrow: homeForm.auroraAboutEyebrow,
+        auroraAboutTitle: homeForm.auroraAboutTitle,
+        projectsEyebrow: homeForm.projectsEyebrow,
+        projectsTitle: homeForm.projectsTitle,
+        projectsLinkLabel: homeForm.projectsLinkLabel,
+        projectsTotalLabel: homeForm.projectsTotalLabel,
+        blogEyebrow: homeForm.blogEyebrow,
+        blogTitle: homeForm.blogTitle,
+        contactTitle: homeForm.contactTitle,
+        contactDescription: homeForm.contactDescription,
+      }
+
+      if (locale !== DEFAULT_LOCALE) {
+        await saveTranslation('home_content', { id: 'main' }, homeTranslation, locale)
+        return
+      }
+
       const { error } = await supabase.from('home_content').upsert({
         id: 'main',
         hero_eyebrow: homeForm.heroEyebrow,
@@ -1282,6 +1362,22 @@ export default function AdminDashboard() {
         })),
       )
 
+      if (locale !== DEFAULT_LOCALE) {
+        for (const group of projectGroupsForm) {
+          await saveTranslation('project_groups', { id: group.id }, { title: group.title }, locale)
+          for (const project of group.projects) {
+            await saveTranslation('projects', { id: project.id }, {
+              title: project.title,
+              description: project.description,
+              tags: parseTextList(project.tags),
+              architecture: project.architecture,
+              details: project.details,
+            }, locale)
+          }
+        }
+        return
+      }
+
       const { error: deleteProjectsError } = await supabase.from('projects').delete().neq('id', '')
       if (deleteProjectsError) throw deleteProjectsError
       const { error: deleteGroupsError } = await supabase.from('project_groups').delete().neq('id', '')
@@ -1310,6 +1406,20 @@ export default function AdminDashboard() {
         kind: article.kind,
         sort_order: index,
       }))
+
+      if (locale !== DEFAULT_LOCALE) {
+        for (const article of articleForms) {
+          await saveTranslation('articles', { slug: article.slug }, {
+            title: article.title,
+            category: article.category,
+            description: article.description,
+            date: article.date,
+            readTime: article.readTime,
+            content: article.content,
+          }, locale)
+        }
+        return
+      }
 
       const { error: deleteError } = await supabase.from('articles').delete().neq('slug', '')
       if (deleteError) throw deleteError
@@ -1358,6 +1468,47 @@ export default function AdminDashboard() {
         description: language.description.trim(),
       }))
       const sections = resumeForm.sections.map((section) => ({ ...section }))
+
+      if (locale !== DEFAULT_LOCALE) {
+        await saveTranslation('resume_settings', { id: 'main' }, {
+          technologies: parseTextList(resumeForm.technologies),
+          aboutParagraphs: parseTextList(resumeForm.aboutParagraphs),
+          languages,
+          sections,
+          location: resumeForm.location,
+          downloadLabel: resumeForm.downloadLabel,
+          generatingLabel: resumeForm.generatingLabel,
+          pdfFilename: resumeForm.pdfFilename,
+          projectTechnologiesLabel: resumeForm.projectTechnologiesLabel,
+        }, locale)
+
+        for (const experience of experiences) {
+          await saveTranslation('resume_experiences', { id: experience.id }, {
+            company: experience.company,
+            position: experience.position,
+            location: experience.location,
+            period: experience.period,
+            responsibilities: experience.responsibilities,
+          }, locale)
+        }
+
+        for (const educationItem of education) {
+          await saveTranslation('resume_education', { id: educationItem.id }, {
+            institution: educationItem.institution,
+            course: educationItem.course,
+            location: educationItem.location,
+            period: educationItem.period,
+          }, locale)
+        }
+
+        for (const role of roles) {
+          await saveTranslation('resume_roles', { experience_id: role.experience_id, sort_order: role.sort_order }, {
+            position: role.position,
+            period: role.period,
+          }, locale)
+        }
+        return
+      }
 
       const deleteSteps = [
         supabase.from('resume_roles').delete().neq('id', ''),
@@ -1413,6 +1564,7 @@ export default function AdminDashboard() {
           </div>
           <AdminActions className="sm:justify-end">
             {status && <Badge variant={status.includes('Erro') || status.includes('policy') ? 'destructive' : 'secondary'}>{status}</Badge>}
+            <LanguageSelect />
             <ThemeToggle theme={theme} onToggle={toggleTheme} variant="outline" size="lg" />
             <Button type="button" variant="outline" className="min-w-20" onClick={handleLogout}>
               Sair

@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/config/supabase/client'
+import { localizeRow, TranslationMap } from '@/api/i18n/translations'
+import { useLanguage } from '@/contexts/language/LanguageContext'
 
 export type NavigationContent = {
   home: string
@@ -123,15 +125,24 @@ export type SiteContent = {
   }
 }
 
-async function getSiteContent(): Promise<SiteContent> {
-  const { data, error } = await supabase.from('site_content').select('content').eq('id', 'main').single()
+type SiteContentRow = {
+  content: SiteContent
+  translations: TranslationMap<SiteContent> | null
+}
+
+async function getSiteContent(locale: ReturnType<typeof useLanguage>['locale']): Promise<SiteContent> {
+  const { data, error } = await supabase.from('site_content').select('content,translations').eq('id', 'main').single()
   if (error) throw error
-  return data.content as SiteContent
+
+  const row = data as SiteContentRow
+  return localizeRow(row.content, row.translations, locale, 'site_content/main')
 }
 
 export function useSiteContent() {
+  const { locale } = useLanguage()
+
   return useQuery({
-    queryKey: ['site-content', 'main'],
-    queryFn: getSiteContent,
+    queryKey: ['site-content', 'main', locale],
+    queryFn: () => getSiteContent(locale),
   })
 }
