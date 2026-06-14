@@ -21,7 +21,7 @@ import AuroraScene from './AuroraScene'
 import AuroraPointerEffects from './AuroraPointerEffects'
 import { cn } from '@/components/lib'
 import { useProfileContent } from '@/api/profile/useProfileContent'
-import { renderSocialIcon } from '@/features/profile/renderSocialIcon'
+import { renderSocialIcon } from '@/components/profile/renderSocialIcon'
 import { AuroraLoading } from './AuroraLoading'
 import { useSiteContent } from '@/api/site/useSiteContent'
 

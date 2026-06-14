@@ -2,8 +2,8 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { ArrowLeftIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Badge, Skeleton } from '@/components/ui'
 import { useProjectGroups } from '@/api/projects/useProjectGroups'
-import { projectSlug } from '@/features/projects/projectRoutes'
-import { ArchitectureExplorer } from '@/features/playground/ArchitectureExplorer'
+import { projectSlug } from '@/api/projects/projectRoutes'
+import { ArchitectureExplorer } from '@/components/playground/ArchitectureExplorer'
 import { useSiteContent } from '@/api/site/useSiteContent'
 
 export default function ProjectDetail() {

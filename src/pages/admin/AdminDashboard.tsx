@@ -10,8 +10,7 @@ import { useHomeContent } from '@/api/home/useHomeContent'
 import { ArchitectureNode, Project, ProjectArchitecture, ProjectGroup, useProjectGroups } from '@/api/projects/useProjectGroups'
 import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeContent'
 import { supabase } from '@/config/supabase/client'
-import { formatTextList, parseTextList } from '@/features/admin/textList'
-import { useStoredTheme } from '@/hooks/useStoredTheme'
+import { useStoredTheme } from '@/hooks/theme/useStoredTheme'
 import { PlaygroundPattern, PlaygroundTreeNode, SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 
@@ -168,6 +167,17 @@ function slugify(value: string) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+function parseTextList(value: string) {
+  return value
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function formatTextList(value: string[] | undefined) {
+  return (value ?? []).join('\n')
 }
 
 function Textarea({

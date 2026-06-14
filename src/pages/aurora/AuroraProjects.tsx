@@ -7,7 +7,7 @@ import { Project, ProjectGroup, useProjectGroups } from '@/api/projects/useProje
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
-import { isExternalUrl, projectDetailPath } from '@/features/projects/projectRoutes'
+import { isExternalUrl, projectDetailPath } from '@/api/projects/projectRoutes'
 import { SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 
 gsap.registerPlugin(ScrollTrigger)

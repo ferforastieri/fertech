@@ -1,15 +1,15 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
-import Home from './pages/Home'
-import Blog from './pages/Blog'
-import Projects from './pages/Projects'
-import Resume from './pages/Resume'
-import Article from './pages/Article'
-import ProjectDetail from './pages/ProjectDetail'
+import Home from './pages/home'
+import Blog from './pages/blog'
+import Projects from './pages/projects'
+import Resume from './pages/resume'
+import Article from './pages/article'
+import ProjectDetail from './pages/project-detail'
 
 const AuroraLayout = lazy(() => import('./components/aurora/AuroraLayout'))
-const ExperienceGateway = lazy(() => import('./pages/ExperienceGateway'))
+const ExperienceGateway = lazy(() => import('./pages/experience-gateway'))
 const AuroraHome = lazy(() => import('./pages/aurora/AuroraHome'))
 const AuroraBlog = lazy(() => import('./pages/aurora/AuroraBlog'))
 const AuroraProjects = lazy(() => import('./pages/aurora/AuroraProjects'))
@@ -19,7 +19,7 @@ const AuroraPlayground = lazy(() => import('./pages/aurora/AuroraPlayground'))
 const AuroraProjectDetail = lazy(() => import('./pages/aurora/AuroraProjectDetail'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
-const ProtectedAdminRoute = lazy(() => import('./pages/admin/ProtectedAdminRoute'))
+const ProtectedAdminRoute = lazy(() => import('./components/admin/ProtectedAdminRoute'))
 
 function ClassicPage({ children, basePath = '' }: { children: React.ReactNode; basePath?: string }) {
   return <Layout basePath={basePath}>{children}</Layout>

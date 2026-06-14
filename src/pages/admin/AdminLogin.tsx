@@ -5,7 +5,7 @@ import { Button, Input } from '@/components/ui/forms'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/layout'
 import { supabase } from '@/config/supabase/client'
 import { useAdminSession } from '@/api/admin/useAdminSession'
-import { useStoredTheme } from '@/hooks/useStoredTheme'
+import { useStoredTheme } from '@/hooks/theme/useStoredTheme'
 import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 
 export default function AdminLogin() {

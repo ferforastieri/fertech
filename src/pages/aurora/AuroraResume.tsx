@@ -16,7 +16,7 @@ import { useProjects } from '@/api/projects/useProjects'
 import { AuroraLoading } from '@/components/aurora/AuroraLoading'
 import { useAuroraLoadingTransition } from '@/hooks/aurora/useAuroraLoadingTransition'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
-import { generateResumePdf } from '@/features/resume/generateResumePdf'
+import { generateResumePdf } from '@/api/resume/generateResumePdf'
 import { useSiteContent } from '@/api/site/useSiteContent'
 import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 

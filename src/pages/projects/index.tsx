@@ -2,7 +2,7 @@ import { Badge, Skeleton } from '@/components/ui/feedback'
 import { Link, useLocation } from 'react-router-dom'
 import { ArrowRightIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Project, useProjectGroups } from '@/api/projects/useProjectGroups'
-import { isExternalUrl, projectDetailPath } from '@/features/projects/projectRoutes'
+import { isExternalUrl, projectDetailPath } from '@/api/projects/projectRoutes'
 import { SiteContent, useSiteContent } from '@/api/site/useSiteContent'
 
 function ProjectItem({ project, classic, copy }: { project: Project; classic: boolean; copy: SiteContent }) {

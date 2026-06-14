@@ -16,7 +16,7 @@ import {
   saveExperienceMode,
 } from '@/contexts/experience/ExperienceContext'
 import { useProfileContent } from '@/api/profile/useProfileContent'
-import { renderSocialIcon } from '@/features/profile/renderSocialIcon'
+import { renderSocialIcon } from '@/components/profile/renderSocialIcon'
 import { useSiteContent } from '@/api/site/useSiteContent'
 
 interface LayoutProps {

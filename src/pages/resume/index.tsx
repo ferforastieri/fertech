@@ -12,7 +12,7 @@ import {
 import { useProfileContent } from '@/api/profile/useProfileContent'
 import { useProjects } from '@/api/projects/useProjects'
 import { ResumeSectionKey, useResumeContent } from '@/api/resume/useResumeContent'
-import { generateResumePdf } from '@/features/resume/generateResumePdf'
+import { generateResumePdf } from '@/api/resume/generateResumePdf'
 import { useSiteContent } from '@/api/site/useSiteContent'
 import { notifyError, notifySuccess } from '@/components/ui/feedback/notifications'
 

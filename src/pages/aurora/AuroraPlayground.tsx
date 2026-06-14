@@ -11,13 +11,13 @@ import {
   PlaygroundMode,
   PlaygroundSettings,
   WebGLPlayground,
-} from '@/features/playground/WebGLPlayground'
+} from '@/components/playground/WebGLPlayground'
 import {
   PulseGridExperiment,
   SignalSculptureExperiment,
-} from '@/features/playground/WebGLExperiments'
+} from '@/components/playground/WebGLExperiments'
 import { AuroraPageReveal } from '@/components/aurora/AuroraPageReveal'
-import { ArchitectureLab } from '@/features/playground/ArchitectureLab'
+import { ArchitectureLab } from '@/components/playground/ArchitectureLab'
 import { useSiteContent } from '@/api/site/useSiteContent'
 
 export default function AuroraPlayground() {

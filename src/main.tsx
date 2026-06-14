@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
-import { queryClient } from './config/queryClient'
+import { queryClient } from './api/queryClient'
 import './index.css'
 import { ToastProvider } from './components/ui/feedback'
 
