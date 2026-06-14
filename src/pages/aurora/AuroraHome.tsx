@@ -120,6 +120,7 @@ export default function AuroraHome() {
         </div>
         <div className="aurora-orbit relative overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.14] p-5 shadow-2xl shadow-rose-950/45 backdrop-blur-xl">
           <span className="aurora-stack-scan pointer-events-none absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-gradient-to-r from-transparent via-rose-500/15 to-transparent" />
+          <h2 className="mb-4 text-xl font-bold text-white md:text-2xl">{homeContent.stackTitle}</h2>
           <div className="divide-y divide-white/10">
             {homeContent.stackGroups.map((group) => (
               <div key={group.title} className="aurora-stack-group py-4 first:pt-0 last:pb-0">

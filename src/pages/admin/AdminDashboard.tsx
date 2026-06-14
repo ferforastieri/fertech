@@ -47,6 +47,7 @@ type HomeForm = {
   projectsButtonLabel: string
   resumeButtonLabel: string
   contactButtonLabel: string
+  stackTitle: string
   stackGroups: StackGroupForm[]
   classicAboutTitle: string
   classicHighlightsTitle: string
@@ -990,6 +991,7 @@ export default function AdminDashboard() {
     projectsButtonLabel: '',
     resumeButtonLabel: '',
     contactButtonLabel: '',
+    stackTitle: '',
     stackGroups: [],
     classicAboutTitle: '',
     classicHighlightsTitle: '',
@@ -1232,6 +1234,7 @@ export default function AdminDashboard() {
         projects_button_label: homeForm.projectsButtonLabel,
         resume_button_label: homeForm.resumeButtonLabel,
         contact_button_label: homeForm.contactButtonLabel,
+        stack_title: homeForm.stackTitle,
         stack_groups: homeForm.stackGroups.map((group) => ({
           title: group.title,
           items: parseTextList(group.items),
@@ -1522,6 +1525,9 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <AdminInlineSection title="Grupos da stack" description="Aparecem na Home como blocos de capacidades e tecnologias.">
+                    <div className="mb-4">
+                      <Input label="Aurora: título acima das skills" value={homeForm.stackTitle} onChange={(event) => setHomeForm({ ...homeForm, stackTitle: event.target.value })} />
+                    </div>
                     <div className="space-y-4">
                       {homeForm.stackGroups.map((group, index) => (
                         <div key={`${group.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_auto] md:items-end">

@@ -13,6 +13,7 @@ export type HomeContent = {
   projectsButtonLabel: string
   resumeButtonLabel: string
   contactButtonLabel: string
+  stackTitle: string
   stackGroups: HomeStackGroup[]
   classicAboutTitle: string
   classicHighlightsTitle: string
@@ -37,6 +38,7 @@ type HomeContentRow = {
   projects_button_label: string
   resume_button_label: string
   contact_button_label: string
+  stack_title: string
   stack_groups: HomeStackGroup[]
   classic_about_title: string
   classic_highlights_title: string
@@ -62,6 +64,7 @@ function mapHomeContent(row: HomeContentRow): HomeContent {
     projectsButtonLabel: row.projects_button_label,
     resumeButtonLabel: row.resume_button_label,
     contactButtonLabel: row.contact_button_label,
+    stackTitle: row.stack_title,
     stackGroups: row.stack_groups,
     classicAboutTitle: row.classic_about_title,
     classicHighlightsTitle: row.classic_highlights_title,
@@ -90,6 +93,7 @@ async function getHomeContent(): Promise<HomeContent> {
       projects_button_label,
       resume_button_label,
       contact_button_label,
+      stack_title,
       stack_groups,
       classic_about_title,
       classic_highlights_title,
