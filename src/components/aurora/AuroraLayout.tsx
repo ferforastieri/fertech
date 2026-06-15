@@ -79,13 +79,12 @@ export default function AuroraLayout({ children }: { children?: React.ReactNode 
 
   if (!siteContent) return null
   const copy = siteContent.navigation
-  const playgroundLabel = copy.playground === 'Playground' ? 'Laboratório' : copy.playground
   const navItems = [
     { name: copy.home, href: '/aurora', icon: HomeIcon },
     { name: copy.blog, href: '/aurora/blog', icon: DocumentTextIcon },
     { name: copy.projects, href: '/aurora/projects', icon: BriefcaseIcon },
     { name: copy.resume, href: '/aurora/resume', icon: UserIcon },
-    { name: playgroundLabel, href: '/aurora/playground', icon: BeakerIcon },
+    { name: copy.playground, href: '/aurora/playground', icon: BeakerIcon },
   ]
 
   const toggleTheme = () => {

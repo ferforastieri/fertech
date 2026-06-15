@@ -31,62 +31,6 @@ type ExperimentCopy = {
   description: string
 }
 
-const experimentFallbacks: ExperimentCopy[] = [
-  {
-    eyebrow: 'Interactive field',
-    title: 'Canvas de partículas',
-    description: 'Cena interativa com desenho, órbita, ondas e caos procedural.',
-  },
-  {
-    eyebrow: 'Landing page',
-    title: 'Composição prismática',
-    description: 'Placas, partículas e núcleo abstrato em uma composição WebGL limpa.',
-  },
-  {
-    eyebrow: 'Sculpture',
-    title: 'Escultura de sinal',
-    description: 'Forma orgânica com distorção, luz emissiva e rotação lenta para página editorial.',
-  },
-  {
-    eyebrow: 'Data pulse',
-    title: 'Grid de pulsos',
-    description: 'Visualização generativa para dados, infra e sinais de produto.',
-  },
-  {
-    eyebrow: 'Particles',
-    title: 'Túnel de partículas',
-    description: 'Partículas em profundidade com movimento contínuo, inspirado em shaders e experiências imersivas.',
-  },
-  {
-    eyebrow: 'Terrain',
-    title: 'Terreno procedural',
-    description: 'Malha WebGL deformada em tempo real para simular superfície, água ou topografia.',
-  },
-  {
-    eyebrow: 'Mini game',
-    title: 'Aim trainer',
-    description: 'Micro jogo clicável com alvos 3D, pontuação e reposicionamento procedural.',
-  },
-  {
-    eyebrow: 'Mini game',
-    title: 'Snake livre',
-    description: 'A cobrinha segue o mouse em qualquer direção e coleta pontos luminosos pelo campo.',
-  },
-  {
-    eyebrow: 'Mini game',
-    title: 'Desvio de barras',
-    description: 'Controle uma nave abstrata pelo mouse e desvie das barras que avançam na sua direção.',
-  },
-]
-
-function getExperimentCopy(experiments: ExperimentCopy[], index: number) {
-  return experiments[index] ?? experimentFallbacks[index] ?? experimentFallbacks[0]
-}
-
-function getFallbackExperimentCopy(index: number) {
-  return experimentFallbacks[index] ?? experimentFallbacks[0]
-}
-
 function ExperimentCard({
   copy,
   accent = 'text-rose-400',
@@ -135,6 +79,7 @@ export default function AuroraPlayground() {
   const copy = siteContent.playground
   const colors = copy.colors
   const modes: { id: PlaygroundMode; label: string }[] = copy.modes
+  const experiments = copy.experiments
   if (!settings) return null
 
   const randomize = () => {
@@ -161,9 +106,9 @@ export default function AuroraPlayground() {
       <section className="overflow-hidden rounded-[2rem] border border-border bg-card/80 shadow-sm shadow-rose-950/5 dark:border-white/12 dark:bg-white/[0.04] dark:shadow-none">
         <div className="grid gap-0 border-b border-border/70 dark:border-white/10 lg:grid-cols-[1fr_14rem]">
           <div className="min-w-0 p-5 md:p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-primary dark:text-rose-400">{getExperimentCopy(copy.experiments, 0).eyebrow}</p>
-            <h2 className="mt-3 text-3xl font-bold md:text-4xl">{getExperimentCopy(copy.experiments, 0).title}</h2>
-            <p className="mt-3 max-w-2xl text-muted-foreground dark:text-white/60">{getExperimentCopy(copy.experiments, 0).description}</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-primary dark:text-rose-400">{experiments[0].eyebrow}</p>
+            <h2 className="mt-3 text-3xl font-bold md:text-4xl">{experiments[0].title}</h2>
+            <p className="mt-3 max-w-2xl text-muted-foreground dark:text-white/60">{experiments[0].description}</p>
           </div>
 
         <aside
@@ -234,8 +179,8 @@ export default function AuroraPlayground() {
                 settings.color === color ? 'border-white' : 'border-transparent'
               }`}
               style={{ backgroundColor: color }}
-              title={`Usar cor ${color}`}
-              aria-label={`Usar cor ${color}`}
+              title={`${copy.controlsTitle}: ${color}`}
+              aria-label={`${copy.controlsTitle}: ${color}`}
             />
           ))}
         </div>
@@ -298,28 +243,28 @@ export default function AuroraPlayground() {
       </section>
 
       <section className="grid gap-10 lg:grid-cols-2">
-        <ExperimentCard copy={getExperimentCopy(copy.experiments, 6)} accent="text-rose-300">
+        <ExperimentCard copy={experiments[6]} accent="text-rose-300">
           <AimGameExperiment />
         </ExperimentCard>
-        <ExperimentCard copy={getExperimentCopy(copy.experiments, 7)} accent="text-cyan-300">
+        <ExperimentCard copy={experiments[7]} accent="text-cyan-300">
           <ReflexGameExperiment />
         </ExperimentCard>
-        <ExperimentCard copy={getExperimentCopy(copy.experiments, 8)} accent="text-violet-300">
+        <ExperimentCard copy={experiments[8]} accent="text-violet-300">
           <OrbitDodgeExperiment />
         </ExperimentCard>
-        <ExperimentCard copy={getExperimentCopy(copy.experiments, 1)} accent="text-rose-400">
+        <ExperimentCard copy={experiments[1]} accent="text-rose-400">
           <SignalSculptureExperiment />
         </ExperimentCard>
-        <ExperimentCard copy={getExperimentCopy(copy.experiments, 2)} accent="text-violet-400">
+        <ExperimentCard copy={experiments[2]} accent="text-violet-400">
           <PulseGridExperiment />
         </ExperimentCard>
-        <ExperimentCard copy={getFallbackExperimentCopy(1)} accent="text-cyan-300">
+        <ExperimentCard copy={experiments[3]} accent="text-cyan-300">
           <LandingHeroExperiment />
         </ExperimentCard>
-        <ExperimentCard copy={getFallbackExperimentCopy(4)} accent="text-cyan-300">
+        <ExperimentCard copy={experiments[4]} accent="text-cyan-300">
           <ParticleTunnelExperiment />
         </ExperimentCard>
-        <ExperimentCard copy={getFallbackExperimentCopy(5)} accent="text-violet-300">
+        <ExperimentCard copy={experiments[5]} accent="text-violet-300">
           <TerrainWaveExperiment />
         </ExperimentCard>
       </section>
