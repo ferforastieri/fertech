@@ -77,7 +77,7 @@ export default function Layout({ children, basePath = '' }: LayoutProps) {
       {/* Mobile Header */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b border-border bg-background">
         <div className="flex items-center justify-between h-16 px-4">
-          <RouterLink to="/" className="flex items-center">
+          <RouterLink to="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-950 shadow-sm ring-1 ring-rose-900/20 dark:bg-transparent dark:ring-0">
             {profile && (
               <img
                 src={profile.logoUrl}

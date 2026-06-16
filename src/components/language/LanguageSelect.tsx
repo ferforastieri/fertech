@@ -7,8 +7,10 @@ function FlagIcon({ locale }: { locale: Locale }) {
   if (locale === 'pt-BR') {
     return (
       <span className="relative block h-4 w-5 overflow-hidden rounded-[3px] bg-[#009b3a] shadow-sm ring-1 ring-black/10" aria-hidden="true">
-        <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#ffdf00]" />
-        <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#002776]" />
+        <span className="absolute left-1/2 top-1/2 h-[0.72rem] w-[0.72rem] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#ffdf00]" />
+        <span className="absolute left-1/2 top-1/2 h-[0.46rem] w-[0.46rem] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full bg-[#002776]">
+          <span className="absolute left-1/2 top-[0.2rem] h-px w-[0.64rem] -translate-x-1/2 rotate-[14deg] rounded-full bg-white/95" />
+        </span>
       </span>
     )
   }

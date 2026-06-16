@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeftIcon, ArrowUpTrayIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, ArrowRightOnRectangleIcon, ArrowUpTrayIcon, Bars3Icon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Badge, ThemeToggle } from '@/components/ui/feedback'
 import { Button, Input } from '@/components/ui/forms'
 import { Article, ArticleKind, useArticleList } from '@/api/articles/useArticleList'
@@ -220,14 +220,14 @@ function FileUploadButton({
 }) {
   return (
     <label
-      className={`grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-xl border border-border bg-background text-foreground transition hover:bg-accent hover:text-accent-foreground ${
+      className={`grid min-h-10 w-full shrink-0 cursor-pointer grid-cols-[auto_auto] place-items-center justify-center gap-2 self-end rounded-xl border border-border bg-background px-4 text-foreground transition hover:bg-accent hover:text-accent-foreground md:h-10 md:w-10 md:grid-cols-1 md:gap-0 md:px-0 ${
         disabled ? 'pointer-events-none opacity-60' : ''
       }`}
       title={label}
       aria-label={label}
     >
       <ArrowUpTrayIcon className="h-4 w-4" />
-      <span className="sr-only">{label}</span>
+      <span className="text-sm font-medium md:sr-only">{label}</span>
       <input
         type="file"
         accept="image/png,image/jpeg,image/webp,image/svg+xml"
@@ -245,8 +245,16 @@ function FileUploadButton({
 
 function RemoveIconButton({ label, onClick, className = '' }: { label: string; onClick: () => void; className?: string }) {
   return (
-    <Button type="button" variant="destructive" className={`h-10 !w-10 shrink-0 px-0 ${className}`} aria-label={label} title={label} onClick={onClick}>
-      <TrashIcon className="h-4 w-4" />
+    <Button
+      type="button"
+      variant="destructive"
+      className={`row-auto h-10 w-full shrink-0 justify-self-stretch self-end px-4 md:col-auto md:row-auto md:!w-10 md:justify-self-end md:px-0 ${className}`}
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+    >
+      <TrashIcon className="mr-2 h-4 w-4 md:mr-0" />
+      <span className="md:sr-only">Remover</span>
     </Button>
   )
 }
@@ -262,7 +270,7 @@ function AdminSection({
 }) {
   return (
     <section className="space-y-7">
-      <div className="border-b border-border pb-5">
+      <div>
         <h2 className="text-2xl font-bold text-foreground">{title}</h2>
         {description && <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>}
       </div>
@@ -283,7 +291,7 @@ function AdminCard({
   action?: React.ReactNode
 }) {
   return (
-    <section className="rounded-2xl border border-border bg-card/40 p-4 sm:p-5">
+    <section className="rounded-2xl border border-border bg-card/55 p-4 shadow-sm shadow-black/5 sm:p-5">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h3 className="text-lg font-semibold text-foreground">{title}</h3>
@@ -308,8 +316,8 @@ function AdminInlineSection({
   action?: React.ReactNode
 }) {
   return (
-    <section className="space-y-5 border-t border-border/70 pt-6 first:border-t-0 first:pt-0">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <section className="space-y-5 rounded-2xl border border-border bg-card/45 p-4 shadow-sm shadow-black/5 sm:p-5">
+      <div className="flex flex-col gap-3 border-b border-border/70 pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           {description && <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>}
@@ -447,7 +455,7 @@ function ProjectArchitectureEditor({
             <div className="space-y-4">
               {value.layers[layer].map((node, index) => (
                 <div key={`${node.name}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
-                  <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                  <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
                     <Input
                       label="Nome"
                       value={node.name}
@@ -540,7 +548,7 @@ function ProjectDetailsEditor({
         <div className="space-y-4">
           {value.modules.map((module, index) => (
             <div key={`${module.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
-              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+              <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
                 <Input label="Nome do módulo" value={module.title} onChange={(event) => onChange({ ...value, modules: value.modules.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
                 <RemoveIconButton label="Remover módulo" onClick={() => onChange({ ...value, modules: value.modules.filter((_, itemIndex) => itemIndex !== index) })} />
               </div>
@@ -569,7 +577,7 @@ function ProjectDetailsEditor({
         <div className="space-y-4">
           {value.flows.map((flow, index) => (
             <div key={`${flow.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-2">
-              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+              <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
                 <Input label="Nome do fluxo" value={flow.title} onChange={(event) => onChange({ ...value, flows: value.flows.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
                 <RemoveIconButton label="Remover fluxo" onClick={() => onChange({ ...value, flows: value.flows.filter((_, itemIndex) => itemIndex !== index) })} />
               </div>
@@ -626,7 +634,7 @@ function TreeNodeEditor({
   return (
     <div className="space-y-3 border-b border-border/60 pb-4 last:border-b-0" style={{ marginLeft: depth ? `${Math.min(depth * 1.25, 3)}rem` : undefined }}>
       <div className="grid gap-3 md:grid-cols-2">
-        <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+        <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
           <Input label="Nome da pasta ou arquivo" value={node.name} onChange={(event) => onChange({ ...node, name: event.target.value })} />
           <RemoveIconButton label="Remover pasta ou arquivo" onClick={onRemove} />
         </div>
@@ -796,7 +804,7 @@ function SiteContentEditor({
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {value.playground.experiments.map((experiment, index) => (
             <div key={`${experiment.title}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
-              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+              <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
                 <Input label={`Experimento ${index + 1}: chamada`} value={experiment.eyebrow} onChange={(event) => update('playground', { ...value.playground, experiments: value.playground.experiments.map((item, itemIndex) => (itemIndex === index ? { ...item, eyebrow: event.target.value } : item)) })} />
                 <RemoveIconButton label="Remover experimento" onClick={() => update('playground', { ...value.playground, experiments: value.playground.experiments.filter((_, itemIndex) => itemIndex !== index) })} />
               </div>
@@ -843,7 +851,7 @@ function SiteContentEditor({
         <div className="mt-3 grid gap-4 md:grid-cols-2">
           {value.playground.architecture.patterns.map((pattern, index) => (
             <div key={`${pattern.id}-${index}`} className="space-y-3 border-b border-border/60 pb-4 last:border-b-0">
-              <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+              <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
                 <Input label="Identificador" value={pattern.id} onChange={(event) => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.map((item, itemIndex) => (itemIndex === index ? { ...item, id: slugify(event.target.value) || event.target.value } : item)) } })} />
                 <RemoveIconButton label="Remover pattern" onClick={() => update('playground', { ...value.playground, architecture: { ...value.playground.architecture, patterns: value.playground.architecture.patterns.filter((_, itemIndex) => itemIndex !== index) } })} />
               </div>
@@ -962,6 +970,7 @@ export default function AdminDashboard() {
   const [status, setStatus] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState('')
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
   const [selectedProjectGroupIndex, setSelectedProjectGroupIndex] = useState(0)
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0)
   const [selectedArticleIndex, setSelectedArticleIndex] = useState(0)
@@ -1555,28 +1564,116 @@ export default function AdminDashboard() {
       if (settingsError) throw settingsError
     }, 'Currículo salvo.')
 
+  const activeTabLabel = tabs.find((tab) => tab.id === activeTab)?.label ?? 'Painel'
+
   return (
-    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-6">
+    <main className="min-h-screen bg-background px-4 pb-8 pt-20 text-foreground sm:px-6 sm:py-8">
+      <header className="fixed left-0 right-0 top-0 z-50 border-b border-border bg-background sm:hidden">
+        <div className="flex h-16 items-center justify-between px-4">
+          <Link
+            to="/classic"
+            className="flex items-center rounded-xl p-2 text-muted-foreground transition hover:bg-accent/50 hover:text-foreground"
+            aria-label="Voltar ao site"
+            title="Voltar ao site"
+          >
+            <ArrowLeftIcon className="h-5 w-5" />
+            <span className="ml-2 text-sm font-semibold text-foreground">{activeTabLabel}</span>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <LanguageSelect compact className="h-9 w-9" />
+            <ThemeToggle theme={theme} onToggle={toggleTheme} variant="ghost" size="sm" className="h-9 w-9 rounded-xl p-0" />
+            <button
+              type="button"
+              onClick={() => setIsMobileDrawerOpen(true)}
+              className="rounded-xl p-2 text-muted-foreground transition hover:bg-accent/50 hover:text-foreground"
+              aria-label="Abrir opções do painel"
+              title="Opções"
+            >
+              <Bars3Icon className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {isMobileDrawerOpen && (
+        <div className="fixed inset-0 z-[60] sm:hidden">
+          <button
+            type="button"
+            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            aria-label="Fechar opções"
+            onClick={() => setIsMobileDrawerOpen(false)}
+          />
+          <aside className="absolute right-0 top-0 flex h-full w-[min(19rem,85vw)] flex-col border-l border-border bg-background shadow-2xl">
+            <div className="flex h-16 items-center justify-between border-b border-border px-4">
+              <span className="text-sm font-semibold text-foreground">Opções do painel</span>
+              <button
+                type="button"
+                onClick={() => setIsMobileDrawerOpen(false)}
+                className="rounded-xl p-2 text-muted-foreground transition hover:bg-accent/50 hover:text-foreground"
+                aria-label="Fechar opções"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tab.id)
+                    setIsMobileDrawerOpen(false)
+                  }}
+                  className={`w-full rounded-xl px-3 py-3 text-left text-sm font-medium transition ${
+                    activeTab === tab.id ? 'bg-foreground text-background' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+
+            <div className="border-t border-border p-3">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex h-11 w-full items-center justify-center rounded-xl text-sm font-medium text-muted-foreground transition hover:bg-accent/50 hover:text-foreground"
+              >
+                <ArrowRightOnRectangleIcon className="mr-2 h-5 w-5" />
+                Sair
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
       <div className="mx-auto max-w-6xl space-y-7">
-        <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <Link to="/classic" className="mb-3 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-              <ArrowLeftIcon className="mr-2 h-4 w-4" />
-              Voltar ao site
-            </Link>
+        <header className="hidden flex-col gap-4 sm:flex sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-col gap-3">
+            <div className="inline-flex w-fit items-center gap-1 rounded-2xl border border-border bg-card/80 p-1 shadow-sm">
+              <Link
+                to="/classic"
+                className="inline-flex h-10 items-center rounded-xl px-3 text-sm font-medium text-foreground transition hover:bg-accent"
+              >
+                <ArrowLeftIcon className="mr-2 h-4 w-4" />
+                Voltar
+              </Link>
+              <LanguageSelect compact className="h-10 w-10 rounded-xl" />
+            </div>
             <h1 className="text-4xl font-bold">Painel</h1>
           </div>
-          <AdminActions className="sm:justify-end">
+          <AdminActions className="hidden w-auto flex-row flex-wrap items-center justify-end gap-1 rounded-2xl border border-border bg-card/80 p-1 shadow-sm sm:flex [&>button]:w-auto [&>label]:w-auto">
             {status && <Badge variant={status.includes('Erro') || status.includes('policy') ? 'destructive' : 'secondary'}>{status}</Badge>}
-            <LanguageSelect />
-            <ThemeToggle theme={theme} onToggle={toggleTheme} variant="outline" size="lg" />
-            <Button type="button" variant="outline" className="min-w-20" onClick={handleLogout}>
+            <ThemeToggle theme={theme} onToggle={toggleTheme} variant="ghost" size="lg" className="h-10 w-10 rounded-xl" />
+            <Button type="button" variant="ghost" className="h-10 min-w-20 rounded-xl px-4" onClick={handleLogout}>
               Sair
             </Button>
           </AdminActions>
         </header>
 
-        <nav className="grid gap-2 border-b border-border pb-4 sm:flex sm:flex-wrap sm:items-center">
+        <nav className="hidden gap-2 border-b border-border pb-4 sm:flex sm:flex-wrap sm:items-center">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -1597,36 +1694,44 @@ export default function AdminDashboard() {
           <>
             {activeTab === 'profile' && (
               <AdminSection title="Perfil" description="Dados principais usados no topo do site, navegação social, apresentação pessoal e destaques da Home tradicional.">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Input label="Nome" value={profileForm.name} onChange={(event) => setProfileForm({ ...profileForm, name: event.target.value })} />
-                  <Input label="Cargo" value={profileForm.role} onChange={(event) => setProfileForm({ ...profileForm, role: event.target.value })} />
-                  <Input label="Contato" value={profileForm.contactUrl} onChange={(event) => setProfileForm({ ...profileForm, contactUrl: event.target.value })} />
-                  <Input label="Intro" value={profileForm.intro} onChange={(event) => setProfileForm({ ...profileForm, intro: event.target.value })} />
-                </div>
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
-                  <Input label="Logo do site" value={profileForm.logoUrl} onChange={(event) => setProfileForm({ ...profileForm, logoUrl: event.target.value })} />
-                  <FileUploadButton
-                    label={uploadingLogo === 'logoUrl' ? 'Enviando...' : 'Enviar'}
-                    disabled={uploadingLogo === 'logoUrl'}
-                    onFile={(file) => void uploadProfileAsset(file, 'logoUrl')}
-                  />
-                </div>
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
-                  <Input label="Foto do currículo" value={profileForm.photoUrl} onChange={(event) => setProfileForm({ ...profileForm, photoUrl: event.target.value })} />
-                  <FileUploadButton
-                    label={uploadingLogo === 'photoUrl' ? 'Enviando...' : 'Enviar'}
-                    disabled={uploadingLogo === 'photoUrl'}
-                    onFile={(file) => void uploadProfileAsset(file, 'photoUrl')}
-                  />
-                </div>
+                <AdminCard title="Identidade" description="Nome, cargo, chamada principal e links usados no topo do site.">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Input label="Nome" value={profileForm.name} onChange={(event) => setProfileForm({ ...profileForm, name: event.target.value })} />
+                    <Input label="Cargo" value={profileForm.role} onChange={(event) => setProfileForm({ ...profileForm, role: event.target.value })} />
+                    <Input label="Contato" value={profileForm.contactUrl} onChange={(event) => setProfileForm({ ...profileForm, contactUrl: event.target.value })} />
+                    <Input label="Intro" value={profileForm.intro} onChange={(event) => setProfileForm({ ...profileForm, intro: event.target.value })} />
+                  </div>
+                </AdminCard>
+                <AdminCard title="Imagens" description="Logo do site e foto usada no currículo.">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+                      <Input label="Logo do site" value={profileForm.logoUrl} onChange={(event) => setProfileForm({ ...profileForm, logoUrl: event.target.value })} />
+                      <FileUploadButton
+                        label={uploadingLogo === 'logoUrl' ? 'Enviando...' : 'Enviar'}
+                        disabled={uploadingLogo === 'logoUrl'}
+                        onFile={(file) => void uploadProfileAsset(file, 'logoUrl')}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+                      <Input label="Foto do currículo" value={profileForm.photoUrl} onChange={(event) => setProfileForm({ ...profileForm, photoUrl: event.target.value })} />
+                      <FileUploadButton
+                        label={uploadingLogo === 'photoUrl' ? 'Enviando...' : 'Enviar'}
+                        disabled={uploadingLogo === 'photoUrl'}
+                        onFile={(file) => void uploadProfileAsset(file, 'photoUrl')}
+                      />
+                    </div>
+                  </div>
+                </AdminCard>
                 <div>
                   <AdminInlineSection title="Redes sociais" description="Aparecem no topo, rodapé ou navegação social do site.">
                     <div className="space-y-4">
                       {profileForm.socialLinks.map((social, index) => (
-                        <div key={`${social.name}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end">
-                          <Input label="Nome" value={social.name} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
-                          <Input label="URL" value={social.href} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, href: event.target.value } : item)) })} />
-                          <Input label="Ícone" value={social.icon} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
+                        <div key={`${social.name}-${index}`} className="grid grid-cols-1 items-end gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[minmax(0,1fr)_auto]">
+                          <div className="grid min-w-0 gap-3 md:grid-cols-3">
+                            <Input label="Nome" value={social.name} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
+                            <Input label="URL" value={social.href} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, href: event.target.value } : item)) })} />
+                            <Input label="Ícone" value={social.icon} onChange={(event) => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
+                          </div>
                           <RemoveIconButton label="Remover rede" onClick={() => setProfileForm({ ...profileForm, socialLinks: profileForm.socialLinks.filter((_, itemIndex) => itemIndex !== index) })} />
                         </div>
                       ))}
@@ -1639,19 +1744,21 @@ export default function AdminDashboard() {
                     </AdminActions>
                   </AdminInlineSection>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Textarea label="Tecnologias, uma por linha" value={profileForm.technologies} onChange={(value) => setProfileForm({ ...profileForm, technologies: value })} rows={8} />
-                  <Textarea label="Sobre, um parágrafo por linha" value={profileForm.aboutParagraphs} onChange={(value) => setProfileForm({ ...profileForm, aboutParagraphs: value })} rows={8} />
-                </div>
+                <AdminCard title="Apresentação" description="Tecnologias e parágrafos de apresentação pessoal.">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Textarea label="Tecnologias, uma por linha" value={profileForm.technologies} onChange={(value) => setProfileForm({ ...profileForm, technologies: value })} rows={8} />
+                    <Textarea label="Sobre, um parágrafo por linha" value={profileForm.aboutParagraphs} onChange={(value) => setProfileForm({ ...profileForm, aboutParagraphs: value })} rows={8} />
+                  </div>
+                </AdminCard>
                 <div>
                   <AdminInlineSection title="Destaques" description="Aparecem na Home tradicional como cards de diferenciais.">
                     <div className="space-y-4">
                       {profileForm.highlights.map((highlight, index) => (
-                        <div key={`${highlight.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                        <div key={`${highlight.title}-${index}`} className="grid grid-cols-1 items-end gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto]">
                           <Input label="Ícone" value={highlight.icon} onChange={(event) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, icon: event.target.value } : item)) })} />
                           <Input label="Título" value={highlight.title} onChange={(event) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
                           <RemoveIconButton label="Remover destaque" onClick={() => setProfileForm({ ...profileForm, highlights: profileForm.highlights.filter((_, itemIndex) => itemIndex !== index) })} />
-                          <div className="md:col-span-2">
+                          <div className="col-span-2 md:col-span-2">
                             <Textarea label="Descrição" value={highlight.description} onChange={(description) => setProfileForm({ ...profileForm, highlights: profileForm.highlights.map((item, itemIndex) => (itemIndex === index ? { ...item, description } : item)) })} rows={3} />
                           </div>
                         </div>
@@ -1675,18 +1782,22 @@ export default function AdminDashboard() {
 
             {activeTab === 'home' && (
               <AdminSection title="Home" description="Textos e blocos que aparecem na página inicial dos modos tradicional e Aurora.">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Input label="Chamada superior" value={homeForm.heroEyebrow} onChange={(event) => setHomeForm({ ...homeForm, heroEyebrow: event.target.value })} />
-                  <Input label="Título de impacto" value={homeForm.heroHeadline} onChange={(event) => setHomeForm({ ...homeForm, heroHeadline: event.target.value })} />
-                </div>
-                <div>
-                  <Textarea label="Apresentação principal" value={homeForm.heroDescription} onChange={(value) => setHomeForm({ ...homeForm, heroDescription: value })} rows={4} />
-                </div>
-                <div className="grid gap-4 md:grid-cols-3">
-                  <Input label="Botão de projetos" value={homeForm.projectsButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsButtonLabel: event.target.value })} />
-                  <Input label="Botão de currículo" value={homeForm.resumeButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, resumeButtonLabel: event.target.value })} />
-                  <Input label="Botão de contato" value={homeForm.contactButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, contactButtonLabel: event.target.value })} />
-                </div>
+                <AdminCard title="Hero" description="Primeira dobra da página inicial.">
+                  <div className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Input label="Chamada superior" value={homeForm.heroEyebrow} onChange={(event) => setHomeForm({ ...homeForm, heroEyebrow: event.target.value })} />
+                      <Input label="Título de impacto" value={homeForm.heroHeadline} onChange={(event) => setHomeForm({ ...homeForm, heroHeadline: event.target.value })} />
+                    </div>
+                    <Textarea label="Apresentação principal" value={homeForm.heroDescription} onChange={(value) => setHomeForm({ ...homeForm, heroDescription: value })} rows={4} />
+                  </div>
+                </AdminCard>
+                <AdminCard title="Botões principais" description="Chamadas de ação exibidas na Home.">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <Input label="Botão de projetos" value={homeForm.projectsButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsButtonLabel: event.target.value })} />
+                    <Input label="Botão de currículo" value={homeForm.resumeButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, resumeButtonLabel: event.target.value })} />
+                    <Input label="Botão de contato" value={homeForm.contactButtonLabel} onChange={(event) => setHomeForm({ ...homeForm, contactButtonLabel: event.target.value })} />
+                  </div>
+                </AdminCard>
                 <div>
                   <AdminInlineSection title="Grupos da stack" description="Aparecem na Home como blocos de capacidades e tecnologias.">
                     <div className="mb-4">
@@ -1694,7 +1805,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="space-y-4">
                       {homeForm.stackGroups.map((group, index) => (
-                        <div key={`${group.title}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_auto] md:items-end">
+                        <div key={`${group.title}-${index}`} className="grid grid-cols-1 items-end gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[minmax(0,1fr)_auto]">
                           <Input label="Título do grupo" value={group.title} onChange={(event) => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
                           <RemoveIconButton label="Remover grupo" onClick={() => setHomeForm({ ...homeForm, stackGroups: homeForm.stackGroups.filter((_, itemIndex) => itemIndex !== index) })} />
                           <div className="md:col-span-2">
@@ -1711,24 +1822,26 @@ export default function AdminDashboard() {
                     </AdminActions>
                   </AdminInlineSection>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Input label="Tradicional: título sobre" value={homeForm.classicAboutTitle} onChange={(event) => setHomeForm({ ...homeForm, classicAboutTitle: event.target.value })} />
-                  <Input label="Tradicional: título diferenciais" value={homeForm.classicHighlightsTitle} onChange={(event) => setHomeForm({ ...homeForm, classicHighlightsTitle: event.target.value })} />
-                  <Input label="Tradicional: título capacidades" value={homeForm.classicCapabilitiesTitle} onChange={(event) => setHomeForm({ ...homeForm, classicCapabilitiesTitle: event.target.value })} />
-                  <Input label="Observação de idioma" value={homeForm.languageNote} onChange={(event) => setHomeForm({ ...homeForm, languageNote: event.target.value })} />
-                  <Input label="Aurora: chamada sobre" value={homeForm.auroraAboutEyebrow} onChange={(event) => setHomeForm({ ...homeForm, auroraAboutEyebrow: event.target.value })} />
-                  <Input label="Aurora: título sobre" value={homeForm.auroraAboutTitle} onChange={(event) => setHomeForm({ ...homeForm, auroraAboutTitle: event.target.value })} />
-                  <Input label="Chamada de projetos" value={homeForm.projectsEyebrow} onChange={(event) => setHomeForm({ ...homeForm, projectsEyebrow: event.target.value })} />
-                  <Input label="Título de projetos" value={homeForm.projectsTitle} onChange={(event) => setHomeForm({ ...homeForm, projectsTitle: event.target.value })} />
-                  <Input label="Link de projetos" value={homeForm.projectsLinkLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsLinkLabel: event.target.value })} />
-                  <Input label="Legenda do total de projetos" value={homeForm.projectsTotalLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsTotalLabel: event.target.value })} />
-                  <Input label="Chamada do blog" value={homeForm.blogEyebrow} onChange={(event) => setHomeForm({ ...homeForm, blogEyebrow: event.target.value })} />
-                  <Input label="Título do blog" value={homeForm.blogTitle} onChange={(event) => setHomeForm({ ...homeForm, blogTitle: event.target.value })} />
-                  <Input label="Título do contato" value={homeForm.contactTitle} onChange={(event) => setHomeForm({ ...homeForm, contactTitle: event.target.value })} />
-                </div>
-                <div>
-                  <Textarea label="Descrição do contato" value={homeForm.contactDescription} onChange={(value) => setHomeForm({ ...homeForm, contactDescription: value })} rows={3} />
-                </div>
+                <AdminCard title="Seções da página" description="Títulos e rótulos das demais áreas da Home.">
+                  <div className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Input label="Tradicional: título sobre" value={homeForm.classicAboutTitle} onChange={(event) => setHomeForm({ ...homeForm, classicAboutTitle: event.target.value })} />
+                      <Input label="Tradicional: título diferenciais" value={homeForm.classicHighlightsTitle} onChange={(event) => setHomeForm({ ...homeForm, classicHighlightsTitle: event.target.value })} />
+                      <Input label="Tradicional: título capacidades" value={homeForm.classicCapabilitiesTitle} onChange={(event) => setHomeForm({ ...homeForm, classicCapabilitiesTitle: event.target.value })} />
+                      <Input label="Observação de idioma" value={homeForm.languageNote} onChange={(event) => setHomeForm({ ...homeForm, languageNote: event.target.value })} />
+                      <Input label="Aurora: chamada sobre" value={homeForm.auroraAboutEyebrow} onChange={(event) => setHomeForm({ ...homeForm, auroraAboutEyebrow: event.target.value })} />
+                      <Input label="Aurora: título sobre" value={homeForm.auroraAboutTitle} onChange={(event) => setHomeForm({ ...homeForm, auroraAboutTitle: event.target.value })} />
+                      <Input label="Chamada de projetos" value={homeForm.projectsEyebrow} onChange={(event) => setHomeForm({ ...homeForm, projectsEyebrow: event.target.value })} />
+                      <Input label="Título de projetos" value={homeForm.projectsTitle} onChange={(event) => setHomeForm({ ...homeForm, projectsTitle: event.target.value })} />
+                      <Input label="Link de projetos" value={homeForm.projectsLinkLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsLinkLabel: event.target.value })} />
+                      <Input label="Legenda do total de projetos" value={homeForm.projectsTotalLabel} onChange={(event) => setHomeForm({ ...homeForm, projectsTotalLabel: event.target.value })} />
+                      <Input label="Chamada do blog" value={homeForm.blogEyebrow} onChange={(event) => setHomeForm({ ...homeForm, blogEyebrow: event.target.value })} />
+                      <Input label="Título do blog" value={homeForm.blogTitle} onChange={(event) => setHomeForm({ ...homeForm, blogTitle: event.target.value })} />
+                      <Input label="Título do contato" value={homeForm.contactTitle} onChange={(event) => setHomeForm({ ...homeForm, contactTitle: event.target.value })} />
+                    </div>
+                    <Textarea label="Descrição do contato" value={homeForm.contactDescription} onChange={(value) => setHomeForm({ ...homeForm, contactDescription: value })} rows={3} />
+                  </div>
+                </AdminCard>
                 <AdminActions>
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveHome}>
                     Salvar home
@@ -1782,7 +1895,7 @@ export default function AdminDashboard() {
 
                   {projectGroupsForm[selectedProjectGroupIndex] ? (
                     <div className="space-y-5">
-                      <div className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-[1fr_auto] md:items-end">
+                      <div className="grid grid-cols-1 items-end gap-3 rounded-xl border border-border p-4 md:grid-cols-[minmax(0,1fr)_auto]">
                         <div className="min-w-0">
                           <Input
                             label="Empresa/grupo selecionado"
@@ -1801,11 +1914,11 @@ export default function AdminDashboard() {
                             const project = projectGroupsForm[groupIndex].projects[projectIndex]
                             return (
                               <>
-                                <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                                <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
                                   <Input label="Projeto selecionado" value={project.title} onChange={(event) => updateProject(groupIndex, projectIndex, { title: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
                                   <RemoveIconButton label="Remover projeto" onClick={() => removeProject(groupIndex, projectIndex, projectGroupsForm, setProjectGroupsForm)} />
                                 </div>
-                                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-end">
+                                <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
                                   <Input label="Logo" value={project.logo} onChange={(event) => updateProject(groupIndex, projectIndex, { logo: event.target.value }, projectGroupsForm, setProjectGroupsForm)} />
                                   <FileUploadButton
                                     label={uploadingLogo === `${groupIndex}-${projectIndex}` ? 'Enviando logo...' : 'Enviar nova logo'}
@@ -1894,7 +2007,7 @@ export default function AdminDashboard() {
                         const article = articleForms[index]
                         return (
                           <>
-                            <div className="grid gap-3 md:col-span-2 md:grid-cols-[1fr_auto] md:items-end">
+                            <div className="grid grid-cols-1 items-end gap-3 md:col-span-2 md:grid-cols-[minmax(0,1fr)_auto]">
                               <Input label="Título" value={article.title} onChange={(event) => updateArticle(index, { title: event.target.value }, articleForms, setArticleForms)} />
                               <RemoveIconButton label="Remover artigo" onClick={() => setArticleForms(articleForms.filter((_, itemIndex) => itemIndex !== index))} />
                             </div>
@@ -1937,15 +2050,17 @@ export default function AdminDashboard() {
 
             {activeTab === 'resume' && (
               <AdminSection title="Currículo" description="Conteúdo usado na página de currículo e no PDF gerado pelo painel.">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Textarea label="Sobre do currículo, um parágrafo por linha" value={resumeForm.aboutParagraphs} onChange={(value) => setResumeForm({ ...resumeForm, aboutParagraphs: value })} rows={6} />
-                  <Textarea label="Habilidades técnicas, uma por linha" value={resumeForm.technologies} onChange={(value) => setResumeForm({ ...resumeForm, technologies: value })} rows={8} />
-                </div>
+                <AdminCard title="Resumo e habilidades" description="Texto inicial do currículo e lista de tecnologias.">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Textarea label="Sobre do currículo, um parágrafo por linha" value={resumeForm.aboutParagraphs} onChange={(value) => setResumeForm({ ...resumeForm, aboutParagraphs: value })} rows={6} />
+                    <Textarea label="Habilidades técnicas, uma por linha" value={resumeForm.technologies} onChange={(value) => setResumeForm({ ...resumeForm, technologies: value })} rows={8} />
+                  </div>
+                </AdminCard>
                 <div className="grid gap-4 lg:grid-cols-2">
                   <AdminInlineSection title="Idiomas" description="Aparecem na seção de idiomas do currículo e no PDF.">
                     <div className="space-y-4">
                       {resumeForm.languages.map((language, index) => (
-                        <div key={`${language.name}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                        <div key={`${language.name}-${index}`} className="grid grid-cols-1 items-end gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto]">
                           <Input label="Idioma" value={language.name} onChange={(event) => setResumeForm({ ...resumeForm, languages: resumeForm.languages.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)) })} />
                           <Input label="Descrição" value={language.description} onChange={(event) => setResumeForm({ ...resumeForm, languages: resumeForm.languages.map((item, itemIndex) => (itemIndex === index ? { ...item, description: event.target.value } : item)) })} />
                           <RemoveIconButton label="Remover idioma" onClick={() => setResumeForm({ ...resumeForm, languages: resumeForm.languages.filter((_, itemIndex) => itemIndex !== index) })} />
@@ -1963,7 +2078,7 @@ export default function AdminDashboard() {
                   <AdminInlineSection title="Seções do currículo" description="Controla ordem, título e visibilidade das seções no currículo.">
                     <div className="space-y-4">
                       {resumeForm.sections.map((section, index) => (
-                        <div key={`${section.key}-${index}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto]">
+                        <div key={`${section.key}-${index}`} className="grid grid-cols-1 items-end gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto]">
                           <Input label="Chave técnica" value={section.key} onChange={(event) => setResumeForm({ ...resumeForm, sections: resumeForm.sections.map((item, itemIndex) => (itemIndex === index ? { ...item, key: event.target.value as ResumeSectionKey } : item)) })} />
                           <Input label="Título exibido" value={section.title} onChange={(event) => setResumeForm({ ...resumeForm, sections: resumeForm.sections.map((item, itemIndex) => (itemIndex === index ? { ...item, title: event.target.value } : item)) })} />
                           <label className="flex items-center gap-2 self-end rounded-xl border border-border px-3 py-2 text-sm">
@@ -1979,49 +2094,52 @@ export default function AdminDashboard() {
                     </div>
                   </AdminInlineSection>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Input label="Localização no PDF" value={resumeForm.location} onChange={(event) => setResumeForm({ ...resumeForm, location: event.target.value })} />
-                  <Input label="Nome do arquivo PDF" value={resumeForm.pdfFilename} onChange={(event) => setResumeForm({ ...resumeForm, pdfFilename: event.target.value })} />
-                  <Input label="Texto do botão de download" value={resumeForm.downloadLabel} onChange={(event) => setResumeForm({ ...resumeForm, downloadLabel: event.target.value })} />
-                  <Input label="Texto durante geração" value={resumeForm.generatingLabel} onChange={(event) => setResumeForm({ ...resumeForm, generatingLabel: event.target.value })} />
-                  <Input label="Rótulo de tecnologias dos projetos" value={resumeForm.projectTechnologiesLabel} onChange={(event) => setResumeForm({ ...resumeForm, projectTechnologiesLabel: event.target.value })} />
-                </div>
-                <h2 className="mt-8 text-2xl font-bold">Educação</h2>
-                <div className="mt-4 space-y-4">
-                  {resumeForm.education.map((item, index) => (
-                    <div key={`${item.id}-${index}`} className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
-                      <Input label="Instituição" value={item.institution} onChange={(event) => updateEducation(index, { institution: event.target.value }, resumeForm, setResumeForm)} />
-                      <Input label="Curso" value={item.course} onChange={(event) => updateEducation(index, { course: event.target.value }, resumeForm, setResumeForm)} />
-                      <RemoveIconButton label="Remover educação" onClick={() => setResumeForm({ ...resumeForm, education: resumeForm.education.filter((_, itemIndex) => itemIndex !== index) })} />
-                      <Input label="Local" value={item.location} onChange={(event) => updateEducation(index, { location: event.target.value }, resumeForm, setResumeForm)} />
-                      <Input label="Período" value={item.period} onChange={(event) => updateEducation(index, { period: event.target.value }, resumeForm, setResumeForm)} />
-                    </div>
-                  ))}
-                </div>
-                <AdminActions className="mt-4">
-                  <Button type="button" variant="outline" className="min-w-44" onClick={() => setResumeForm({ ...resumeForm, education: [...resumeForm.education, createEducationForm(resumeForm.education.length)] })}>
-                    <PlusIcon className="mr-2 h-4 w-4" />
-                    Adicionar educação
-                  </Button>
-                </AdminActions>
+                <AdminCard title="Configuração do PDF" description="Labels, localização e nome do arquivo baixado.">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Input label="Localização no PDF" value={resumeForm.location} onChange={(event) => setResumeForm({ ...resumeForm, location: event.target.value })} />
+                    <Input label="Nome do arquivo PDF" value={resumeForm.pdfFilename} onChange={(event) => setResumeForm({ ...resumeForm, pdfFilename: event.target.value })} />
+                    <Input label="Texto do botão de download" value={resumeForm.downloadLabel} onChange={(event) => setResumeForm({ ...resumeForm, downloadLabel: event.target.value })} />
+                    <Input label="Texto durante geração" value={resumeForm.generatingLabel} onChange={(event) => setResumeForm({ ...resumeForm, generatingLabel: event.target.value })} />
+                    <Input label="Rótulo de tecnologias dos projetos" value={resumeForm.projectTechnologiesLabel} onChange={(event) => setResumeForm({ ...resumeForm, projectTechnologiesLabel: event.target.value })} />
+                  </div>
+                </AdminCard>
+                <AdminCard title="Educação" description="Formações exibidas no currículo.">
+                  <div className="space-y-4">
+                    {resumeForm.education.map((item, index) => (
+                      <div key={`${item.id}-${index}`} className="grid grid-cols-1 items-end gap-3 rounded-xl border border-border/70 bg-background/50 p-4 md:grid-cols-[1fr_1fr_auto]">
+                        <Input label="Instituição" value={item.institution} onChange={(event) => updateEducation(index, { institution: event.target.value }, resumeForm, setResumeForm)} />
+                        <Input label="Curso" value={item.course} onChange={(event) => updateEducation(index, { course: event.target.value }, resumeForm, setResumeForm)} />
+                        <RemoveIconButton label="Remover educação" onClick={() => setResumeForm({ ...resumeForm, education: resumeForm.education.filter((_, itemIndex) => itemIndex !== index) })} />
+                        <Input label="Local" value={item.location} onChange={(event) => updateEducation(index, { location: event.target.value }, resumeForm, setResumeForm)} />
+                        <Input label="Período" value={item.period} onChange={(event) => updateEducation(index, { period: event.target.value }, resumeForm, setResumeForm)} />
+                      </div>
+                    ))}
+                  </div>
+                  <AdminActions className="mt-4">
+                    <Button type="button" variant="outline" className="min-w-44" onClick={() => setResumeForm({ ...resumeForm, education: [...resumeForm.education, createEducationForm(resumeForm.education.length)] })}>
+                      <PlusIcon className="mr-2 h-4 w-4" />
+                      Adicionar educação
+                    </Button>
+                  </AdminActions>
+                </AdminCard>
 
-                <h2 className="mt-8 text-2xl font-bold">Experiências</h2>
-                <div className="mt-4 space-y-4">
-                  {resumeForm.experiences.map((experience, index) => (
-                    <div key={`${experience.id}-${index}`} className="grid gap-3 rounded-xl border border-border p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                <AdminCard title="Experiências" description="Histórico profissional, cargos e responsabilidades.">
+                  <div className="space-y-4">
+                    {resumeForm.experiences.map((experience, index) => (
+                    <div key={`${experience.id}-${index}`} className="grid grid-cols-1 items-end gap-3 rounded-xl border border-border/70 bg-background/50 p-4 md:grid-cols-[1fr_1fr_auto]">
                       <Input label="Empresa" value={experience.company} onChange={(event) => updateExperience(index, { company: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Cargo principal" value={experience.position} onChange={(event) => updateExperience(index, { position: event.target.value }, resumeForm, setResumeForm)} />
                       <RemoveIconButton label="Remover experiência" onClick={() => setResumeForm({ ...resumeForm, experiences: resumeForm.experiences.filter((_, itemIndex) => itemIndex !== index) })} />
                       <Input label="Local" value={experience.location} onChange={(event) => updateExperience(index, { location: event.target.value }, resumeForm, setResumeForm)} />
                       <Input label="Período" value={experience.period} onChange={(event) => updateExperience(index, { period: event.target.value }, resumeForm, setResumeForm)} />
-                      <section className="space-y-3 md:col-span-3">
+                      <section className="col-span-2 space-y-3 md:col-span-3">
                         <div>
                           <h3 className="text-base font-semibold text-foreground">Timeline de cargos</h3>
                           <p className="mt-1 text-sm leading-6 text-muted-foreground">Aparece dentro desta experiência, em ordem.</p>
                         </div>
                         <div className="space-y-4">
                           {experience.roles.map((role, roleIndex) => (
-                            <div key={`${role.position}-${roleIndex}`} className="grid gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                            <div key={`${role.position}-${roleIndex}`} className="grid grid-cols-1 items-end gap-3 border-b border-border/60 pb-4 last:border-b-0 md:grid-cols-[1fr_1fr_auto]">
                               <Input
                                 label="Cargo"
                                 value={role.position}
@@ -2061,13 +2179,16 @@ export default function AdminDashboard() {
                         <Textarea label="Responsabilidades, uma por linha" value={experience.responsibilities} onChange={(value) => updateExperience(index, { responsibilities: value }, resumeForm, setResumeForm)} rows={5} />
                       </div>
                     </div>
-                  ))}
-                </div>
-                <AdminActions className="mt-5">
-                  <Button type="button" variant="outline" className="min-w-48" onClick={() => setResumeForm({ ...resumeForm, experiences: [...resumeForm.experiences, createExperienceForm(resumeForm.experiences.length)] })}>
-                    <PlusIcon className="mr-2 h-4 w-4" />
-                    Adicionar experiência
-                  </Button>
+                    ))}
+                  </div>
+                  <AdminActions className="mt-5">
+                    <Button type="button" variant="outline" className="min-w-48" onClick={() => setResumeForm({ ...resumeForm, experiences: [...resumeForm.experiences, createExperienceForm(resumeForm.experiences.length)] })}>
+                      <PlusIcon className="mr-2 h-4 w-4" />
+                      Adicionar experiência
+                    </Button>
+                  </AdminActions>
+                </AdminCard>
+                <AdminActions>
                   <Button type="button" className="min-w-36" loading={isSaving} onClick={saveResume}>
                     Salvar currículo
                   </Button>
