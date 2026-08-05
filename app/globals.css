@@ -8,6 +8,12 @@
   --graphite:#4a4640;
   --serif:'Instrument Serif',Georgia,serif;
   --sans:'Manrope Variable',Arial,sans-serif;
+  --type-micro:clamp(.5625rem,.52rem + .18vw,.6875rem);
+  --type-caption:clamp(.625rem,.57rem + .2vw,.75rem);
+  --type-label:clamp(.65625rem,.6rem + .2vw,.78125rem);
+  --type-small:clamp(.6875rem,.63rem + .22vw,.8125rem);
+  --type-body-small:clamp(.75rem,.68rem + .24vw,.875rem);
+  --type-body:clamp(.8125rem,.74rem + .25vw,.9375rem);
 }
 
 [data-theme='light']{
