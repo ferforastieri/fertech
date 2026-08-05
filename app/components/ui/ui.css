@@ -2,9 +2,8 @@
 
 .book-layer{position:fixed;inset:0;z-index:-20;background-image:url('/assets/open-book.jpg');background-size:cover;background-position:center;filter:sepia(.36) contrast(.82) brightness(.58);pointer-events:none}
 [data-theme='light'] .book-layer{filter:sepia(.48) contrast(.62) brightness(1.28);opacity:.58}
-.water-reactive-layer{position:fixed;inset:0;z-index:-15;width:100%;height:100%;overflow:visible;opacity:1;filter:sepia(.18) saturate(1.08) contrast(1.42) brightness(1.08);pointer-events:none}
-[data-theme='light'] .water-reactive-layer{filter:sepia(.42) saturate(.82) contrast(.84) brightness(1.24)}
-.water-stroke{fill:none;stroke:#fff;stroke-width:22px;stroke-linecap:butt;stroke-linejoin:round;opacity:0}
+.water-surface{position:fixed;inset:0;z-index:-15;width:100%;height:100%;filter:sepia(.36) contrast(.82) brightness(.58);pointer-events:none}
+[data-theme='light'] .water-surface{filter:sepia(.48) contrast(.62) brightness(1.28)}
 .paper-wash{position:fixed;inset:0;z-index:-10;background:radial-gradient(circle at 50% 42%,rgba(231,223,209,.25),transparent 34%),linear-gradient(90deg,rgba(24,23,20,.7),transparent 32%,transparent 68%,rgba(24,23,20,.7)),linear-gradient(180deg,rgba(24,23,20,.12),rgba(24,23,20,.22));pointer-events:none}
 [data-theme='light'] .paper-wash{background:radial-gradient(circle at 50% 42%,rgba(255,252,244,.28),transparent 35%),linear-gradient(90deg,rgba(233,225,212,.7),transparent 34%,transparent 66%,rgba(233,225,212,.7)),linear-gradient(180deg,rgba(233,225,212,.22),rgba(233,225,212,.38))}
 
@@ -150,8 +149,8 @@
   .scene-shell:has(.floating-nav-root--top) .corner-logo{top:max(70px,calc(env(safe-area-inset-top) + 66px))}
   .scene-shell:has(.floating-nav-root--top) .global-profile{top:max(70px,calc(env(safe-area-inset-top) + 66px))}
   .scene-shell:has(.floating-nav-root--top) .editorial-page{padding-top:172px}
-  .custom-cursor,.water-reactive-layer{display:none}
+  .custom-cursor,.water-surface{display:none}
   [data-theme='light'] .paper-wash{background:linear-gradient(rgba(233,225,212,.28),rgba(233,225,212,.54))}
 }
 
-@media(prefers-reduced-motion:reduce){.book-layer{transform:none!important}.book-intro,.water-reactive-layer{display:none!important}.scroll-reveal{opacity:1!important;filter:none!important;transform:none!important}}
+@media(prefers-reduced-motion:reduce){.book-layer{transform:none!important}.book-intro,.water-surface{display:none!important}.scroll-reveal{opacity:1!important;filter:none!important;transform:none!important}}

@@ -4,6 +4,7 @@ import { useEffect,useRef,type ReactNode } from 'react'
 import { animate,createScope,createTimeline,stagger,utils } from 'animejs'
 import {useTranslations} from 'next-intl'
 import { Logo } from './logo'
+import {WaterSurface} from './water-surface'
 import './ui.css'
 
 const introCode=['class Portfolio {','  constructor(public mind: Human) {}','  async build(): Promise<Experience> {','    return this.design.with({ ai: true });','  }','}']
@@ -18,10 +19,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   const book=useTranslations('Book')
   const root=useRef<HTMLElement>(null)
   const cursor=useRef<HTMLDivElement>(null)
-  const water=useRef<SVGSVGElement>(null)
-  const waterStrokes=useRef<Array<SVGPathElement|null>>([])
-  const noise=useRef<SVGFETurbulenceElement>(null)
-  const displacement=useRef<SVGFEDisplacementMapElement>(null)
 
   useEffect(()=>{
     if(!root.current)return
@@ -29,9 +26,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
       if(!self?.matches.reduce){
         const intro=root.current?.querySelector<HTMLElement>('.book-intro')
         const mobileBook=window.matchMedia('(max-width: 767px)').matches
-        const mobileOpenWidth=mobileBook?Math.min(window.innerWidth-24,(window.innerHeight-32)*1.4,740):0
-        const mobileOpenHeight=mobileOpenWidth/1.4
-        const closedBookScale=mobileBook?Math.max(1,Math.min(1.75,(window.innerWidth*.86*2)/mobileOpenWidth,(window.innerHeight*.9)/mobileOpenHeight)):1
         const openedBookScale=mobileBook?1:1.035
         const internalArrival=sessionStorage.getItem('fertec-internal-navigation')==='1'
         sessionStorage.removeItem('fertec-internal-navigation')
@@ -58,33 +52,34 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         else if(intro?.hidden)setupScrollReveals()
         else window.addEventListener('book-opened',setupScrollReveals,{once:true})
         self?.add(()=>{window.removeEventListener('book-opened',setupScrollReveals);revealObserver?.disconnect()})
-        if(!internalArrival)createTimeline({defaults:{ease:'outExpo'},onComplete:()=>{if(intro)intro.hidden=true;window.dispatchEvent(new Event('book-opened'))}})
-          .add('.intro-book',{opacity:[0,1],scale:mobileBook?[closedBookScale*.94,closedBookScale]:[.92,1],x:'-25%',y:[26,0],rotateX:[12,4],duration:450})
-          .add('.intro-cover',{rotateY:[0,-179],duration:1000,ease:'inOutQuart'},320)
-          .add('.intro-book',{x:['-25%','0%'],scale:[closedBookScale,openedBookScale],duration:1000,ease:'inOutQuart'},320)
-          .add('.intro-page--one',{rotateY:[0,-177],z:[8,5],duration:680,ease:'inOutQuart'},1260)
-          .add('.intro-page--one .intro-page-code--front',{opacity:[1,0],duration:90},1530)
-          .add('.intro-page--one .intro-page-code--back',{opacity:[0,1],duration:90},1530)
-          .add('.intro-page--two',{rotateY:[0,-169],z:[6,4],duration:660,ease:'inOutQuart'},1550)
-          .add('.intro-page--two .intro-page-code--front',{opacity:[1,0],duration:90},1810)
-          .add('.intro-page--two .intro-page-code--back',{opacity:[0,1],duration:90},1810)
-          .add('.intro-page--three',{rotateY:[0,-158],z:[4,3],duration:640,ease:'inOutQuart'},1840)
-          .add('.intro-page--three .intro-page-code--front',{opacity:[1,0],duration:90},2090)
-          .add('.intro-page--three .intro-page-code--back',{opacity:[0,1],duration:90},2090)
-          .add('.intro-page--four',{rotateY:[0,-146],z:[2,2],duration:620,ease:'inOutQuart'},2130)
-          .add('.intro-page--four .intro-page-code--front',{opacity:[1,0],duration:90},2370)
-          .add('.intro-page--four .intro-page-code--back',{opacity:[0,1],duration:90},2370)
-          .add('.intro-spine',{scaleY:[.6,1],opacity:[0,1],duration:420},680)
-          .add('.scene-item',{opacity:[0,1],y:[16,0],delay:stagger(48),duration:520},2580)
-          .add('.scene-panel',{opacity:[0,1],y:[22,0],duration:520},2580)
-          .add('.book-intro',{opacity:[1,0],scale:[1,1.012],duration:360,ease:'outQuad'},2800)
+        if(!internalArrival&&intro&&root.current){
+          const page=root.current.querySelector('.intro-page--one')
+          const front=root.current.querySelector('.intro-page--one .intro-page-code--front')
+          const back=root.current.querySelector('.intro-page--one .intro-page-code--back')
+          if(page&&front&&back){
+            setOpenedBook()
+            intro.hidden=false
+            utils.set(intro,{opacity:1})
+            utils.set(page,{rotateY:0,z:8})
+            utils.set(front,{opacity:1})
+            utils.set(back,{opacity:0})
+            createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>{intro.hidden=true;window.dispatchEvent(new Event('book-opened'))}})
+              .add(page,{rotateY:[0,-178],z:[8,5],duration:720},100)
+              .add(front,{opacity:[1,0],duration:80},410)
+              .add(back,{opacity:[0,1],duration:80},410)
+              .add('.intro-spine',{scaleY:[.85,1],opacity:[.65,1],duration:360},100)
+              .add('.scene-item',{opacity:[0,1],y:[16,0],delay:stagger(40),duration:480},650)
+              .add('.scene-panel',{opacity:[0,1],y:[22,0],duration:480},650)
+              .add(intro,{opacity:[1,0],duration:260,ease:'outQuad'},650)
+          }
+        }
         animate('.scroll-cue-mark',{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
 
-        const internalLinks=Array.from(root.current?.querySelectorAll<HTMLAnchorElement>('a[href^="/"]')??[])
         const turnPage=(event:MouseEvent)=>{
-          const link=event.currentTarget as HTMLAnchorElement
-          if(event.metaKey||event.ctrlKey||event.shiftKey)return
+          const link=(event.target as Element).closest<HTMLAnchorElement>('a[href^="/"]')
+          if(!link||link.target==='_blank'||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return
           event.preventDefault()
+          event.stopPropagation()
           if(!intro||!root.current)return
           const page=root.current.querySelector('.intro-page--one')
           const front=root.current.querySelector('.intro-page--one .intro-page-code--front')
@@ -103,40 +98,14 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
             .add(back,{opacity:[0,1],duration:60},220)
             .add(intro,{opacity:[1,0],duration:140,ease:'outQuad'},370)
         }
-        internalLinks.forEach(link=>link.addEventListener('click',turnPage))
-        self?.add(()=>internalLinks.forEach(link=>link.removeEventListener('click',turnPage)))
+        root.current?.addEventListener('click',turnPage,true)
+        self?.add(()=>root.current?.removeEventListener('click',turnPage,true))
       }
       if(self?.matches.pointer){
-        if(noise.current)animate(noise.current,{baseFrequency:['0.008 0.030','0.012 0.045'],duration:3200,alternate:true,loop:true,ease:'inOutSine'})
-        let lastDistortion=0
-        let strokeIndex=0
-        let lastPoint:{x:number;y:number}|null=null
         const move=(event:PointerEvent)=>{
           if(cursor.current)animate(cursor.current,{x:event.clientX,y:event.clientY,opacity:1,duration:95,ease:'outQuad'})
-          const point={x:event.clientX,y:event.clientY}
-          if(!lastPoint){lastPoint=point;return}
-          const distance=Math.hypot(point.x-lastPoint.x,point.y-lastPoint.y)
-          if(distance>24){
-            const stroke=waterStrokes.current[strokeIndex%waterStrokes.current.length]
-            strokeIndex+=1
-            const dx=point.x-lastPoint.x
-            const dy=point.y-lastPoint.y
-            const normalX=-dy/distance
-            const normalY=dx/distance
-            const bend=(strokeIndex%2?1:-1)*Math.min(18,distance*.18)
-            const controlX=(lastPoint.x+point.x)/2+normalX*bend
-            const controlY=(lastPoint.y+point.y)/2+normalY*bend
-            stroke?.setAttribute('d',`M ${lastPoint.x} ${lastPoint.y} Q ${controlX} ${controlY} ${point.x} ${point.y}`)
-            if(stroke)animate(stroke,{opacity:[0,.92,0],strokeWidth:[22,104,12],duration:920,ease:'outExpo'})
-            lastPoint=point
-          }
-          const now=performance.now()
-          if(displacement.current&&now-lastDistortion>80){
-            lastDistortion=now
-            animate(displacement.current,{scale:[24,44,28],duration:680,ease:'outExpo'})
-          }
         }
-        const exit=()=>{lastPoint=null;if(water.current)animate(waterStrokes.current.filter(Boolean),{opacity:0,duration:260,ease:'outQuad'});if(cursor.current)animate(cursor.current,{opacity:0,duration:180,ease:'outQuad'})}
+        const exit=()=>{if(cursor.current)animate(cursor.current,{opacity:0,duration:180,ease:'outQuad'})}
         const cursorOver=(event:PointerEvent)=>{if((event.target as Element).closest('a,button,[role="button"]')&&cursor.current)animate(cursor.current,{scale:.76,rotate:-8,duration:180,ease:'outBack'})}
         const cursorOut=(event:PointerEvent)=>{if((event.target as Element).closest('a,button,[role="button"]')&&cursor.current)animate(cursor.current,{scale:1,rotate:0,duration:180,ease:'outBack'})}
         const cursorDown=()=>{if(cursor.current)animate(cursor.current,{scale:.62,duration:100,ease:'outQuad'})}
@@ -155,14 +124,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
 
   return <main ref={root} className={`scene-shell ${className}`}>
     <div className="book-layer" aria-hidden="true"/>
-    <svg ref={water} className="water-reactive-layer" aria-hidden="true">
-      <defs>
-        <filter id="water-background-displacement" x="-12%" y="-12%" width="124%" height="124%"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.009 0.032" numOctaves="3" seed="8" stitchTiles="stitch" result="noise"/><feDisplacementMap ref={displacement} in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="B"/></filter>
-        <filter id="water-trail-edge" x="-40%" y="-80%" width="180%" height="260%"><feTurbulence type="turbulence" baseFrequency="0.018 0.075" numOctaves="2" seed="13" result="edgeNoise"/><feDisplacementMap in="SourceGraphic" in2="edgeNoise" scale="24" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="5"/></filter>
-        <mask id="water-trail-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><rect width="100%" height="100%" fill="black"/>{Array.from({length:18},(_,index)=><path key={index} ref={element=>{waterStrokes.current[index]=element}} className="water-stroke" filter="url(#water-trail-edge)"/>)}</mask>
-      </defs>
-      <image href="/assets/open-book.jpg" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" filter="url(#water-background-displacement)" mask="url(#water-trail-mask)"/>
-    </svg>
+    <WaterSurface/>
     <div className="paper-wash" aria-hidden="true"/>
     <div ref={cursor} className="custom-cursor" aria-hidden="true"><span/></div>
     <div className="book-intro" aria-hidden="true">
