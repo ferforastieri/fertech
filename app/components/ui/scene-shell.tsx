@@ -17,7 +17,6 @@ const introPages=[
 export function SceneShell({children,className=''}:{children:ReactNode;className?:string}){
   const book=useTranslations('Book')
   const root=useRef<HTMLElement>(null)
-  const cursor=useRef<HTMLDivElement>(null)
   const water=useRef<HTMLDivElement>(null)
   const noise=useRef<SVGFETurbulenceElement>(null)
   const displacement=useRef<SVGFEDisplacementMapElement>(null)
@@ -76,7 +75,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
             trail[index].y+=(trail[index-1].y-trail[index].y)*follow
           }
           if(water.current){
-            water.current.style.setProperty('--water-x',`${target.x}px`);water.current.style.setProperty('--water-y',`${target.y}px`)
             trail.forEach((point,index)=>{water.current?.style.setProperty(`--trail-${index+1}-x`,`${point.x}px`);water.current?.style.setProperty(`--trail-${index+1}-y`,`${point.y}px`)})
           }
           animationFrame=requestAnimationFrame(renderTrail)
@@ -84,7 +82,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         animationFrame=requestAnimationFrame(renderTrail)
         const move=(event:PointerEvent)=>{
           target.x=event.clientX;target.y=event.clientY
-          if(cursor.current)animate(cursor.current,{x:event.clientX,y:event.clientY,duration:70,ease:'outQuad'})
           if(water.current&&!waterVisible){waterVisible=true;trail.forEach(point=>{point.x=target.x;point.y=target.y});animate(water.current,{opacity:.9,duration:220,ease:'outQuad'})}
           const now=performance.now()
           if(displacement.current&&now-lastDistortion>110){
@@ -106,7 +103,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     <div ref={water} className="water-reactive-layer" aria-hidden="true"/>
     <div className="paper-wash" aria-hidden="true"/>
     <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-background-displacement" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap ref={displacement} in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="1.6"/></filter></defs></svg>
-    <div ref={cursor} className="precision-cursor" aria-hidden="true"/>
     <div className="book-intro" aria-hidden="true">
       <div className="intro-book">
         <div className="intro-book__shadow"/>
