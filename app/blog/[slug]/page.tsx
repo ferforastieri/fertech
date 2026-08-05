@@ -7,7 +7,7 @@ export const dynamicParams = false
 
 export async function generateStaticParams() {
   const articles = await getArticles()
-  if (!articles.length) throw new Error('Nenhum artigo encontrado no Supabase.')
+  if (!articles.length) throw new Error('Nenhum artigo encontrado no Firebase.')
   return articles.map((article) => ({ slug: article.slug }))
 }
 
