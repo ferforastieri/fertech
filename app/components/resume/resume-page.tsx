@@ -1,6 +1,7 @@
 'use client'
 
 import {useRef,useState} from 'react'
+import Image from 'next/image'
 import {useTranslations} from 'next-intl'
 import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
 import {siteContent} from '@/messages/site-content'
@@ -53,6 +54,7 @@ export function ResumePage(){
     <header className="resume-header resume-reveal">
       <p>{t('eyebrow')}</p>
       <h1>{t('title')}</h1>
+      <Image className="resume-photo" src="/assets/fernando.png" alt={t('portraitAlt')} width={320} height={320} priority/>
       <div><strong>{t('role')}</strong><span>{t('location')}</span></div>
       <nav aria-label={t('contact')}><a href={`mailto:${siteContent.contacts.email}`}>{t('email')} ↗</a><a href={siteContent.contacts.linkedin} target="_blank" rel="noreferrer">{t('linkedin')} ↗</a><a href={siteContent.contacts.github} target="_blank" rel="noreferrer">{t('github')} ↗</a><button type="button" onClick={download} disabled={exporting} data-html2canvas-ignore>{t(exporting?'generating':'download')} ↓</button></nav>
     </header>

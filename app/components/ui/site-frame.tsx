@@ -10,5 +10,5 @@ export function SiteFrame({children,className=''}:{children:ReactNode;className?
   <FloatingNavigation/>
   <Link className="corner-logo scene-item" href="/" aria-label={siteContent.identity.name}><Logo/></Link>
   <GlobalProfile/>
-  {children}
+  <div className="route-view">{children}</div>
 </SceneShell>}

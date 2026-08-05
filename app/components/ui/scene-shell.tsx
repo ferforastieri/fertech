@@ -3,12 +3,15 @@
 import {useEffect,useRef,type ReactNode} from 'react'
 import {animate,createScope,createTimeline,stagger,utils} from 'animejs'
 import {useTranslations} from 'next-intl'
+import {usePathname} from 'next/navigation'
 import {WaterSurface} from './water-surface'
 import './ui.css'
 
 export function SceneShell({children,className=''}:{children:ReactNode;className?:string}){
   const system=useTranslations('System')
+  const pathname=usePathname()
   const root=useRef<HTMLElement>(null)
+  const routeReady=useRef(false)
   const cursor=useRef<HTMLDivElement>(null)
   const bootCode=system.raw('bootCode') as string[]
   const serverUnits=system.raw('units') as string[]
@@ -61,8 +64,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
 
       }
 
-      animate('.scroll-cue-mark',{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
-
       if(self?.matches.pointer){
         const move=(event:PointerEvent)=>{if(cursor.current)animate(cursor.current,{x:event.clientX,y:event.clientY,opacity:1,duration:95,ease:'outQuad'})}
         const exit=()=>{if(cursor.current)animate(cursor.current,{opacity:0,duration:180,ease:'outQuad'})}
@@ -81,6 +82,21 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     })
     return()=>scope.revert()
   },[])
+
+  useEffect(()=>{
+    const view=root.current?.querySelector<HTMLElement>('.route-view')
+    if(!view)return
+    if(!routeReady.current){routeReady.current=true;return}
+    const motion=animate(view,{opacity:[0,1],y:[18,0],filter:['blur(7px)','blur(0px)'],duration:520,ease:'outExpo'})
+    return()=>motion.revert()
+  },[pathname])
+
+  useEffect(()=>{
+    const mark=root.current?.querySelector<HTMLElement>('.scroll-cue-mark')
+    if(!mark)return
+    const motion=animate(mark,{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
+    return()=>motion.revert()
+  },[pathname])
 
   return <main ref={root} className={`scene-shell ${className}`}>
     <div className="server-layer" aria-hidden="true"/>

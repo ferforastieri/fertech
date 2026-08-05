@@ -1,4 +1,5 @@
 .scene-shell{position:relative;isolation:isolate;min-height:100svh;overflow-x:hidden;background:var(--ink);color:var(--paper)}
+.route-view{min-width:0;min-height:100svh;will-change:opacity,transform,filter}
 
 .server-layer{position:fixed;inset:0;z-index:-20;background-image:linear-gradient(rgba(12,13,13,.62),rgba(12,13,13,.7)),url('https://images.pexels.com/photos/5408005/pexels-photo-5408005.jpeg?auto=compress&cs=tinysrgb&w=1920');background-size:cover;background-position:center;filter:sepia(.28) saturate(.5) contrast(.9);pointer-events:none}
 [data-theme='light'] .server-layer{filter:grayscale(.72) sepia(.22) contrast(.72) brightness(1.35);opacity:.2}
@@ -64,9 +65,9 @@
 .global-profile__contact:hover>span:last-child{transform:translate(2px,-2px)}
 .brand-logo{display:inline-flex;align-items:center;gap:10px}
 .brand-logo>strong{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
-.brand-mark{width:40px;height:30px;overflow:visible;color:currentColor}
-.tech-monogram__trace{stroke:currentColor;stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
-.tech-monogram__circuit{stroke:currentColor;stroke-width:1.5;stroke-linecap:square}
+.brand-mark{width:45px;height:30px;overflow:visible;color:currentColor}
+.tech-monogram__trace{fill:currentColor}
+.tech-monogram__circuit{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:square}
 .brand-mark circle{fill:currentColor}
 
 .custom-cursor{position:fixed;z-index:80;top:-2px;left:-2px;width:24px;height:30px;opacity:0;pointer-events:none;transform-origin:2px 2px;will-change:transform,opacity}
