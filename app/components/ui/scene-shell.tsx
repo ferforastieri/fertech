@@ -17,7 +17,9 @@ const introPages=[
 export function SceneShell({children,className=''}:{children:ReactNode;className?:string}){
   const book=useTranslations('Book')
   const root=useRef<HTMLElement>(null)
+  const cursor=useRef<HTMLDivElement>(null)
   const water=useRef<HTMLDivElement>(null)
+  const ripples=useRef<HTMLDivElement>(null)
   const noise=useRef<SVGFETurbulenceElement>(null)
   const displacement=useRef<SVGFEDisplacementMapElement>(null)
 
@@ -65,6 +67,8 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         let waterVisible=false
         let animationFrame=0
         let lastDistortion=0
+        let lastRipple={x:-300,y:-300}
+        let rippleIndex=0
         const target={x:-300,y:-300}
         const trail=Array.from({length:5},()=>({x:-300,y:-300}))
         const renderTrail=()=>{
@@ -82,17 +86,35 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         animationFrame=requestAnimationFrame(renderTrail)
         const move=(event:PointerEvent)=>{
           target.x=event.clientX;target.y=event.clientY
+          if(cursor.current)animate(cursor.current,{x:event.clientX,y:event.clientY,opacity:1,duration:95,ease:'outQuad'})
           if(water.current&&!waterVisible){waterVisible=true;trail.forEach(point=>{point.x=target.x;point.y=target.y});animate(water.current,{opacity:.9,duration:220,ease:'outQuad'})}
+          const rippleDistance=Math.hypot(event.clientX-lastRipple.x,event.clientY-lastRipple.y)
+          if(ripples.current&&rippleDistance>72){
+            const ripple=ripples.current.children[rippleIndex%8] as HTMLElement
+            rippleIndex+=1
+            lastRipple={x:event.clientX,y:event.clientY}
+            ripple.style.left=`${event.clientX}px`
+            ripple.style.top=`${event.clientY}px`
+            animate(ripple,{opacity:[.52,0],scale:[.18,2.25],duration:1150,ease:'outExpo'})
+          }
           const now=performance.now()
           if(displacement.current&&now-lastDistortion>110){
             lastDistortion=now
             animate(displacement.current,{scale:[18,30,20],duration:520,ease:'outExpo'})
           }
         }
-        const exit=()=>{waterVisible=false;if(water.current)animate(water.current,{opacity:0,duration:520,ease:'outQuad'})}
+        const exit=()=>{waterVisible=false;if(water.current)animate(water.current,{opacity:0,duration:520,ease:'outQuad'});if(cursor.current)animate(cursor.current,{opacity:0,duration:180,ease:'outQuad'})}
+        const cursorOver=(event:PointerEvent)=>{if((event.target as Element).closest('a,button,[role="button"]')&&cursor.current)animate(cursor.current,{scale:.76,rotate:-8,duration:180,ease:'outBack'})}
+        const cursorOut=(event:PointerEvent)=>{if((event.target as Element).closest('a,button,[role="button"]')&&cursor.current)animate(cursor.current,{scale:1,rotate:0,duration:180,ease:'outBack'})}
+        const cursorDown=()=>{if(cursor.current)animate(cursor.current,{scale:.62,duration:100,ease:'outQuad'})}
+        const cursorUp=()=>{if(cursor.current)animate(cursor.current,{scale:1,duration:190,ease:'outBack'})}
         window.addEventListener('pointermove',move,{passive:true})
+        root.current?.addEventListener('pointerover',cursorOver)
+        root.current?.addEventListener('pointerout',cursorOut)
+        window.addEventListener('pointerdown',cursorDown)
+        window.addEventListener('pointerup',cursorUp)
         document.documentElement.addEventListener('pointerleave',exit)
-        return()=>{cancelAnimationFrame(animationFrame);window.removeEventListener('pointermove',move);document.documentElement.removeEventListener('pointerleave',exit)}
+        return()=>{cancelAnimationFrame(animationFrame);window.removeEventListener('pointermove',move);root.current?.removeEventListener('pointerover',cursorOver);root.current?.removeEventListener('pointerout',cursorOut);window.removeEventListener('pointerdown',cursorDown);window.removeEventListener('pointerup',cursorUp);document.documentElement.removeEventListener('pointerleave',exit)}
       }
     })
     return()=>scope.revert()
@@ -101,8 +123,10 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   return <main ref={root} className={`scene-shell ${className}`}>
     <div className="book-layer" aria-hidden="true"/>
     <div ref={water} className="water-reactive-layer" aria-hidden="true"/>
+    <div ref={ripples} className="water-ripple-field" aria-hidden="true">{Array.from({length:8},(_,index)=><i key={index}/>)}</div>
     <div className="paper-wash" aria-hidden="true"/>
     <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-background-displacement" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap ref={displacement} in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="1.6"/></filter></defs></svg>
+    <div ref={cursor} className="custom-cursor" aria-hidden="true"><span/></div>
     <div className="book-intro" aria-hidden="true">
       <div className="intro-book">
         <div className="intro-book__shadow"/>

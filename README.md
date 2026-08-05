@@ -1,4 +1,4 @@
-# Fertech Portfolio
+# Fertec Portfolio
 
 Home experimental de Fernando Forastieri, construída com Next.js, Tailwind CSS e Anime.js.
 

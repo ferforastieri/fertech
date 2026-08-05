@@ -31,7 +31,7 @@ export function PreferencesProvider({children}:{children:ReactNode}){
   const [navPosition,setNavPosition]=useState<NavPosition>('top')
 
   useEffect(()=>{
-    const storedLocale=localStorage.getItem('fertech-locale')
+    const storedLocale=localStorage.getItem('fertec-locale')
     const browserLocale=navigator.languages?.find(language=>/^(pt|en|es)/i.test(language))
     const initialLocale=locales.includes(storedLocale as Locale)
       ? storedLocale as Locale
@@ -57,7 +57,7 @@ export function PreferencesProvider({children}:{children:ReactNode}){
 
   useEffect(()=>{
     document.documentElement.lang=locale
-    localStorage.setItem('fertech-locale',locale)
+    localStorage.setItem('fertec-locale',locale)
   },[locale])
 
   const value=useMemo<Preferences>(()=>({
