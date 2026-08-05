@@ -54,7 +54,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
             ripple.style.top=`${event.clientY}px`
             ripples.current.appendChild(ripple)
             animate(ripple,{scale:[.25,2.7],opacity:[.5,0],duration:920,ease:'outExpo',onComplete:()=>ripple.remove()})
-            if(displacement.current)animate(displacement.current,{scale:[9,25,11],duration:680,ease:'outElastic(1, .7)'})
+            if(displacement.current)animate(displacement.current,{scale:[16,38,18],duration:760,ease:'outElastic(1, .65)'})
           }
         }
         const enter=()=>animate(cursor.current!,{scale:1.7,duration:260,ease:'outExpo'})
@@ -73,7 +73,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     <div className="book-layer absolute -inset-[6%] -z-20 bg-cover bg-center" aria-hidden="true"/>
     <div ref={water} className="water-reactive-layer" aria-hidden="true"/>
     <div className="paper-wash absolute inset-0 -z-10" aria-hidden="true"/>
-    <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-background-displacement" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap ref={displacement} in="SourceGraphic" in2="noise" scale="11" xChannelSelector="R" yChannelSelector="B"/></filter></defs></svg>
+    <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-background-displacement" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap ref={displacement} in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="1.6"/></filter></defs></svg>
     <div ref={ripples} className="water-ripples" aria-hidden="true"/>
     <div ref={cursor} className="precision-cursor pointer-events-none fixed left-0 top-0 z-50 hidden lg:block" aria-hidden="true"/>
     <div className="book-intro fixed inset-0 z-40 grid place-items-center overflow-hidden bg-[var(--ink)]" aria-hidden="true">

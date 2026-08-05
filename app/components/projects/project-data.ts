@@ -1,12 +1,20 @@
-export const projects=[
-  {id:'fertech',title:'FerTech',group:'personal',url:'https://github.com/ferforastieri/fertech',tags:['Next.js','TypeScript','Tailwind CSS','Anime.js']},
-  {id:'atacte',title:'Atacte',group:'personal',url:'https://github.com/ferforastieri/atacte',tags:['Vue 3','React Native','Node.js','PostgreSQL']},
-  {id:'valk',title:'Valk UI',group:'personal',url:'https://valkui.vercel.app',tags:['React','TypeScript','Tailwind CSS','CLI']},
-  {id:'vendedor',title:'Vendedor Gold',group:'professional',url:'https://vendedorgold.com.br',tags:['React Native','React','NestJS','PostgreSQL']},
-  {id:'parceiro',title:'Parceiro Gold',group:'professional',url:'https://parceirogold.com.br',tags:['React Native','Material UI','Fastify','MySQL']},
-  {id:'pintor',title:'Clube Pro Pintor',group:'professional',url:'https://clubepropintor.com.br',tags:['Ionic','React','Redux','Express']},
-  {id:'dashboard',title:'SW Dashboard',group:'professional',url:undefined,tags:['React','TypeScript','Analytics']},
-  {id:'gabriel',title:'GabrielPro',group:'professional',url:'https://gabrielpro.com.br',tags:['Next.js','TypeScript','Clean Architecture']},
-  {id:'legrand',title:'Legrand',group:'professional',url:'https://legrandmaisvantagens.com.br',tags:['React','TypeScript','Zustand','React Query']},
-  {id:'leoplus',title:'LeoPlus',group:'professional',url:'https://leoplus.com.br',tags:['React','TypeScript','Material UI','APIs']},
-] as const
+export type TreeNode={name:string;type:'folder'|'file';children?:TreeNode[]}
+export type Project={id:string;title:string;group:'personal'|'professional';url?:string;tags:readonly string[];repository:string;treeSource?:'reconstructed';tree:TreeNode[]}
+
+const folder=(name:string,children:TreeNode[]=[]):TreeNode=>({name,type:'folder',children})
+const file=(name:string):TreeNode=>({name,type:'file'})
+
+export const projects:Project[]=[
+  {id:'fertech',title:'FerTech',group:'personal',url:'https://github.com/ferforastieri/fertech',repository:'pessoal/fertech',tags:['Next.js','TypeScript','Tailwind CSS','Anime.js'],tree:[folder('app',[folder('(portfolio)',[folder('projetos'),folder('sobre'),file('page.tsx')]),folder('components',[folder('ui'),folder('portfolio'),folder('projects'),folder('about')]),file('globals.css')]),folder('i18n',[file('request.ts')]),folder('messages',[file('pt-BR.json'),file('en.json'),file('es.json')]),folder('public',[folder('assets')]),file('next.config.ts')]},
+  {id:'atacte',title:'Atacte',group:'personal',url:'https://github.com/ferforastieri/atacte',repository:'pessoal/atacte',tags:['Vue 3','React Native','Node.js','PostgreSQL'],tree:[folder('backend',[folder('src')]),folder('desktop'),folder('mobile',[folder('assets'),folder('src')]),folder('web',[folder('public'),folder('src')]),folder('nginx'),folder('scripts')]},
+  {id:'valk',title:'Valk UI',group:'personal',url:'https://valkui.vercel.app',repository:'github/ferforastieri/valk-ui',treeSource:'reconstructed',tags:['React','TypeScript','Tailwind CSS','CLI'],tree:[folder('src',[folder('components'),folder('cli'),folder('lib'),folder('styles')]),folder('docs'),folder('templates'),file('package.json')]},
+  {id:'vendedor',title:'Vendedor Gold',group:'professional',url:'https://vendedorgold.com.br',repository:'smart/vendedor-gold',tags:['React Native','React','NestJS','PostgreSQL'],tree:[folder('backend',[folder('src')]),folder('backend-firebase',[folder('functions')]),folder('mobile',[folder('src')]),folder('web',[folder('public'),folder('src')])]},
+  {id:'parceiro',title:'Parceiro Gold',group:'professional',url:'https://parceirogold.com.br',repository:'smart/wpp-parceirogold',tags:['React Native','Material UI','Fastify','MySQL'],tree:[folder('src',[folder('config'),folder('helpers'),folder('scripts')]),folder('prisma'),folder('test'),folder('img',[folder('generated')]),folder('fonts')]},
+  {id:'pintor',title:'Clube Pro Pintor',group:'professional',url:'https://clubepropintor.com.br',repository:'smart/sw-app',tags:['Ionic','Angular','Capacitor','Express'],tree:[folder('src',[folder('app'),folder('assets'),folder('environments'),folder('theme')]),folder('android',[folder('app'),folder('gradle')]),folder('ios',[folder('App')]),folder('resources'),folder('e2e')]},
+  {id:'dashboard',title:'Dashlab',group:'personal',repository:'pessoal/dashlab',tags:['React','TypeScript','Analytics','Prisma'],tree:[folder('backend',[folder('prisma'),folder('src')]),folder('web',[folder('public'),folder('scripts'),folder('src')]),folder('nginx'),folder('.gitea',[folder('workflows')])]},
+  {id:'gabriel',title:'GabrielPro',group:'professional',url:'https://gabrielpro.com.br',repository:'smart/gabrielpro',tags:['Next.js','TypeScript','Clean Architecture'],tree:[folder('api',[folder('assets'),folder('prisma'),folder('scripts'),folder('src')]),folder('app',[folder('public'),folder('src')]),folder('nginx')]},
+  {id:'recomenda',title:'SW Recomenda',group:'professional',repository:'smart/sw-recomenda',tags:['Ionic','React','NestJS','Prisma'],tree:[folder('app',[folder('android'),folder('ios'),folder('resources'),folder('src')]),folder('backend',[folder('prisma'),folder('scripts'),folder('src')]),folder('frontend',[folder('public'),folder('src')]),folder('push',[folder('src')])]},
+  {id:'leoplus',title:'LeoPlus',group:'professional',url:'https://leoplus.com.br',repository:'private/leoplus',treeSource:'reconstructed',tags:['React','TypeScript','Material UI','APIs'],tree:[folder('frontend',[folder('src',[folder('components'),folder('features'),folder('services')])]),folder('api',[folder('src',[folder('modules'),folder('integrations')])]),folder('infrastructure')]},
+]
+
+export function getProject(id:string){return projects.find(project=>project.id===id)}
