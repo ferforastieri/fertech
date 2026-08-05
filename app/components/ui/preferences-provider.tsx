@@ -73,7 +73,7 @@ export function PreferencesProvider({children}:{children:ReactNode}){
     }),
   }),[locale,theme,navPosition])
 
-  return <PreferencesContext.Provider value={value}><NextIntlClientProvider locale={locale} messages={messages[locale]}>{children}</NextIntlClientProvider></PreferencesContext.Provider>
+  return <PreferencesContext.Provider value={value}><NextIntlClientProvider locale={locale} timeZone="America/Sao_Paulo" messages={messages[locale]}>{children}</NextIntlClientProvider></PreferencesContext.Provider>
 }
 
 export function usePreferences(){
