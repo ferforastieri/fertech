@@ -1,6 +1,10 @@
 'use client'
 
 import {createContext,useContext,useEffect,useMemo,useState,type ReactNode} from 'react'
+import {NextIntlClientProvider} from 'next-intl'
+import ptBR from '@/messages/pt-BR.json'
+import en from '@/messages/en.json'
+import es from '@/messages/es.json'
 
 export type Locale='pt-BR'|'en'|'es'
 export type Theme='dark'|'light'
@@ -8,6 +12,7 @@ export type NavPosition='top'|'right'|'bottom'|'left'
 
 const locales:Locale[]=['pt-BR','en','es']
 const positions:NavPosition[]=['top','right','bottom','left']
+const messages={'pt-BR':ptBR,en,es}
 
 type Preferences={
   locale:Locale
@@ -68,7 +73,7 @@ export function PreferencesProvider({children}:{children:ReactNode}){
     }),
   }),[locale,theme,navPosition])
 
-  return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>
+  return <PreferencesContext.Provider value={value}><NextIntlClientProvider locale={locale} messages={messages[locale]}>{children}</NextIntlClientProvider></PreferencesContext.Provider>
 }
 
 export function usePreferences(){

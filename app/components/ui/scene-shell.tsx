@@ -2,11 +2,14 @@
 
 import { useEffect,useRef,type ReactNode } from 'react'
 import { animate,createScope,createTimeline,stagger } from 'animejs'
+import {useTranslations} from 'next-intl'
 import { Logo } from './logo'
 
 export function SceneShell({children,className=''}:{children:ReactNode;className?:string}){
+  const book=useTranslations('Book')
   const root=useRef<HTMLElement>(null)
   const cursor=useRef<HTMLDivElement>(null)
+  const noise=useRef<SVGFETurbulenceElement>(null)
 
   useEffect(()=>{
     if(!root.current)return
@@ -33,12 +36,15 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         self?.add(()=>internalLinks.forEach(link=>link.removeEventListener('click',closeBook)))
       }
       if(self?.matches.pointer&&cursor.current){
-        const move=(event:PointerEvent)=>animate(cursor.current!,{x:event.clientX,y:event.clientY,duration:520,ease:'outExpo'})
-        const enter=()=>animate(cursor.current!,{scale:2.1,rotate:18,borderRadius:'38% 62% 58% 42%',duration:360,ease:'outExpo'})
-        const leave=()=>animate(cursor.current!,{scale:1,rotate:0,borderRadius:'58% 42% 48% 52%',duration:360,ease:'outExpo'})
+        if(noise.current)animate(noise.current,{baseFrequency:['0.008 0.014','0.02 0.028'],duration:2400,alternate:true,loop:true,ease:'inOutSine'})
+        const move=(event:PointerEvent)=>animate(cursor.current!,{x:event.clientX,y:event.clientY,duration:430,ease:'outExpo'})
+        const enter=()=>animate(cursor.current!,{scale:1.55,rotate:14,duration:380,ease:'outExpo'})
+        const leave=()=>animate(cursor.current!,{scale:1,rotate:0,duration:420,ease:'outElastic(1, .55)'})
+        const press=()=>animate(cursor.current!,{scale:[1,1.85,1.08],rotate:[0,-18,4],duration:520,ease:'outExpo'})
         window.addEventListener('pointermove',move,{passive:true})
+        window.addEventListener('pointerdown',press,{passive:true})
         root.current?.querySelectorAll('a,button,input').forEach(element=>{element.addEventListener('pointerenter',enter);element.addEventListener('pointerleave',leave)})
-        return()=>{window.removeEventListener('pointermove',move);root.current?.querySelectorAll('a,button,input').forEach(element=>{element.removeEventListener('pointerenter',enter);element.removeEventListener('pointerleave',leave)})}
+        return()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerdown',press);root.current?.querySelectorAll('a,button,input').forEach(element=>{element.removeEventListener('pointerenter',enter);element.removeEventListener('pointerleave',leave)})}
       }
     })
     return()=>scope.revert()
@@ -47,7 +53,8 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   return <main ref={root} className={`relative isolate min-h-svh overflow-hidden bg-[var(--ink)] text-[var(--paper)] ${className}`}>
     <div className="book-layer absolute -inset-[6%] -z-20 bg-cover bg-center" aria-hidden="true"/>
     <div className="paper-wash absolute inset-0 -z-10" aria-hidden="true"/>
-    <div ref={cursor} className="custom-cursor pointer-events-none fixed left-0 top-0 z-50 hidden h-7 w-9 bg-[var(--paper)] mix-blend-difference lg:block" aria-hidden="true"/>
+    <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-displacement"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="13" xChannelSelector="R" yChannelSelector="B"/></filter></defs></svg>
+    <div ref={cursor} className="water-cursor pointer-events-none fixed left-0 top-0 z-50 hidden lg:block" aria-hidden="true"><span className="water-cursor__halo"/><span className="water-cursor__lens"/><span className="water-cursor__core"/></div>
     <div className="book-intro fixed inset-0 z-40 grid place-items-center overflow-hidden bg-[var(--ink)]" aria-hidden="true">
       <div className="intro-book">
         <div className="intro-book__shadow"/>
@@ -56,7 +63,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         <div className="intro-page intro-page--three"/>
         <div className="intro-page intro-page--two"/>
         <div className="intro-page intro-page--one"/>
-        <div className="intro-cover"><div className="intro-cover__front"><div className="cover-rule"/><Logo/><div className="cover-title"><small>Portfolio de</small><strong>Fernando<br/>Forastieri</strong><span>Software · IA · Interfaces</span></div><p>Volume 01 · 2026</p></div><div className="intro-cover__inside"/></div>
+        <div className="intro-cover"><div className="intro-cover__front"><div className="cover-rule"/><Logo/><div className="cover-title"><small>{book('portfolio')}</small><strong>Fernando<br/>Forastieri</strong><span>{book('disciplines')}</span></div><p>{book('volume')}</p></div><div className="intro-cover__inside"/></div>
         <div className="intro-spine"/>
       </div>
     </div>

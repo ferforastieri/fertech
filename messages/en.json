@@ -1,0 +1,35 @@
+{
+  "Navigation": {
+    "main": "Main navigation",
+    "home": "Home",
+    "contact": "Get in touch",
+    "theme": "Switch theme",
+    "move": "Move navigation",
+    "language": "Select language",
+    "portuguese": "Portuguese",
+    "english": "English",
+    "spanish": "Spanish"
+  },
+  "Home": {
+    "passion": "Passionate about interfaces, AI and Hardware",
+    "role": "Software engineer, postgraduate in AI.",
+    "about": "I build complete systems focused on AI and beautiful interfaces, working remotely from Sorocaba, Brazil.",
+    "portraitAlt": "Portrait of Fernando Forastieri"
+  },
+  "Profile": {
+    "signature": "Fernando Forastieri",
+    "introduction": "I bring engineering, artificial intelligence and visual sensitivity together to create complete digital experiences.",
+    "cta": "Let's talk"
+  },
+  "Metrics": {
+    "aria": "Professional indicators",
+    "years": "Years of experience",
+    "projects": "Projects completed",
+    "drive": "Creative dedication"
+  },
+  "Book": {
+    "portfolio": "Portfolio by",
+    "disciplines": "Software · AI · Interfaces",
+    "volume": "Volume 01 · 2026"
+  }
+}

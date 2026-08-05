@@ -1,0 +1,35 @@
+{
+  "Navigation": {
+    "main": "Navegação principal",
+    "home": "Início",
+    "contact": "Entrar em contato",
+    "theme": "Alternar tema",
+    "move": "Mover navegação",
+    "language": "Selecionar idioma",
+    "portuguese": "Português",
+    "english": "Inglês",
+    "spanish": "Espanhol"
+  },
+  "Home": {
+    "passion": "Apaixonado por interfaces, IA e Hardware",
+    "role": "Engenheiro de software, pós-graduado em IA.",
+    "about": "Construo sistemas completos, com foco em IA e interfaces bonitas, trabalhando remotamente de Sorocaba, Brasil.",
+    "portraitAlt": "Retrato de Fernando Forastieri"
+  },
+  "Profile": {
+    "signature": "Fernando Forastieri",
+    "introduction": "Uno engenharia, inteligência artificial e sensibilidade visual para criar experiências digitais completas.",
+    "cta": "Vamos conversar"
+  },
+  "Metrics": {
+    "aria": "Indicadores profissionais",
+    "years": "Anos de experiência",
+    "projects": "Projetos realizados",
+    "drive": "Dedicação criativa"
+  },
+  "Book": {
+    "portfolio": "Portfólio de",
+    "disciplines": "Software · IA · Interfaces",
+    "volume": "Volume 01 · 2026"
+  }
+}
