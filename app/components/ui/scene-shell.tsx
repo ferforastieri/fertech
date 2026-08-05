@@ -35,7 +35,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
           .add('.scene-panel',{opacity:[0,1],y:[18,0],duration:460},610)
           .add('.book-intro',{opacity:[1,0],scale:[1,1.018],duration:230,ease:'outQuad'},700)
         animate('.book-layer',{scale:[1.08,1.13],x:['-1.5%','1.5%'],y:['-1%','1%'],duration:12000,alternate:true,loop:true,ease:'inOutSine'})
-        animate('.scroll-cue-mark',{y:[0,8],scaleY:[.65,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
+        animate('.scroll-cue-mark',{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
 
         const internalLinks=Array.from(root.current?.querySelectorAll<HTMLAnchorElement>('a[href^="/"]')??[])
         const closeBook=(event:MouseEvent)=>{const link=event.currentTarget as HTMLAnchorElement;if(event.metaKey||event.ctrlKey||event.shiftKey)return;event.preventDefault();if(!intro)return;intro.hidden=false;createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>window.location.assign(link.href)}).add(intro,{opacity:[0,1],duration:140}).add('.intro-page',{rotateY:0,duration:460},0).add('.intro-cover',{rotateY:0,duration:560},55).add('.intro-book',{x:'-25%',duration:560},55)}
@@ -48,11 +48,14 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         let animationFrame=0
         let lastDistortion=0
         const target={x:-300,y:-300}
-        const trail=[{x:-300,y:-300},{x:-300,y:-300},{x:-300,y:-300}]
+        const trail=Array.from({length:5},()=>({x:-300,y:-300}))
         const renderTrail=()=>{
-          trail[0].x+=(target.x-trail[0].x)*.24;trail[0].y+=(target.y-trail[0].y)*.24
-          trail[1].x+=(trail[0].x-trail[1].x)*.16;trail[1].y+=(trail[0].y-trail[1].y)*.16
-          trail[2].x+=(trail[1].x-trail[2].x)*.11;trail[2].y+=(trail[1].y-trail[2].y)*.11
+          trail[0].x+=(target.x-trail[0].x)*.3;trail[0].y+=(target.y-trail[0].y)*.3
+          for(let index=1;index<trail.length;index++){
+            const follow=.2-index*.018
+            trail[index].x+=(trail[index-1].x-trail[index].x)*follow
+            trail[index].y+=(trail[index-1].y-trail[index].y)*follow
+          }
           if(water.current){
             water.current.style.setProperty('--water-x',`${target.x}px`);water.current.style.setProperty('--water-y',`${target.y}px`)
             trail.forEach((point,index)=>{water.current?.style.setProperty(`--trail-${index+1}-x`,`${point.x}px`);water.current?.style.setProperty(`--trail-${index+1}-y`,`${point.y}px`)})

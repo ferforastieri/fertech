@@ -50,7 +50,7 @@ button.tree-row:hover,button.tree-row:focus-visible{background:color-mix(in srgb
 .file-icon:after{content:'';position:absolute;right:-1px;top:-1px;border-top:5px solid var(--ink);border-left:5px solid transparent}
 .folder-children{overflow:hidden}
 
-@media(max-width:639px){
+@media(max-width:767px){
   .page-heading{grid-template-columns:1fr;gap:26px;padding-bottom:40px}
   .page-heading h1{font-size:58px}
   .project-columns{grid-template-columns:1fr;gap:65px;margin-top:42px}

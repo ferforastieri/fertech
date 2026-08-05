@@ -5,6 +5,9 @@ const config: NextConfig = {
   poweredByHeader: false,
   trailingSlash: true,
   compress: true,
+  experimental: {
+    useTypeScriptCli: false,
+  },
 }
 
 const withNextIntl=createNextIntlPlugin('./i18n/request.ts')

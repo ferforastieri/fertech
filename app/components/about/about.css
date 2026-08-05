@@ -11,7 +11,7 @@
 .about-principles h2{margin:65px 0 16px;font-family:var(--serif);font-size:32px;font-weight:400;line-height:.95}
 .about-principles p{margin:0;font-size:11px;line-height:1.75;opacity:.65}
 
-@media(max-width:639px){
+@media(max-width:767px){
   .about-hero{grid-template-columns:1fr;gap:38px;padding-bottom:50px}
   .about-hero h1{font-size:58px}
   .about-photo{width:min(74vw,320px)}
