@@ -1,8 +1,8 @@
 .about-page{max-width:1080px}
 .about-book-background{position:fixed;z-index:-12;inset:0;background-position:center;background-size:cover;filter:grayscale(.88) sepia(.18) contrast(1.08) brightness(.42);pointer-events:none}
 .about-book-background:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,15,13,.78),rgba(15,15,13,.42) 50%,rgba(15,15,13,.76)),linear-gradient(180deg,rgba(15,15,13,.22),rgba(15,15,13,.56))}
-[data-theme='light'] .about-book-background{filter:grayscale(.9) sepia(.24) contrast(.76) brightness(1.08);opacity:.54}
-[data-theme='light'] .about-book-background:after{background:rgba(233,225,212,.36)}
+[data-theme='light'] .about-book-background{filter:grayscale(.9) sepia(.2) contrast(.72) brightness(1.18);opacity:.22}
+[data-theme='light'] .about-book-background:after{background:rgba(246,242,234,.68)}
 .about-hero{display:grid;grid-template-columns:1fr;align-items:end;padding-bottom:48px;border-bottom:1px solid color-mix(in srgb,var(--paper) 24%,transparent);opacity:0}
 .about-hero>div>p,.about-details>header>p,.about-stack>div>p{margin:0 0 14px;font-size:8px;font-weight:750;letter-spacing:.2em;text-transform:uppercase;opacity:.55}
 .about-hero h1{max-width:760px;margin:0;font-family:var(--serif);font-size:clamp(52px,7vw,98px);font-weight:400;line-height:.82;letter-spacing:-.045em}

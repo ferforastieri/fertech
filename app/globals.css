@@ -11,10 +11,10 @@
 }
 
 [data-theme='light']{
-  --paper:#26231f;
-  --paper-light:#38332c;
-  --ink:#e9e1d4;
-  --graphite:#b9ae9e;
+  --paper:#171612;
+  --paper-light:#302c25;
+  --ink:#f2ede4;
+  --graphite:#8f8577;
 }
 
 *{box-sizing:border-box}
