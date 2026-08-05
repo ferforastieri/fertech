@@ -97,9 +97,9 @@
   .server-console__chrome{top:14px;right:16px;left:16px;padding-bottom:10px}
   .server-console__stream{top:55px;right:17px;left:17px;gap:7px;font-size:9px}
   .paper-wash{background:linear-gradient(rgba(24,23,20,.38),rgba(24,23,20,.6))}
-  .global-profile{position:relative;top:auto;right:auto;left:auto;display:block;width:min(calc(100% - 48px),300px);margin:max(72px,calc(env(safe-area-inset-top) + 64px)) auto 0;text-align:center}
+  .global-profile{position:relative;top:auto;right:auto;left:auto;display:block;width:min(calc(100% - 48px),300px);margin:16px auto 0;text-align:center;transition:margin-top .34s cubic-bezier(.22,1,.36,1)}
   .global-profile__signature{font-size:clamp(22px,7vw,29px);transform:rotate(-3deg);transform-origin:center}
-  .global-profile__introduction{max-width:34ch;margin:10px auto;font-size:8px;line-height:1.45}
+  .global-profile__introduction{max-width:34ch;margin:6px auto;font-size:8px;line-height:1.4}
   .global-profile__contact{gap:8px;padding:5px 8px;font-size:6px}
   .floating-nav-root--bottom{top:auto;right:auto;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%)}
   .floating-nav-root--top{top:max(10px,env(safe-area-inset-top));right:auto;bottom:auto;left:50%;transform:translateX(-50%)}
@@ -125,6 +125,8 @@
   .language-dropdown--right{top:50%;right:calc(100% + 42px);bottom:auto;left:auto;transform:translateY(-50%)}
   .editorial-page{width:calc(100% - 36px);padding:56px 0 96px}
   .scene-shell:has(.floating-nav-root--top) .corner-logo{top:max(70px,calc(env(safe-area-inset-top) + 66px))}
+  .scene-shell:has(.floating-nav-root--top) .global-profile{margin-top:max(72px,calc(env(safe-area-inset-top) + 64px))}
+  .scene-shell:has(.floating-nav-root--bottom) .global-profile,.scene-shell:has(.floating-nav-root--left) .global-profile,.scene-shell:has(.floating-nav-root--right) .global-profile{margin-top:16px}
   .scene-shell:has(.floating-nav-root--top) .editorial-page{padding-top:56px}
   .custom-cursor,.water-surface{display:none}
   [data-theme='light'] .paper-wash{background:linear-gradient(rgba(233,225,212,.28),rgba(233,225,212,.54))}
