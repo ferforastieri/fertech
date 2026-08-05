@@ -1,6 +1,0 @@
-'use client'
-
-import { useEffect, useRef } from 'react'
-import { animate, createScope, stagger } from 'animejs'
-import type { HomeContent,Profile } from '@/lib/content'
-export function Hero({profile,home}:{profile:Profile;home:HomeContent}){const ref=useRef<HTMLElement>(null);useEffect(()=>{if(!ref.current)return;const scope=createScope({root:ref.current}).add(()=>{animate('.hero-word',{opacity:[0,1],y:[80,0],delay:stagger(55),duration:900,ease:'outExpo'});animate('figure',{opacity:[0,1],rotate:[-6,0],duration:1100,ease:'outExpo'})});return()=>scope.revert()},[]);return <section className="hero hero-new" ref={ref}><div className="hero-index"><span>PORTFOLIO / 2026</span><span>{home.heroEyebrow}</span></div><div className="hero-type"><p>{profile.role}</p><h1>{home.heroHeadline.split(' ').map((word,index)=><span className="hero-word" key={index}>{word}{' '}</span>)}</h1></div><figure><img src={profile.photoUrl} alt={profile.name}/><figcaption>{profile.name}<br/>{home.heroDescription}</figcaption></figure><div className="hero-actions"><a href="#work">{home.projectsButtonLabel} ↓</a><a href="/resume/">{home.resumeButtonLabel} ↗</a><a href={profile.contactUrl}>{home.contactButtonLabel} ↗</a></div></section>}
