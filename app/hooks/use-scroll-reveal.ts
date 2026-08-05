@@ -26,7 +26,7 @@ export function useScrollReveal(root:RefObject<RevealRoot>,selector:string){
     const intro=document.querySelector<HTMLElement>('.book-intro')
     if(intro?.hidden)observe()
     else window.addEventListener('book-opened',observe,{once:true})
-    fallback=window.setTimeout(observe,3500)
+    fallback=window.setTimeout(observe,5000)
 
     return()=>{
       window.removeEventListener('book-opened',observe)

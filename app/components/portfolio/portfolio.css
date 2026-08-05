@@ -12,13 +12,12 @@
 
 .corner-metrics,.corner-profile{position:absolute;z-index:12;width:min(18vw,210px);color:color-mix(in srgb,var(--paper) 82%,transparent)}
 .corner-metrics{bottom:3.5vh;left:4.5vw}
-.corner-profile{top:26px;right:4.5vw;text-align:right}
+.corner-profile{top:82px;right:4.5vw;text-align:right}
 .metric-line{padding:0 0 13px;border-bottom:1px solid color-mix(in srgb,var(--paper) 22%,transparent)}
 .metric-line+.metric-line{padding-top:13px}
 .metric-line strong{display:block;font-family:var(--serif);font-size:clamp(27px,2.6vw,43px);font-weight:400;line-height:.86;letter-spacing:-.035em}
 .metric-label{display:block;margin-top:5px;font-size:8px;font-weight:650;letter-spacing:.13em;text-transform:uppercase;opacity:.62}
-.profile-signature{margin:0;font-family:var(--serif);font-size:clamp(24px,2.5vw,39px);font-style:italic;line-height:1;transform:rotate(-3deg);transform-origin:right center}
-.profile-introduction{max-width:28ch;margin:17px 0 15px auto;font-size:11px;font-weight:520;line-height:1.65;opacity:.74}
+.profile-introduction{max-width:28ch;margin:0 0 15px auto;font-size:11px;font-weight:520;line-height:1.65;opacity:.74}
 .profile-contact{display:inline-flex;align-items:center;gap:18px;padding:9px 13px;border:1px solid color-mix(in srgb,var(--paper) 48%,transparent);border-radius:999px;color:inherit;font-size:8px;font-weight:750;letter-spacing:.13em;text-decoration:none;text-transform:uppercase}
 .profile-contact>span:last-child{font-size:14px;transition:transform .25s ease}
 .profile-contact:hover>span:last-child{transform:translate(2px,-2px)}
@@ -65,7 +64,6 @@
   .corner-metrics,.corner-profile{position:static;display:block;width:100%;text-align:left}
   .corner-profile{order:3;margin-top:58px}
   .corner-metrics{order:4;margin-top:52px}
-  .profile-signature{transform-origin:left center}
   .profile-introduction{margin-right:auto;margin-left:0}
   .scroll-cue{top:calc(100svh - 92px);bottom:auto}
   .experience-section{padding:100px 20px 90px}

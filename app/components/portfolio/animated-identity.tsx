@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect,useRef} from 'react'
-import {animate,createTimeline,createTimer,utils} from 'animejs'
+import {animate,createTimer,utils} from 'animejs'
 
 export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
   const prompt=useRef<HTMLParagraphElement>(null)
@@ -11,8 +11,7 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
   useEffect(()=>{
     if(!prompt.current||!output.current||!caret.current)return
     const portrait=document.querySelector<HTMLElement>('.scene-portrait')
-    const complete=()=>{document.documentElement.dataset.identityComplete='true';window.dispatchEvent(new Event('identity-complete'))}
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches){output.current.textContent=role;complete();return}
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){output.current.textContent=role;return}
     if(portrait)utils.set(portrait,{opacity:0,y:30,scale:.88})
     output.current.textContent=''
 
@@ -28,6 +27,7 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
       const roleType=role.length*32
       const roleStart=passionType+pause+passionDelete
       blink=animate(caret.current!,{opacity:[1,0],duration:420,alternate:true,loop:true,ease:'inOutQuad'})
+      if(portrait)animate(portrait,{opacity:[0,1],y:[30,0],scale:[.88,1],rotate:[-3,0],duration:900,ease:'outExpo'})
       timer=createTimer({
         delay:100,
         duration:roleStart+roleType,
@@ -43,15 +43,13 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
         onComplete:()=>{
           blink?.pause()
           animate(caret.current!,{opacity:[1,.35],duration:620,alternate:true,loop:true,ease:'inOutSine'})
-          if(portrait)createTimeline({defaults:{ease:'outExpo'}}).add(portrait,{opacity:[0,1],y:[30,0],scale:[.88,1],rotate:[-3,0],duration:900})
-          complete()
         },
       })
     }
     const intro=document.querySelector<HTMLElement>('.book-intro')
     if(intro?.hidden)start()
     else window.addEventListener('book-opened',start,{once:true})
-    const fallback=window.setTimeout(start,3200)
+    const fallback=window.setTimeout(start,5000)
     return()=>{window.removeEventListener('book-opened',start);window.clearTimeout(fallback);timer?.cancel();blink?.revert()}
   },[passion,role])
 
