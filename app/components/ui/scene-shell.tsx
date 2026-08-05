@@ -27,6 +27,8 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         const intro=root.current?.querySelector<HTMLElement>('.book-intro')
         const mobileBook=window.matchMedia('(max-width: 767px)').matches
         const openedBookScale=mobileBook?1:1.035
+        const mobileOpenWidth=mobileBook?Math.min(window.innerWidth-24,(window.innerHeight-32)*1.4,740):1
+        const closedBookScale=mobileBook?Math.max(1,Math.min(1.72,(window.innerWidth*.86*2)/mobileOpenWidth,(window.innerHeight*.9)/(mobileOpenWidth/1.4))):1
         const internalArrival=sessionStorage.getItem('fertec-internal-navigation')==='1'
         sessionStorage.removeItem('fertec-internal-navigation')
         const setOpenedBook=()=>{
@@ -36,6 +38,14 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
           ;([['four',-146,2],['three',-158,3],['two',-169,4],['one',-177,5]] as const).forEach(([layer,rotateY,z])=>utils.set(root.current!.querySelectorAll(`.intro-page--${layer}`),{rotateY,z}))
           utils.set(root.current.querySelectorAll('.intro-page-code--front'),{opacity:0})
           utils.set(root.current.querySelectorAll('.intro-page-code--back'),{opacity:1})
+        }
+        const setClosedBook=()=>{
+          if(!root.current)return
+          utils.set(root.current.querySelectorAll('.intro-book'),{opacity:1,x:'-25%',y:0,scale:closedBookScale,rotateX:4})
+          utils.set(root.current.querySelectorAll('.intro-cover'),{rotateY:0})
+          ;(['four','three','two','one'] as const).forEach((layer,index)=>utils.set(root.current!.querySelectorAll(`.intro-page--${layer}`),{rotateY:0,z:index+2}))
+          utils.set(root.current.querySelectorAll('.intro-page-code--front'),{opacity:1})
+          utils.set(root.current.querySelectorAll('.intro-page-code--back'),{opacity:0})
         }
         let revealObserver:IntersectionObserver|undefined
         const setupScrollReveals=()=>{
@@ -57,20 +67,16 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
           const front=root.current.querySelector('.intro-page--one .intro-page-code--front')
           const back=root.current.querySelector('.intro-page--one .intro-page-code--back')
           if(page&&front&&back){
-            setOpenedBook()
+            setClosedBook()
             intro.hidden=false
             utils.set(intro,{opacity:1})
-            utils.set(page,{rotateY:0,z:8})
-            utils.set(front,{opacity:1})
-            utils.set(back,{opacity:0})
             createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>{intro.hidden=true;window.dispatchEvent(new Event('book-opened'))}})
-              .add(page,{rotateY:[0,-178],z:[8,5],duration:720},100)
-              .add(front,{opacity:[1,0],duration:80},410)
-              .add(back,{opacity:[0,1],duration:80},410)
-              .add('.intro-spine',{scaleY:[.85,1],opacity:[.65,1],duration:360},100)
-              .add('.scene-item',{opacity:[0,1],y:[16,0],delay:stagger(40),duration:480},650)
-              .add('.scene-panel',{opacity:[0,1],y:[22,0],duration:480},650)
-              .add(intro,{opacity:[1,0],duration:260,ease:'outQuad'},650)
+              .add('.intro-cover',{rotateY:[0,-179],duration:900},100)
+              .add('.intro-book',{x:['-25%','0%'],scale:[closedBookScale,openedBookScale],duration:900},100)
+              .add('.intro-spine',{scaleY:[.82,1],opacity:[.55,1],duration:420},260)
+              .add('.scene-item',{opacity:[0,1],y:[16,0],delay:stagger(40),duration:480},900)
+              .add('.scene-panel',{opacity:[0,1],y:[22,0],duration:480},900)
+              .add(intro,{opacity:[1,0],duration:280,ease:'outQuad'},920)
           }
         }
         animate('.scroll-cue-mark',{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
@@ -130,7 +136,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     <div className="book-intro" aria-hidden="true">
       <div className="intro-book">
         <div className="intro-book__shadow"/>
-        <div className="intro-back-cover"/>
+        <div className="intro-page-base"/>
         {introPages.map(page=><div className={`intro-page intro-page--${page.layer}`} key={page.layer}>
           <code className="intro-page-code intro-page-code--front">{page.front.map(line=><span key={line}>{line}</span>)}</code>
           <code className="intro-page-code intro-page-code--back">{page.back.map(line=><span key={line}>{line}</span>)}</code>

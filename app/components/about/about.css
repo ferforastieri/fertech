@@ -15,10 +15,10 @@
 .about-details h3{margin:0 0 10px;font-size:8px;font-weight:750;letter-spacing:.16em;text-transform:uppercase;opacity:.55}
 .about-details article p{margin:0;font-size:11px;line-height:1.7;opacity:.72}
 
-.about-stack{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr);align-items:end;gap:clamp(40px,6vw,76px);padding:48px 0;border-top:1px solid color-mix(in srgb,var(--paper) 22%,transparent);opacity:0}
+.about-stack{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr);align-items:center;gap:clamp(40px,6vw,76px);padding:48px 0;border-top:1px solid color-mix(in srgb,var(--paper) 22%,transparent);opacity:0}
 .about-stack>div>span{display:block;max-width:35ch;margin-top:18px;font-size:11px;line-height:1.65;opacity:.65}
-.about-stack ul{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
-.about-stack li{padding:7px 10px;border:1px solid color-mix(in srgb,var(--paper) 26%,transparent);border-radius:999px;font-size:8px;letter-spacing:.07em;text-transform:uppercase}
+.about-stack ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0;padding:0;list-style:none}
+.about-stack li{display:grid;min-height:32px;padding:7px 12px;place-items:center;border:1px solid color-mix(in srgb,var(--paper) 26%,transparent);border-radius:999px;font-size:8px;letter-spacing:.07em;text-align:center;text-transform:uppercase}
 
 .about-principles{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:color-mix(in srgb,var(--paper) 22%,transparent)}
 .about-principles article{min-height:220px;padding:25px;background:color-mix(in srgb,var(--ink) 94%,transparent);opacity:0}
@@ -39,7 +39,7 @@
   .about-details article{padding:18px 0}
   .about-details article p{max-width:38ch;margin-inline:auto}
   .about-stack>div>span{margin-inline:auto}
-  .about-stack ul{justify-content:center}
+  .about-stack ul{width:min(100%,420px);margin-inline:auto}
   .about-principles{grid-template-columns:1fr}
   .about-principles article{min-height:0;padding:24px 22px}
   .about-principles h2{margin:28px 0 12px}

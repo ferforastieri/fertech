@@ -11,13 +11,12 @@
 .book-intro[hidden]{display:none}
 .intro-book{position:relative;width:134.4vh;height:96vh;max-width:none;max-height:none;transform-style:preserve-3d;transform-origin:center center;will-change:transform}
 .intro-book__shadow{position:absolute;right:-4%;bottom:-10%;left:42%;height:16%;border-radius:50%;background:rgba(0,0,0,.72);filter:blur(18px);transform:rotateZ(-2deg)}
-.intro-back-cover,.intro-page,.intro-cover{position:absolute;top:0;left:50%;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d;border-radius:1px 9px 9px 1px;will-change:transform}
-.intro-back-cover{z-index:0;background-image:linear-gradient(90deg,rgba(24,23,20,.34),transparent 12%),url('/assets/open-book.jpg');background-size:200% 100%;background-position:right center;border:2px solid var(--paper);box-shadow:8px 12px 30px rgba(0,0,0,.48);transform:translateZ(-10px);filter:sepia(.36) contrast(.82) brightness(.58)}
+.intro-page-base,.intro-page,.intro-cover{position:absolute;top:0;left:50%;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d;border-radius:1px 9px 9px 1px;will-change:transform}
+.intro-page-base{z-index:0;border:1px solid rgba(24,23,20,.22);background:linear-gradient(90deg,#c9c0b1 0%,#f1ece3 9%,#e7dfd1 92%,#c3b9aa 100%);box-shadow:8px 12px 30px rgba(0,0,0,.28);transform:translateZ(-10px)}
 .intro-page{isolation:isolate;border:1px solid rgba(24,23,20,.22);background:#e7dfd1;box-shadow:inset 7px 0 14px rgba(24,23,20,.12),2px 2px 3px rgba(0,0,0,.18)}
 .intro-page:before,.intro-page:after{content:'';position:absolute;z-index:0;inset:0;border-radius:inherit;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .intro-page:before{background:linear-gradient(90deg,#c9c0b1 0%,#f1ece3 9%,#e7dfd1 92%,#c3b9aa 100%)}
 .intro-page:after{background:linear-gradient(270deg,#c9c0b1 0%,#f1ece3 9%,#e7dfd1 92%,#c3b9aa 100%);transform:rotateY(180deg)}
-[data-theme='light'] .intro-back-cover{filter:sepia(.48) contrast(.62) brightness(1.28)}
 .intro-page--four{z-index:2;transform:translateZ(2px)}
 .intro-page--three{z-index:3;transform:translateZ(4px)}
 .intro-page--two{z-index:4;transform:translateZ(6px)}
