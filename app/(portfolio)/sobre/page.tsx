@@ -1,6 +1,6 @@
-import type {Metadata} from 'next'
 import {AboutPage} from '@/app/components/about/about-page'
 import {siteContent} from '@/messages/site-content'
+import {pageMetadata} from '@/app/seo'
 
-export const metadata:Metadata={title:siteContent.metadata.titles.about,description:siteContent.metadata.about}
+export const metadata=pageMetadata(siteContent.metadata.titles.about,siteContent.metadata.about,'/sobre/')
 export default function Page(){return <AboutPage/>}

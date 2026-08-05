@@ -56,7 +56,7 @@ export function ResumePage(){
       <h1>{t('title')}</h1>
       <Image className="resume-photo" src="/assets/fernando.png" alt={t('portraitAlt')} width={320} height={320} priority/>
       <div><strong>{t('role')}</strong><span>{t('location')}</span></div>
-      <nav aria-label={t('contact')}><a href={`mailto:${siteContent.contacts.email}`}>{t('email')} ↗</a><a href={siteContent.contacts.linkedin} target="_blank" rel="noreferrer">{t('linkedin')} ↗</a><a href={siteContent.contacts.github} target="_blank" rel="noreferrer">{t('github')} ↗</a><button type="button" onClick={download} disabled={exporting} data-html2canvas-ignore>{t(exporting?'generating':'download')} ↓</button></nav>
+      <nav aria-label={t('contact')}><a href={`mailto:${siteContent.contacts.email}`}>{t('email')} ↗</a><a href={siteContent.contacts.linkedin} target="_blank" rel="noreferrer">{t('linkedin')} ↗</a><a href={siteContent.contacts.github} target="_blank" rel="noreferrer">{t('github')} ↗</a><button className="resume-download" type="button" onClick={download} disabled={exporting} data-html2canvas-ignore>{t(exporting?'generating':'download')} <span aria-hidden="true">↓</span></button></nav>
     </header>
 
     <section className="resume-summary resume-reveal"><p>{t('summaryEyebrow')}</p><h2>{t('summary')}</h2></section>

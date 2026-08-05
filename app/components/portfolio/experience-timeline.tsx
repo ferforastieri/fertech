@@ -3,6 +3,7 @@
 import {useEffect,useRef} from 'react'
 import {animate} from 'animejs'
 import {useTranslations} from 'next-intl'
+import Link from 'next/link'
 
 const experienceKeys=['smart','inet','getninjas'] as const
 
@@ -12,7 +13,7 @@ export function ExperienceTimeline(){
 
   useEffect(()=>{
     if(!root.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return
-    const items=root.current.querySelectorAll('.timeline-entry')
+    const items=root.current.querySelectorAll('.timeline-entry,.experience-resume')
     const sectionObserver=new IntersectionObserver(([entry])=>{
       if(!entry.isIntersecting)return
       animate(root.current!.querySelector('.experience-heading')!,{opacity:[0,1],y:[28,0],duration:760,ease:'outExpo'})
@@ -45,5 +46,6 @@ export function ExperienceTimeline(){
         {key==='smart'&&<div className="role-progression"><span>{t('smart.junior')}</span><i aria-hidden="true">→</i><span className="is-current">{t('smart.pleno')}</span></div>}
       </article>
     </li>)}</ol></div>
+    <Link className="experience-resume" href="/curriculo"><span>{t('resumeHint')}</span><strong>{t('resumeCta')}</strong><i aria-hidden="true">↗</i></Link>
   </section>
 }

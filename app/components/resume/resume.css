@@ -7,8 +7,10 @@
 .resume-header>div strong{font-family:var(--serif);font-size:25px;font-weight:400}
 .resume-header>div span{font-size:9px;letter-spacing:.11em;text-transform:uppercase;opacity:.55}
 .resume-header nav{grid-area:links;display:flex;flex-wrap:wrap;justify-content:flex-start;gap:10px;margin-top:4px}
-.resume-header nav a,.resume-header nav button,.resume-footer a{padding:8px 11px;border:1px solid color-mix(in srgb,var(--paper) 34%,transparent);border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:8px;font-weight:700;letter-spacing:.09em;text-decoration:none;text-transform:uppercase}
+.resume-header nav a,.resume-header nav button,.resume-footer a{display:inline-flex;min-height:36px;align-items:center;justify-content:center;padding:0 12px;border:1px solid color-mix(in srgb,var(--paper) 34%,transparent);border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:8px;font-weight:700;line-height:1;letter-spacing:.09em;text-align:center;text-decoration:none;text-transform:uppercase;white-space:nowrap}
 .resume-header nav button{cursor:pointer}.resume-header nav button:disabled{cursor:wait;opacity:.55}
+.resume-header nav .resume-download{min-height:44px;margin-left:auto;padding:0 18px;border-color:var(--paper);background:var(--paper);color:var(--ink);font-size:9px;box-shadow:0 12px 30px rgba(0,0,0,.18);transition:transform .24s ease,box-shadow .24s ease}
+.resume-download span{font-family:var(--serif);font-size:17px;line-height:1}.resume-header nav .resume-download:hover,.resume-header nav .resume-download:focus-visible{outline:0;transform:translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)}
 .resume-summary{display:grid;grid-template-columns:minmax(180px,.4fr) 1fr;gap:56px;padding:64px 0;opacity:0}
 .resume-summary>p,.resume-section-title>p,.resume-footer>p{margin:0;font-size:8px;font-weight:750;letter-spacing:.18em;text-transform:uppercase;opacity:.5}
 .resume-summary h2{margin:0;font-family:var(--serif);font-size:clamp(27px,3.5vw,43px);font-weight:400;line-height:1.13;letter-spacing:-.02em}
@@ -42,6 +44,7 @@
   .resume-header h1{font-size:clamp(52px,17vw,68px)}
   .resume-photo{width:min(48vw,180px);border-radius:20px}
   .resume-header nav{justify-content:center}
+  .resume-header nav .resume-download{width:100%;max-width:290px;margin:4px auto 0;justify-content:center;gap:18px}
   .resume-summary,.resume-section{grid-template-columns:1fr;justify-items:center;gap:30px;padding:40px 0}
   .resume-summary h2{font-size:clamp(24px,7.5vw,32px)}
   .resume-section-title h2{max-width:none;margin-inline:auto}

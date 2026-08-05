@@ -1,6 +1,6 @@
-import type {Metadata} from 'next'
 import {WebGLPage} from '@/app/components/webgl/webgl-page'
 import {siteContent} from '@/messages/site-content'
+import {pageMetadata} from '@/app/seo'
 
-export const metadata:Metadata={title:siteContent.metadata.titles.webgl,description:siteContent.metadata.webgl}
+export const metadata=pageMetadata(siteContent.metadata.titles.webgl,siteContent.metadata.webgl,'/webgl/')
 export default function Page(){return <WebGLPage/>}
