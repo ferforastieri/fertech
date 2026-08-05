@@ -2,7 +2,6 @@
 
 import {useRef} from 'react'
 import {useTranslations} from 'next-intl'
-import {SiteFrame} from '@/app/components/ui/site-frame'
 import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
 import './resume.css'
 
@@ -14,7 +13,7 @@ export function ResumePage(){
   const t=useTranslations('Resume')
   const root=useRef<HTMLElement>(null)
   useScrollReveal(root,'.resume-reveal')
-  return <SiteFrame><main ref={root} className="editorial-page resume-page">
+  return <main ref={root} className="editorial-page resume-page">
     <header className="resume-header resume-reveal">
       <p>{t('eyebrow')}</p>
       <h1>{t('title')}</h1>
@@ -40,5 +39,5 @@ export function ResumePage(){
     </section>
 
     <footer className="resume-footer resume-reveal"><p>{t('languages')}</p><strong>{t('languageValue')}</strong><a href="mailto:fernandoforastieri2@gmail.com">{t('cta')} ↗</a></footer>
-  </main></SiteFrame>
+  </main>
 }

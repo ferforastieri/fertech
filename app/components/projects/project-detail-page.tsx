@@ -2,7 +2,6 @@
 
 import {useRef} from 'react'
 import {useTranslations} from 'next-intl'
-import {SiteFrame} from '@/app/components/ui/site-frame'
 import type {Project} from './project-data'
 import {RepositoryTree} from './repository-tree'
 import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
@@ -13,7 +12,7 @@ export function ProjectDetailPage({project}:{project:Project}){
   const detail=useTranslations('ProjectDetail')
   const root=useRef<HTMLDivElement>(null)
   useScrollReveal(root,'.detail-reveal')
-  return <SiteFrame><article ref={root} className="editorial-page project-detail">
+  return <article ref={root} className="editorial-page project-detail">
     <a className="detail-back detail-reveal" href="/projetos">← {detail('back')}</a>
     <header className="detail-header detail-reveal"><p>{t(`groups.${project.group}`)}</p><h1>{project.title}</h1><span>{t(`items.${project.id}`)}</span></header>
     <div className="detail-tags detail-reveal">{project.tags.map(tag=><span key={tag}>{tag}</span>)}</div>
@@ -22,5 +21,5 @@ export function ProjectDetailPage({project}:{project:Project}){
       <div className="repository-copy"><p>{detail('eyebrow')}</p><h2>{detail('title')}</h2><span>{detail(project.treeSource==='reconstructed'?'descriptionReconstructed':'description')}</span><code>{project.repository}</code>{project.url&&<a href={project.url} target="_blank" rel="noreferrer">{detail('visit')} ↗</a>}</div>
       <div><div className="repository-window-bar"><i/><i/><i/><span>{project.title.toLowerCase().replaceAll(' ','-')}</span></div><RepositoryTree nodes={project.tree}/></div>
     </section>
-  </article></SiteFrame>
+  </article>
 }
