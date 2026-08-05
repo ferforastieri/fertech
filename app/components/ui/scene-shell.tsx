@@ -28,6 +28,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     const scope=createScope({root:root.current,mediaQueries:{reduce:'(prefers-reduced-motion: reduce)',pointer:'(pointer: fine)'}}).add(self=>{
       if(!self?.matches.reduce){
         const intro=root.current?.querySelector<HTMLElement>('.book-intro')
+        const mobileBook=window.matchMedia('(max-width: 767px)').matches
         let revealObserver:IntersectionObserver|undefined
         const setupScrollReveals=()=>{
           if(revealObserver||!root.current)return
@@ -43,22 +44,22 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         else window.addEventListener('book-opened',setupScrollReveals,{once:true})
         self?.add(()=>{window.removeEventListener('book-opened',setupScrollReveals);revealObserver?.disconnect()})
         createTimeline({defaults:{ease:'outExpo'},onComplete:()=>{if(intro)intro.hidden=true;window.dispatchEvent(new Event('book-opened'))}})
-          .add('.intro-book',{opacity:[0,1],scale:[.92,1],x:'-25%',y:[26,0],rotateX:[12,4],duration:520})
-          .add('.intro-cover',{rotateY:[0,-179],duration:1200,ease:'inOutQuart'},400)
-          .add('.intro-book',{x:['-25%','0%'],scale:[1,1.035],duration:1200,ease:'inOutQuart'},400)
-          .add('.intro-page--one',{rotateY:[0,-177],z:[8,5],duration:820,ease:'inOutQuart'},1550)
-          .add('.intro-page--two',{rotateY:[0,-169],z:[6,4],duration:800,ease:'inOutQuart'},1900)
-          .add('.intro-page--three',{rotateY:[0,-158],z:[4,3],duration:770,ease:'inOutQuart'},2250)
-          .add('.intro-page--four',{rotateY:[0,-146],z:[2,2],duration:740,ease:'inOutQuart'},2600)
-          .add('.intro-spine',{scaleY:[.6,1],opacity:[0,1],duration:520},820)
-          .add('.scene-item',{opacity:[0,1],y:[16,0],delay:stagger(60),duration:620},3150)
-          .add('.scene-panel',{opacity:[0,1],y:[22,0],duration:620},3150)
-          .add('.book-intro',{opacity:[1,0],scale:[1,1.012],duration:420,ease:'outQuad'},3350)
+          .add('.intro-book',{opacity:[0,1],scale:[.92,1],x:'-25%',y:[26,0],rotateX:[12,4],duration:450})
+          .add('.intro-cover',{rotateY:[0,-179],duration:1000,ease:'inOutQuart'},320)
+          .add('.intro-book',{x:['-25%','0%'],scale:[1,mobileBook ? .56 : 1.035],duration:1000,ease:'inOutQuart'},320)
+          .add('.intro-page--one',{rotateY:[0,-177],z:[8,5],duration:680,ease:'inOutQuart'},1260)
+          .add('.intro-page--two',{rotateY:[0,-169],z:[6,4],duration:660,ease:'inOutQuart'},1550)
+          .add('.intro-page--three',{rotateY:[0,-158],z:[4,3],duration:640,ease:'inOutQuart'},1840)
+          .add('.intro-page--four',{rotateY:[0,-146],z:[2,2],duration:620,ease:'inOutQuart'},2130)
+          .add('.intro-spine',{scaleY:[.6,1],opacity:[0,1],duration:420},680)
+          .add('.scene-item',{opacity:[0,1],y:[16,0],delay:stagger(48),duration:520},2580)
+          .add('.scene-panel',{opacity:[0,1],y:[22,0],duration:520},2580)
+          .add('.book-intro',{opacity:[1,0],scale:[1,1.012],duration:360,ease:'outQuad'},2800)
         animate('.book-layer',{scale:[1.08,1.13],x:['-1.5%','1.5%'],y:['-1%','1%'],duration:12000,alternate:true,loop:true,ease:'inOutSine'})
         animate('.scroll-cue-mark',{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
 
         const internalLinks=Array.from(root.current?.querySelectorAll<HTMLAnchorElement>('a[href^="/"]')??[])
-        const closeBook=(event:MouseEvent)=>{const link=event.currentTarget as HTMLAnchorElement;if(event.metaKey||event.ctrlKey||event.shiftKey)return;event.preventDefault();if(!intro)return;intro.hidden=false;createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>window.location.assign(link.href)}).add(intro,{opacity:[0,1],duration:140}).add('.intro-page',{rotateY:0,duration:460},0).add('.intro-cover',{rotateY:0,duration:560},55).add('.intro-book',{x:'-25%',duration:560},55)}
+        const closeBook=(event:MouseEvent)=>{const link=event.currentTarget as HTMLAnchorElement;if(event.metaKey||event.ctrlKey||event.shiftKey)return;event.preventDefault();if(!intro)return;intro.hidden=false;createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>window.location.assign(link.href)}).add(intro,{opacity:[0,1],duration:140}).add('.intro-page',{rotateY:0,duration:460},0).add('.intro-cover',{rotateY:0,duration:560},55).add('.intro-book',{x:'-25%',scale:1,duration:560},55)}
         internalLinks.forEach(link=>link.addEventListener('click',closeBook))
         self?.add(()=>internalLinks.forEach(link=>link.removeEventListener('click',closeBook)))
       }

@@ -23,6 +23,9 @@ export function FloatingNavigation(){
   const dropdown=useRef<HTMLDivElement>(null)
   const root=useRef<HTMLDivElement>(null)
   const [languagesOpen,setLanguagesOpen]=useState(false)
+  const [drawerOpen,setDrawerOpen]=useState(false)
+
+  useEffect(()=>{setDrawerOpen(false);setLanguagesOpen(false)},[navPosition])
 
   useEffect(()=>{
     if(!nav.current)return
@@ -40,8 +43,11 @@ export function FloatingNavigation(){
     return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',escape)}
   },[languagesOpen,navPosition])
 
-  return <div ref={root} className={`floating-nav-root floating-nav-root--${navPosition}`}>
-    <nav ref={nav} className={`floating-nav floating-nav--${navPosition}`} aria-label={t('main')}>
+  return <div ref={root} className={`floating-nav-root floating-nav-root--${navPosition}${drawerOpen?' is-drawer-open':''}`}>
+    <button className="mobile-drawer-trigger" type="button" onClick={()=>setDrawerOpen(open=>!open)} aria-controls="main-floating-navigation" aria-expanded={drawerOpen} aria-label={t(drawerOpen?'closeMenu':'openMenu')}>
+      <Icon><path d={navPosition==='right'?(drawerOpen?'m15 6-6 6 6 6':'m9 6 6 6-6 6'):(drawerOpen?'m9 6 6 6-6 6':'m15 6-6 6 6 6')}/></Icon>
+    </button>
+    <nav id="main-floating-navigation" ref={nav} className={`floating-nav floating-nav--${navPosition}`} aria-label={t('main')}>
       <a className={`nav-control${currentPath==='/'?' is-active':''}`} href="/" aria-label={t('home')} title={t('home')}><Icon><path d="m4 11 8-7 8 7v9h-6v-6h-4v6H4Z"/></Icon></a>
       <a className={`nav-control${currentPath.startsWith('/projetos')?' is-active':''}`} href="/projetos" aria-label={t('projects')} title={t('projects')}><Icon><path d="M4 7h16v12H4zM8 7V4h8v3"/></Icon></a>
       <a className={`nav-control${currentPath==='/sobre'?' is-active':''}`} href="/sobre" aria-label={t('about')} title={t('about')}><Icon><circle cx="12" cy="8" r="3"/><path d="M5 20c.6-4 3-6 7-6s6.4 2 7 6"/></Icon></a>

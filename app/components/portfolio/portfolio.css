@@ -56,8 +56,7 @@
   .central-composition{position:static;width:calc(100vw - 36px);gap:18px;transform:none}
   .identity-prompt{max-width:19ch;padding:0;font-size:clamp(29px,9.8vw,43px);line-height:.98}
   .scene-portrait{width:clamp(132px,42vw,170px);border-radius:20px}
-  .corner-metrics{position:static;display:block;width:100%;text-align:left}
-  .corner-metrics{order:4;margin-top:52px}
+  .corner-metrics{position:static;display:block;order:3;width:min(100%,260px);align-self:center;margin-top:48px;text-align:center}
   .scroll-cue{top:calc(100svh - 104px);bottom:auto;width:max-content}
   .experience-section{padding:92px 18px 108px}
   .experience-heading{margin-bottom:55px;text-align:left}

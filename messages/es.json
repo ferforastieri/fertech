@@ -8,6 +8,8 @@
     "theme": "Cambiar tema",
     "move": "Mover navegación",
     "language": "Seleccionar idioma",
+    "openMenu": "Abrir navegación",
+    "closeMenu": "Cerrar navegación",
     "portuguese": "Portugués",
     "english": "Inglés",
     "spanish": "Español"

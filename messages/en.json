@@ -8,6 +8,8 @@
     "theme": "Switch theme",
     "move": "Move navigation",
     "language": "Select language",
+    "openMenu": "Open navigation",
+    "closeMenu": "Close navigation",
     "portuguese": "Portuguese",
     "english": "English",
     "spanish": "Spanish"
