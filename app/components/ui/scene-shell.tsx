@@ -88,14 +88,14 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     if(!view)return
     if(!routeReady.current){routeReady.current=true;return}
     const motion=animate(view,{opacity:[0,1],y:[18,0],filter:['blur(7px)','blur(0px)'],duration:520,ease:'outExpo'})
-    return()=>motion.revert()
+    return()=>{motion.revert()}
   },[pathname])
 
   useEffect(()=>{
     const mark=root.current?.querySelector<HTMLElement>('.scroll-cue-mark')
     if(!mark)return
     const motion=animate(mark,{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
-    return()=>motion.revert()
+    return()=>{motion.revert()}
   },[pathname])
 
   return <main ref={root} className={`scene-shell ${className}`}>

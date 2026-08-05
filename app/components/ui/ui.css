@@ -118,7 +118,7 @@
   .floating-nav-root--left.is-drawer-open .mobile-drawer-trigger{left:52px}
   .floating-nav-root--right.is-drawer-open .mobile-drawer-trigger{right:52px}
   .mobile-drawer-trigger:focus-visible{outline:1px solid var(--paper);outline-offset:2px}
-  .nav-control{width:clamp(28px,8.6vw,35px);height:35px}
+  .nav-control{width:clamp(25px,7.8vw,35px);height:35px}
   .nav-icon{width:15px;height:15px}
   .nav-separator{width:1px;height:18px;margin:0 1px}
   .floating-nav--left .nav-separator,.floating-nav--right .nav-separator{width:18px;height:1px;margin:1px 0}
