@@ -1,0 +1,78 @@
+'use client'
+
+import {createContext,useContext,useEffect,useMemo,useState,type ReactNode} from 'react'
+
+export type Locale='pt-BR'|'en'|'es'
+export type Theme='dark'|'light'
+export type NavPosition='top'|'right'|'bottom'|'left'
+
+const locales:Locale[]=['pt-BR','en','es']
+const positions:NavPosition[]=['top','right','bottom','left']
+
+type Preferences={
+  locale:Locale
+  theme:Theme
+  navPosition:NavPosition
+  setLocale:(locale:Locale)=>void
+  toggleTheme:()=>void
+  cycleNavPosition:()=>void
+}
+
+const PreferencesContext=createContext<Preferences|null>(null)
+
+export function PreferencesProvider({children}:{children:ReactNode}){
+  const [locale,setLocaleState]=useState<Locale>('pt-BR')
+  const [theme,setTheme]=useState<Theme>('dark')
+  const [navPosition,setNavPosition]=useState<NavPosition>('top')
+
+  useEffect(()=>{
+    const storedLocale=localStorage.getItem('fertech-locale')
+    const browserLocale=navigator.languages?.find(language=>/^(pt|en|es)/i.test(language))
+    const initialLocale=locales.includes(storedLocale as Locale)
+      ? storedLocale as Locale
+      : browserLocale?.toLowerCase().startsWith('en')?'en':browserLocale?.toLowerCase().startsWith('es')?'es':'pt-BR'
+    const storedTheme=localStorage.getItem('theme')
+    const initialTheme:Theme=storedTheme==='light'||storedTheme==='dark'
+      ? storedTheme
+      : matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'
+    const storedPosition=localStorage.getItem('aurora-nav-position')
+    const initialPosition=positions.includes(storedPosition as NavPosition)
+      ? storedPosition as NavPosition
+      : matchMedia('(max-width: 767px)').matches?'bottom':'top'
+    setLocaleState(initialLocale)
+    setTheme(initialTheme)
+    setNavPosition(initialPosition)
+  },[])
+
+  useEffect(()=>{
+    document.documentElement.dataset.theme=theme
+    document.documentElement.style.colorScheme=theme
+    localStorage.setItem('theme',theme)
+  },[theme])
+
+  useEffect(()=>{
+    document.documentElement.lang=locale
+    localStorage.setItem('fertech-locale',locale)
+  },[locale])
+
+  const value=useMemo<Preferences>(()=>({
+    locale,
+    theme,
+    navPosition,
+    setLocale:next=>setLocaleState(next),
+    toggleTheme:()=>setTheme(current=>current==='dark'?'light':'dark'),
+    cycleNavPosition:()=>setNavPosition(current=>{
+      const next=positions[(positions.indexOf(current)+1)%positions.length]
+      localStorage.setItem('aurora-nav-position',next)
+      return next
+    }),
+  }),[locale,theme,navPosition])
+
+  return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>
+}
+
+export function usePreferences(){
+  const context=useContext(PreferencesContext)
+  if(!context)throw new Error('usePreferences must be used inside PreferencesProvider')
+  return context
+}

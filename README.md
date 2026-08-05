@@ -15,7 +15,7 @@ app/
 - A home é a única rota de produto.
 - `ui/` contém somente componentes globais como logo, botão, card e scene shell.
 - O fundo utiliza uma fotografia de livro do Pexels, tratada pela identidade visual do site.
-- Anime.js controla a entrada, o movimento ambiente do livro e o cursor.
+- Anime.js controla a abertura do livro, transições internas, entrada do conteúdo, texto digitado, movimento ambiente e cursor.
 - Manrope e Instrument Serif ficam empacotadas localmente.
 
 ## Ambiente
