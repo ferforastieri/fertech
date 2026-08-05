@@ -9,7 +9,10 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   const book=useTranslations('Book')
   const root=useRef<HTMLElement>(null)
   const cursor=useRef<HTMLDivElement>(null)
+  const water=useRef<HTMLDivElement>(null)
+  const ripples=useRef<HTMLDivElement>(null)
   const noise=useRef<SVGFETurbulenceElement>(null)
+  const displacement=useRef<SVGFEDisplacementMapElement>(null)
 
   useEffect(()=>{
     if(!root.current)return
@@ -37,24 +40,42 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
       }
       if(self?.matches.pointer&&cursor.current){
         if(noise.current)animate(noise.current,{baseFrequency:['0.008 0.014','0.02 0.028'],duration:2400,alternate:true,loop:true,ease:'inOutSine'})
-        const move=(event:PointerEvent)=>animate(cursor.current!,{x:event.clientX,y:event.clientY,duration:430,ease:'outExpo'})
-        const enter=()=>animate(cursor.current!,{scale:1.55,rotate:14,duration:380,ease:'outExpo'})
-        const leave=()=>animate(cursor.current!,{scale:1,rotate:0,duration:420,ease:'outElastic(1, .55)'})
-        const press=()=>animate(cursor.current!,{scale:[1,1.85,1.08],rotate:[0,-18,4],duration:520,ease:'outExpo'})
+        let lastRipple=0
+        let waterVisible=false
+        const move=(event:PointerEvent)=>{
+          animate(cursor.current!,{x:event.clientX,y:event.clientY,duration:95,ease:'outQuad'})
+          if(water.current){water.current.style.setProperty('--water-x',`${event.clientX}px`);water.current.style.setProperty('--water-y',`${event.clientY}px`);if(!waterVisible){waterVisible=true;animate(water.current,{opacity:.92,duration:180,ease:'outQuad'})}}
+          const now=performance.now()
+          if(ripples.current&&now-lastRipple>72){
+            lastRipple=now
+            const ripple=document.createElement('span')
+            ripple.className='water-ripple'
+            ripple.style.left=`${event.clientX}px`
+            ripple.style.top=`${event.clientY}px`
+            ripples.current.appendChild(ripple)
+            animate(ripple,{scale:[.25,2.7],opacity:[.5,0],duration:920,ease:'outExpo',onComplete:()=>ripple.remove()})
+            if(displacement.current)animate(displacement.current,{scale:[9,25,11],duration:680,ease:'outElastic(1, .7)'})
+          }
+        }
+        const enter=()=>animate(cursor.current!,{scale:1.7,duration:260,ease:'outExpo'})
+        const leave=()=>animate(cursor.current!,{scale:1,duration:300,ease:'outExpo'})
+        const exit=()=>{waterVisible=false;if(water.current)animate(water.current,{opacity:0,duration:520,ease:'outQuad'})}
         window.addEventListener('pointermove',move,{passive:true})
-        window.addEventListener('pointerdown',press,{passive:true})
+        document.documentElement.addEventListener('pointerleave',exit)
         root.current?.querySelectorAll('a,button,input').forEach(element=>{element.addEventListener('pointerenter',enter);element.addEventListener('pointerleave',leave)})
-        return()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerdown',press);root.current?.querySelectorAll('a,button,input').forEach(element=>{element.removeEventListener('pointerenter',enter);element.removeEventListener('pointerleave',leave)})}
+        return()=>{window.removeEventListener('pointermove',move);document.documentElement.removeEventListener('pointerleave',exit);root.current?.querySelectorAll('a,button,input').forEach(element=>{element.removeEventListener('pointerenter',enter);element.removeEventListener('pointerleave',leave)})}
       }
     })
     return()=>scope.revert()
   },[])
 
-  return <main ref={root} className={`relative isolate min-h-svh overflow-hidden bg-[var(--ink)] text-[var(--paper)] ${className}`}>
+  return <main ref={root} className={`relative isolate min-h-svh overflow-x-hidden bg-[var(--ink)] text-[var(--paper)] ${className}`}>
     <div className="book-layer absolute -inset-[6%] -z-20 bg-cover bg-center" aria-hidden="true"/>
+    <div ref={water} className="water-reactive-layer" aria-hidden="true"/>
     <div className="paper-wash absolute inset-0 -z-10" aria-hidden="true"/>
-    <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-displacement"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="13" xChannelSelector="R" yChannelSelector="B"/></filter></defs></svg>
-    <div ref={cursor} className="water-cursor pointer-events-none fixed left-0 top-0 z-50 hidden lg:block" aria-hidden="true"><span className="water-cursor__halo"/><span className="water-cursor__lens"/><span className="water-cursor__core"/></div>
+    <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-background-displacement" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap ref={displacement} in="SourceGraphic" in2="noise" scale="11" xChannelSelector="R" yChannelSelector="B"/></filter></defs></svg>
+    <div ref={ripples} className="water-ripples" aria-hidden="true"/>
+    <div ref={cursor} className="precision-cursor pointer-events-none fixed left-0 top-0 z-50 hidden lg:block" aria-hidden="true"/>
     <div className="book-intro fixed inset-0 z-40 grid place-items-center overflow-hidden bg-[var(--ink)]" aria-hidden="true">
       <div className="intro-book">
         <div className="intro-book__shadow"/>

@@ -2,6 +2,8 @@
   "Navigation": {
     "main": "Main navigation",
     "home": "Home",
+    "projects": "Projects",
+    "about": "About me",
     "contact": "Get in touch",
     "theme": "Switch theme",
     "move": "Move navigation",
@@ -31,5 +33,22 @@
     "portfolio": "Portfolio by",
     "disciplines": "Software · AI · Interfaces",
     "volume": "Volume 01 · 2026"
+  },
+  "Experience": {
+    "eyebrow": "Professional journey",
+    "title": "Experience built in layers.",
+    "smart": {"company":"Smart S.A","position":"Full-stack Developer · Mid-level","location":"Sorocaba, SP","period":"Jun 2023 — present","summary":"Internal systems built with React, Redux and Express, spanning feature design, testing, performance and engineering practices."},
+    "inet": {"company":"4iNet Operadora","position":"Network Technician","location":"Sorocaba, SP","period":"Jan — Jul 2023","summary":"Network and communication system configuration, equipment maintenance and technical support."},
+    "getninjas": {"company":"GetNinjas","position":"IT Technician","location":"São Paulo, Brazil","period":"2015 — 2023","summary":"Support for equipment and systems, local networks, security and technical documentation."}
+  },
+  "Projects": {
+    "eyebrow":"Project archive","title":"Systems brought to life.","description":"A selection of personal and professional products built across interfaces, applications, APIs and complete platforms.","visit":"Visit","private":"Private project",
+    "groups":{"personal":"Personal project","professional":"Professional project"},
+    "items":{"fertech":"This portfolio: an editorial Next.js experience with themes, languages and book-inspired motion.","atacte":"Personal password and secure notes manager with encryption, two-factor authentication and a mobile app.","valk":"React component library with a CLI, themes and fully customizable components.","vendedor":"Sales management system with orders, routes, customers, reports and web and mobile applications.","parceiro":"Distributor platform with inventory, distribution, mobile operations and an analytics dashboard.","pintor":"Product, color and loyalty ecosystem with a mobile app, web dashboard and integrated services.","dashboard":"Real-time metrics and reporting dashboard for Sherwin-Williams operations.","gabriel":"Architecture studio website built with Next.js and Clean Architecture principles.","legrand":"Catalog, management and loyalty platform with synchronized state and product integrations.","leoplus":"Multi-partner loyalty program with campaigns, rewards and API integrations."}
+  },
+  "About": {
+    "eyebrow":"About me","title":"Engineering with a human touch.","principles":"Working principles",
+    "paragraphs":{"collaboration":"\"It is very easy to work with you\" is the reaction I value most. A light, clear and collaborative environment comes before any target or tool.","fullstack":"I am a full-stack developer focused on design systems, infrastructure and digital product architecture.","human":"I enjoy frontend and UX because that is where architecture becomes experience. AI accelerates delivery, but human judgment still defines clarity, flow and consistency.","games":"Games and hardware directly shaped my interest in programming and in interfaces that respond well to every action."},
+    "highlights":{"development":{"title":"Full-stack development","description":"Frontend, backend, design systems and infrastructure connected in end-to-end delivery."},"architecture":{"title":"Human-centered architecture","description":"Technology and AI accelerate the work; human decisions preserve clarity, context and experience."},"design":{"title":"Design Systems and UX","description":"Consistent visual foundations, intuitive interfaces and products that remain easy to evolve."}}
   }
 }

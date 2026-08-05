@@ -2,6 +2,8 @@
   "Navigation": {
     "main": "Navegação principal",
     "home": "Início",
+    "projects": "Projetos",
+    "about": "Sobre mim",
     "contact": "Entrar em contato",
     "theme": "Alternar tema",
     "move": "Mover navegação",
@@ -31,5 +33,22 @@
     "portfolio": "Portfólio de",
     "disciplines": "Software · IA · Interfaces",
     "volume": "Volume 01 · 2026"
+  },
+  "Experience": {
+    "eyebrow": "Trajetória profissional",
+    "title": "Experiência construída em camadas.",
+    "smart": {"company":"Smart S.A","position":"Desenvolvedor Fullstack · Pleno","location":"Sorocaba, SP","period":"Jun 2023 — atual","summary":"Desenvolvimento de sistemas internos com React, Redux e Express, da concepção de funcionalidades aos testes, desempenho e boas práticas."},
+    "inet": {"company":"4iNet Operadora","position":"Técnico de Redes","location":"Sorocaba, SP","period":"Jan — Jul 2023","summary":"Configuração de redes e sistemas de comunicação, manutenção de equipamentos e suporte técnico."},
+    "getninjas": {"company":"GetNinjas","position":"Técnico em Informática","location":"São Paulo, Brasil","period":"2015 — 2023","summary":"Suporte a equipamentos e sistemas, redes locais, segurança e documentação técnica."}
+  },
+  "Projects": {
+    "eyebrow":"Arquivo de projetos","title":"Sistemas que saíram do papel.","description":"Uma seleção de produtos pessoais e profissionais construídos entre interfaces, aplicativos, APIs e plataformas completas.","visit":"Visitar","private":"Projeto privado",
+    "groups":{"personal":"Projeto pessoal","professional":"Projeto profissional"},
+    "items":{"fertech":"Este portfólio: uma experiência editorial em Next.js com temas, idiomas e animações de livro.","atacte":"Gerenciador pessoal de senhas e notas seguras com criptografia, autenticação em dois fatores e aplicativo móvel.","valk":"Biblioteca de componentes React com CLI, temas e componentes inteiramente customizáveis.","vendedor":"Sistema de gestão para vendedores com pedidos, rotas, clientes, relatórios e aplicações web e mobile.","parceiro":"Plataforma para distribuidores com estoque, distribuição, operação móvel e dashboard analítico.","pintor":"Ecossistema de produtos, cores e fidelidade com aplicativo móvel, painel web e serviços integrados.","dashboard":"Dashboard de métricas e relatórios em tempo real para operações Sherwin-Williams.","gabriel":"Site institucional de arquitetura construído em Next.js com princípios de Clean Architecture.","legrand":"Plataforma de catálogo, gestão e fidelidade com estado sincronizado e integrações de produto.","leoplus":"Programa de fidelidade com múltiplos parceiros, campanhas, resgates e integrações por APIs."}
+  },
+  "About": {
+    "eyebrow":"Sobre mim","title":"Engenharia com tato humano.","principles":"Princípios de trabalho",
+    "paragraphs":{"collaboration":"\"É muito fácil trabalhar com você\" é a reação que mais valorizo. Um ambiente leve, claro e colaborativo vem antes de qualquer meta ou ferramenta.","fullstack":"Sou desenvolvedor fullstack com foco em design systems, infraestrutura e arquitetura de produtos digitais.","human":"Gosto de frontend e UX porque é onde arquitetura vira experiência. A IA acelera a entrega, mas o tato humano ainda define clareza, fluxo e consistência.","games":"Games e hardware influenciaram diretamente meu interesse por programação e por interfaces que respondem bem a cada ação."},
+    "highlights":{"development":{"title":"Desenvolvimento Fullstack","description":"Frontend, backend, design systems e infraestrutura conectados em uma entrega de ponta a ponta."},"architecture":{"title":"Arquitetura com tato humano","description":"Tecnologia e IA aceleram o trabalho; decisões humanas preservam clareza, contexto e experiência."},"design":{"title":"Design Systems e UX","description":"Bases visuais consistentes, interfaces intuitivas e produtos que continuam fáceis de evoluir."}}
   }
 }
