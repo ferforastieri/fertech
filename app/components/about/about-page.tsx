@@ -5,6 +5,7 @@ import {useEffect,useRef} from 'react'
 import {animate,stagger} from 'animejs'
 import {useTranslations} from 'next-intl'
 import {SiteFrame} from '@/app/components/ui/site-frame'
+import './about.css'
 
 const paragraphs=['collaboration','fullstack','human','games'] as const
 const highlights=['development','architecture','design'] as const

@@ -23,12 +23,12 @@ export function ExperienceTimeline(){
     return()=>observer.disconnect()
   },[])
 
-  return <section ref={root} className="experience-section" aria-labelledby="experience-title">
+  return <section ref={root} id="experiencia" className="experience-section" aria-labelledby="experience-title">
     <header className="experience-heading">
       <p>{t('eyebrow')}</p>
       <h2 id="experience-title">{t('title')}</h2>
     </header>
-    <div className="timeline-spine" aria-hidden="true"><span className="timeline-spine-progress"/></div>
+    <div className="timeline-body"><div className="timeline-spine" aria-hidden="true"><span className="timeline-spine-progress"/></div>
     <ol className="experience-timeline">{experienceKeys.map((key,index)=><li className={`timeline-entry timeline-entry--${index%2?'right':'left'}`} key={key}>
       <span className="timeline-period">{t(`${key}.period`)}</span>
       <article>
@@ -36,7 +36,8 @@ export function ExperienceTimeline(){
         <h3>{t(`${key}.position`)}</h3>
         <span>{t(`${key}.location`)}</span>
         <p className="timeline-summary">{t(`${key}.summary`)}</p>
+        {key==='smart'&&<div className="role-progression"><span>{t('smart.junior')}</span><i aria-hidden="true">→</i><span className="is-current">{t('smart.pleno')}</span></div>}
       </article>
-    </li>)}</ol>
+    </li>)}</ol></div>
   </section>
 }

@@ -52,8 +52,8 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
     return()=>{window.removeEventListener('book-opened',start);window.clearTimeout(fallback);timer?.cancel();blink?.revert()}
   },[passion,role])
 
-  return <div className="identity-stage text-center">
-    <h1 id="portfolio-title" className="sr-only">Fernando Forastieri</h1>
-    <p ref={prompt} className="identity-prompt mx-auto min-h-[1.9em] max-w-[22ch] overflow-visible px-4 font-[var(--serif)] text-[clamp(34px,5.3vw,78px)] leading-[.94] tracking-[-.03em]" aria-live="polite"><span ref={output}/><span ref={caret} className="typed-caret" aria-hidden="true"/></p>
+  return <div className="identity-stage">
+    <h1 id="portfolio-title" className="visually-hidden">Fernando Forastieri</h1>
+    <p ref={prompt} className="identity-prompt" aria-live="polite"><span ref={output}/><span ref={caret} className="typed-caret" aria-hidden="true"/></p>
   </div>
 }
