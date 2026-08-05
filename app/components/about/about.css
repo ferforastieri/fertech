@@ -1,13 +1,22 @@
 .about-page{max-width:1080px}
-.about-hero{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(210px,.55fr);align-items:end;gap:clamp(40px,6vw,76px);padding-bottom:48px;border-bottom:1px solid color-mix(in srgb,var(--paper) 24%,transparent);opacity:0}
+.about-book-background{position:fixed;z-index:-12;inset:0;background-position:center;background-size:cover;filter:grayscale(.88) sepia(.18) contrast(1.08) brightness(.42);pointer-events:none}
+.about-book-background:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,15,13,.78),rgba(15,15,13,.42) 50%,rgba(15,15,13,.76)),linear-gradient(180deg,rgba(15,15,13,.22),rgba(15,15,13,.56))}
+[data-theme='light'] .about-book-background{filter:grayscale(.9) sepia(.24) contrast(.76) brightness(1.08);opacity:.54}
+[data-theme='light'] .about-book-background:after{background:rgba(233,225,212,.36)}
+.about-hero{display:grid;grid-template-columns:1fr;align-items:end;padding-bottom:48px;border-bottom:1px solid color-mix(in srgb,var(--paper) 24%,transparent);opacity:0}
 .about-hero>div>p,.about-details>header>p,.about-stack>div>p{margin:0 0 14px;font-size:8px;font-weight:750;letter-spacing:.2em;text-transform:uppercase;opacity:.55}
 .about-hero h1{max-width:760px;margin:0;font-family:var(--serif);font-size:clamp(52px,7vw,98px);font-weight:400;line-height:.82;letter-spacing:-.045em}
-.about-photo{aspect-ratio:1;width:100%;max-width:280px;justify-self:end;border-radius:22px;object-fit:cover;filter:grayscale(1) contrast(1.08);box-shadow:0 20px 55px rgba(0,0,0,.24)}
 .about-copy{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr);margin:56px 0;gap:18px clamp(40px,6vw,76px)}
 .about-copy p{grid-column:2;margin:0;font-family:var(--serif);font-size:clamp(22px,2.35vw,31px);line-height:1.2;letter-spacing:-.018em;opacity:0}
 .about-copy p:first-child{font-style:italic}
+.about-resume{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr) auto;align-items:center;gap:clamp(24px,4vw,52px);padding:24px 0;border-bottom:1px solid color-mix(in srgb,var(--paper) 22%,transparent);opacity:0}
+.about-resume>div>p{margin:0 0 8px;font-size:8px;font-weight:750;letter-spacing:.18em;text-transform:uppercase;opacity:.5}
+.about-resume h2{margin:0;font-family:var(--serif);font-size:clamp(25px,3vw,38px);font-weight:400;line-height:.95}
+.about-resume>p{max-width:44ch;margin:0;font-size:10px;line-height:1.65;opacity:.68}
+.about-resume>a{display:inline-flex;align-items:center;gap:18px;padding:10px 13px;border:1px solid color-mix(in srgb,var(--paper) 42%,transparent);border-radius:999px;color:inherit;font-size:8px;font-weight:750;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;white-space:nowrap}
+.about-resume>a span{font-size:14px;transition:transform .25s ease}.about-resume>a:hover span{transform:translate(2px,-2px)}
 
-.about-details{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr);gap:clamp(40px,6vw,76px);padding:48px 0;border-top:1px solid color-mix(in srgb,var(--paper) 22%,transparent)}
+.about-details{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr);gap:clamp(40px,6vw,76px);padding:48px 0}
 .about-details>header{opacity:0}
 .about-details h2,.about-stack h2{max-width:10ch;margin:0;font-family:var(--serif);font-size:clamp(34px,4vw,52px);font-weight:400;line-height:.9}
 .about-details>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px}
@@ -17,7 +26,7 @@
 
 .about-stack{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr);align-items:center;gap:clamp(40px,6vw,76px);padding:48px 0;border-top:1px solid color-mix(in srgb,var(--paper) 22%,transparent);opacity:0}
 .about-stack>div>span{display:block;max-width:35ch;margin-top:18px;font-size:11px;line-height:1.65;opacity:.65}
-.about-stack ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0;padding:0;list-style:none}
+.about-stack ul{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:0;padding:0;list-style:none}
 .about-stack li{display:grid;min-height:32px;padding:7px 12px;place-items:center;border:1px solid color-mix(in srgb,var(--paper) 26%,transparent);border-radius:999px;font-size:8px;letter-spacing:.07em;text-align:center;text-transform:uppercase}
 
 .about-principles{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:color-mix(in srgb,var(--paper) 22%,transparent)}
@@ -30,16 +39,18 @@
   .about-page{text-align:center}
   .about-hero{grid-template-columns:1fr;justify-items:center;gap:28px;padding-bottom:36px}
   .about-hero h1{max-width:8ch;margin-inline:auto;font-size:clamp(43px,13vw,58px);line-height:.86}
-  .about-photo{width:min(64vw,230px);justify-self:center}
+  .about-book-background{background-position:58% center;filter:grayscale(.9) sepia(.2) contrast(1.05) brightness(.34)}
   .about-copy{grid-template-columns:1fr;margin:42px 0;gap:18px;text-align:center}
   .about-copy p{grid-column:1;font-size:clamp(21px,6.7vw,29px);line-height:1.22}
+  .about-resume{grid-template-columns:1fr;justify-items:center;gap:18px;margin-bottom:38px;padding:28px 0;text-align:center}
+  .about-resume>p{max-width:36ch}
   .about-details,.about-stack{grid-template-columns:1fr;justify-items:center;gap:28px;padding:38px 0;text-align:center}
   .about-details h2,.about-stack h2{max-width:12ch;margin-inline:auto;font-size:clamp(34px,10vw,44px)}
   .about-details>div{grid-template-columns:1fr}
   .about-details article{padding:18px 0}
   .about-details article p{max-width:38ch;margin-inline:auto}
   .about-stack>div>span{margin-inline:auto}
-  .about-stack ul{width:min(100%,420px);margin-inline:auto}
+  .about-stack ul{width:min(100%,420px);grid-template-columns:repeat(2,minmax(0,1fr));margin-inline:auto}
   .about-principles{grid-template-columns:1fr}
   .about-principles article{min-height:0;padding:24px 22px}
   .about-principles h2{margin:28px 0 12px}

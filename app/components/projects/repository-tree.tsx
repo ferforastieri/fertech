@@ -30,9 +30,9 @@ export function RepositoryTree({nodes}:{nodes:TreeNode[]}){
   useEffect(()=>{
     if(!root.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return
     const reveal=()=>animate(root.current!.querySelectorAll('.tree-row'),{opacity:[0,1],x:[-16,0],delay:stagger(52,{start:180}),duration:520,ease:'outExpo'})
-    window.addEventListener('book-opened',reveal,{once:true})
+    window.addEventListener('site-ready',reveal,{once:true})
     const fallback=setTimeout(reveal,1300)
-    return()=>{window.removeEventListener('book-opened',reveal);clearTimeout(fallback)}
+    return()=>{window.removeEventListener('site-ready',reveal);clearTimeout(fallback)}
   },[])
   return <div ref={root} className="repository-tree">{nodes.map(node=><FolderNode key={node.name} node={node}/>)}</div>
 }

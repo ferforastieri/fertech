@@ -129,7 +129,8 @@ export function WaterSurface(){
     gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([24,23,20,255]))
     let imageAspect=1.5
     const image=new Image()
-    image.src='/assets/open-book.jpg'
+    image.crossOrigin='anonymous'
+    image.src='https://images.pexels.com/photos/5408005/pexels-photo-5408005.jpeg?auto=compress&cs=tinysrgb&w=1920'
     image.onload=()=>{imageAspect=image.naturalWidth/image.naturalHeight;gl.bindTexture(gl.TEXTURE_2D,imageTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image)}
 
     const positionLocation=new Map<WebGLProgram,number>()

@@ -1,6 +1,12 @@
-import { ImageResponse } from 'next/og'
+import {ImageResponse} from 'next/og'
 
 export const size={width:128,height:128}
 export const contentType='image/png'
 
-export default function Icon(){return new ImageResponse(<div style={{width:'128px',height:'128px',display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,0)'}}><div style={{width:'124px',height:'102px',display:'flex',position:'relative',filter:'drop-shadow(0 3px 3px rgba(0,0,0,.32))'}}><div style={{width:'62px',height:'96px',display:'flex',alignItems:'center',justifyContent:'center',border:'6px solid #e7dfd1',background:'#181714',borderRadius:'15px 2px 3px 11px',transform:'skewY(8deg)',color:'#e7dfd1',fontSize:'56px',fontFamily:'serif'}}>F</div><div style={{width:'62px',height:'96px',display:'flex',alignItems:'center',justifyContent:'center',border:'6px solid #e7dfd1',background:'#181714',borderRadius:'2px 15px 11px 3px',transform:'skewY(-8deg)',color:'#e7dfd1',fontSize:'56px',fontFamily:'serif'}}>F</div><div style={{position:'absolute',top:'5px',bottom:'2px',left:'60px',width:'4px',borderRadius:'4px',background:'#e7dfd1'}}/></div></div>,size)}
+export default function Icon(){
+  return new ImageResponse(<div style={{width:128,height:128,display:'flex',alignItems:'center',justifyContent:'center',background:'transparent'}}>
+    <div style={{width:96,height:106,display:'flex',flexDirection:'column',gap:7,padding:10,border:'7px solid #e7dfd1',borderRadius:15,background:'#181714',filter:'drop-shadow(0 5px 4px rgba(0,0,0,.35))'}}>
+      {[0,1,2].map(row=><div key={row} style={{height:24,display:'flex',alignItems:'center',padding:'0 8px',border:'3px solid #e7dfd1',borderRadius:4}}><div style={{width:38,height:3,background:'#e7dfd1',opacity:.48}}/><div style={{width:8,height:8,marginLeft:'auto',borderRadius:999,background:row===2?'#f0c86f':'#9cffbe'}}/></div>)}
+    </div>
+  </div>,size)
+}

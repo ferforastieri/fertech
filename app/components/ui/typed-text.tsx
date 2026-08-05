@@ -18,11 +18,11 @@ export function TypedText({text,className}:{text:string;className?:string}){
       const duration=Math.max(220,text.length*32)
       timer=createTimer({duration,frameRate:30,onUpdate:self=>{if(output.current)output.current.textContent=text.slice(0,Math.ceil(self.currentTime/duration*text.length))}})
     }
-    const intro=document.querySelector<HTMLElement>('.book-intro')
+    const intro=document.querySelector<HTMLElement>('.server-system')
     if(intro?.hidden)start()
-    else window.addEventListener('book-opened',start,{once:true})
+    else window.addEventListener('site-ready',start,{once:true})
     const fallback=window.setTimeout(start,5000)
-    return()=>{window.removeEventListener('book-opened',start);window.clearTimeout(fallback);timer?.cancel()}
+    return()=>{window.removeEventListener('site-ready',start);window.clearTimeout(fallback);timer?.cancel()}
   },[text])
 
   return <span className={className} aria-label={text}><span ref={output} aria-hidden="true"/></span>

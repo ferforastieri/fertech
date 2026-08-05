@@ -23,13 +23,13 @@ export function useScrollReveal(root:RefObject<RevealRoot>,selector:string){
       root.current.querySelectorAll(selector).forEach(element=>observer?.observe(element))
     }
 
-    const intro=document.querySelector<HTMLElement>('.book-intro')
+    const intro=document.querySelector<HTMLElement>('.server-system')
     if(intro?.hidden)observe()
-    else window.addEventListener('book-opened',observe,{once:true})
+    else window.addEventListener('site-ready',observe,{once:true})
     fallback=window.setTimeout(observe,5000)
 
     return()=>{
-      window.removeEventListener('book-opened',observe)
+      window.removeEventListener('site-ready',observe)
       window.clearTimeout(fallback)
       observer?.disconnect()
     }

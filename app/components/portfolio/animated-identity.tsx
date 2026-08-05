@@ -2,6 +2,7 @@
 
 import {useEffect,useRef} from 'react'
 import {animate,createTimer,utils} from 'animejs'
+import {siteContent} from '@/messages/site-content'
 
 export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
   const prompt=useRef<HTMLParagraphElement>(null)
@@ -46,15 +47,15 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
         },
       })
     }
-    const intro=document.querySelector<HTMLElement>('.book-intro')
+    const intro=document.querySelector<HTMLElement>('.server-system')
     if(intro?.hidden)start()
-    else window.addEventListener('book-opened',start,{once:true})
+    else window.addEventListener('site-ready',start,{once:true})
     const fallback=window.setTimeout(start,5000)
-    return()=>{window.removeEventListener('book-opened',start);window.clearTimeout(fallback);timer?.cancel();blink?.revert()}
+    return()=>{window.removeEventListener('site-ready',start);window.clearTimeout(fallback);timer?.cancel();blink?.revert()}
   },[passion,role])
 
   return <div className="identity-stage">
-    <h1 id="portfolio-title" className="visually-hidden">Fernando Forastieri</h1>
+    <h1 id="portfolio-title" className="visually-hidden">{siteContent.identity.name}</h1>
     <p ref={prompt} className="identity-prompt" aria-live="polite"><span ref={output}/><span ref={caret} className="typed-caret" aria-hidden="true"/></p>
   </div>
 }

@@ -6,7 +6,8 @@
 .resume-header>div strong{font-family:var(--serif);font-size:25px;font-weight:400}
 .resume-header>div span{font-size:9px;letter-spacing:.11em;text-transform:uppercase;opacity:.55}
 .resume-header nav{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px}
-.resume-header nav a,.resume-footer a{padding:8px 11px;border:1px solid color-mix(in srgb,var(--paper) 34%,transparent);border-radius:999px;color:inherit;font-size:8px;font-weight:700;letter-spacing:.09em;text-decoration:none;text-transform:uppercase}
+.resume-header nav a,.resume-header nav button,.resume-footer a{padding:8px 11px;border:1px solid color-mix(in srgb,var(--paper) 34%,transparent);border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:8px;font-weight:700;letter-spacing:.09em;text-decoration:none;text-transform:uppercase}
+.resume-header nav button{cursor:pointer}.resume-header nav button:disabled{cursor:wait;opacity:.55}
 .resume-summary{display:grid;grid-template-columns:minmax(180px,.4fr) 1fr;gap:56px;padding:64px 0;opacity:0}
 .resume-summary>p,.resume-section-title>p,.resume-footer>p{margin:0;font-size:8px;font-weight:750;letter-spacing:.18em;text-transform:uppercase;opacity:.5}
 .resume-summary h2{margin:0;font-family:var(--serif);font-size:clamp(27px,3.5vw,43px);font-weight:400;line-height:1.13;letter-spacing:-.02em}

@@ -5,6 +5,7 @@ const config: NextConfig = {
   poweredByHeader: false,
   trailingSlash: true,
   compress: true,
+  images:{remotePatterns:[{protocol:'https',hostname:'images.unsplash.com'}]},
   experimental: {
     useTypeScriptCli: false,
   },

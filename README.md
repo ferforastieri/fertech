@@ -1,6 +1,6 @@
 # Fertec Portfolio
 
-Home experimental de Fernando Forastieri, construída com Next.js, Tailwind CSS e Anime.js.
+Portfólio de Fernando Forastieri, construído com Next.js, CSS modular e Anime.js.
 
 ## Estrutura
 
@@ -12,10 +12,10 @@ app/
     ui/          # primitives globais reutilizáveis
 ```
 
-- A home é a única rota de produto.
+- O portfólio reúne home, projetos, sobre e currículo.
 - `ui/` contém somente componentes globais como logo, botão, card e scene shell.
-- O fundo utiliza uma fotografia de livro do Pexels, tratada pela identidade visual do site.
-- Anime.js controla a abertura do livro, transições internas, entrada do conteúdo, texto digitado, movimento ambiente e cursor.
+- O fundo utiliza uma fotografia de servidores do Pexels, tratada pela identidade visual do site.
+- Anime.js controla a inicialização do servidor, transições de terminal, entrada do conteúdo, texto digitado, movimento ambiente e cursor.
 - Manrope e Instrument Serif ficam empacotadas localmente.
 
 ## Ambiente
