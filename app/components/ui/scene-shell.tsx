@@ -19,7 +19,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   const root=useRef<HTMLElement>(null)
   const cursor=useRef<HTMLDivElement>(null)
   const water=useRef<HTMLDivElement>(null)
-  const ripples=useRef<HTMLDivElement>(null)
   const noise=useRef<SVGFETurbulenceElement>(null)
   const displacement=useRef<SVGFEDisplacementMapElement>(null)
 
@@ -29,6 +28,9 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
       if(!self?.matches.reduce){
         const intro=root.current?.querySelector<HTMLElement>('.book-intro')
         const mobileBook=window.matchMedia('(max-width: 767px)').matches
+        const mobileOpenWidth=mobileBook?Math.min(window.innerWidth-24,(window.innerHeight-32)*1.4,740):0
+        const mobileOpenHeight=mobileOpenWidth/1.4
+        const closedBookScale=mobileBook?Math.max(1,Math.min(1.75,(window.innerWidth*.86*2)/mobileOpenWidth,(window.innerHeight*.9)/mobileOpenHeight)):1
         let revealObserver:IntersectionObserver|undefined
         const setupScrollReveals=()=>{
           if(revealObserver||!root.current)return
@@ -44,22 +46,30 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         else window.addEventListener('book-opened',setupScrollReveals,{once:true})
         self?.add(()=>{window.removeEventListener('book-opened',setupScrollReveals);revealObserver?.disconnect()})
         createTimeline({defaults:{ease:'outExpo'},onComplete:()=>{if(intro)intro.hidden=true;window.dispatchEvent(new Event('book-opened'))}})
-          .add('.intro-book',{opacity:[0,1],scale:[.92,1],x:'-25%',y:[26,0],rotateX:[12,4],duration:450})
+          .add('.intro-book',{opacity:[0,1],scale:mobileBook?[closedBookScale*.94,closedBookScale]:[.92,1],x:'-25%',y:[26,0],rotateX:[12,4],duration:450})
           .add('.intro-cover',{rotateY:[0,-179],duration:1000,ease:'inOutQuart'},320)
-          .add('.intro-book',{x:['-25%','0%'],scale:[1,mobileBook ? .56 : 1.035],duration:1000,ease:'inOutQuart'},320)
+          .add('.intro-book',{x:['-25%','0%'],scale:[closedBookScale,mobileBook?1:1.035],duration:1000,ease:'inOutQuart'},320)
           .add('.intro-page--one',{rotateY:[0,-177],z:[8,5],duration:680,ease:'inOutQuart'},1260)
+          .add('.intro-page--one .intro-page-code--front',{opacity:[1,0],duration:90},1530)
+          .add('.intro-page--one .intro-page-code--back',{opacity:[0,1],duration:90},1530)
           .add('.intro-page--two',{rotateY:[0,-169],z:[6,4],duration:660,ease:'inOutQuart'},1550)
+          .add('.intro-page--two .intro-page-code--front',{opacity:[1,0],duration:90},1810)
+          .add('.intro-page--two .intro-page-code--back',{opacity:[0,1],duration:90},1810)
           .add('.intro-page--three',{rotateY:[0,-158],z:[4,3],duration:640,ease:'inOutQuart'},1840)
+          .add('.intro-page--three .intro-page-code--front',{opacity:[1,0],duration:90},2090)
+          .add('.intro-page--three .intro-page-code--back',{opacity:[0,1],duration:90},2090)
           .add('.intro-page--four',{rotateY:[0,-146],z:[2,2],duration:620,ease:'inOutQuart'},2130)
+          .add('.intro-page--four .intro-page-code--front',{opacity:[1,0],duration:90},2370)
+          .add('.intro-page--four .intro-page-code--back',{opacity:[0,1],duration:90},2370)
           .add('.intro-spine',{scaleY:[.6,1],opacity:[0,1],duration:420},680)
           .add('.scene-item',{opacity:[0,1],y:[16,0],delay:stagger(48),duration:520},2580)
           .add('.scene-panel',{opacity:[0,1],y:[22,0],duration:520},2580)
           .add('.book-intro',{opacity:[1,0],scale:[1,1.012],duration:360,ease:'outQuad'},2800)
-        animate('.book-layer',{scale:[1.08,1.13],x:['-1.5%','1.5%'],y:['-1%','1%'],duration:12000,alternate:true,loop:true,ease:'inOutSine'})
+        animate('.book-layer,.water-reactive-layer',{scale:[1.04,1.08],x:['-1%','1%'],y:['-.7%','.7%'],duration:12000,alternate:true,loop:true,ease:'inOutSine'})
         animate('.scroll-cue-mark',{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
 
         const internalLinks=Array.from(root.current?.querySelectorAll<HTMLAnchorElement>('a[href^="/"]')??[])
-        const closeBook=(event:MouseEvent)=>{const link=event.currentTarget as HTMLAnchorElement;if(event.metaKey||event.ctrlKey||event.shiftKey)return;event.preventDefault();if(!intro)return;intro.hidden=false;createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>window.location.assign(link.href)}).add(intro,{opacity:[0,1],duration:140}).add('.intro-page',{rotateY:0,duration:460},0).add('.intro-cover',{rotateY:0,duration:560},55).add('.intro-book',{x:'-25%',scale:1,duration:560},55)}
+        const closeBook=(event:MouseEvent)=>{const link=event.currentTarget as HTMLAnchorElement;if(event.metaKey||event.ctrlKey||event.shiftKey)return;event.preventDefault();if(!intro)return;intro.hidden=false;createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>window.location.assign(link.href)}).add(intro,{opacity:[0,1],duration:140}).add('.intro-page',{rotateY:0,duration:460},0).add('.intro-page-code--front',{opacity:1,duration:90},220).add('.intro-page-code--back',{opacity:0,duration:90},220).add('.intro-cover',{rotateY:0,duration:560},55).add('.intro-book',{x:'-25%',scale:closedBookScale,duration:560},55)}
         internalLinks.forEach(link=>link.addEventListener('click',closeBook))
         self?.add(()=>internalLinks.forEach(link=>link.removeEventListener('click',closeBook)))
       }
@@ -68,10 +78,8 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         let waterVisible=false
         let animationFrame=0
         let lastDistortion=0
-        let lastRipple={x:-300,y:-300}
-        let rippleIndex=0
         const target={x:-300,y:-300}
-        const trail=Array.from({length:5},()=>({x:-300,y:-300}))
+        const trail=Array.from({length:7},()=>({x:-300,y:-300}))
         const renderTrail=()=>{
           trail[0].x+=(target.x-trail[0].x)*.3;trail[0].y+=(target.y-trail[0].y)*.3
           for(let index=1;index<trail.length;index++){
@@ -89,19 +97,10 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
           target.x=event.clientX;target.y=event.clientY
           if(cursor.current)animate(cursor.current,{x:event.clientX,y:event.clientY,opacity:1,duration:95,ease:'outQuad'})
           if(water.current&&!waterVisible){waterVisible=true;trail.forEach(point=>{point.x=target.x;point.y=target.y});animate(water.current,{opacity:.9,duration:220,ease:'outQuad'})}
-          const rippleDistance=Math.hypot(event.clientX-lastRipple.x,event.clientY-lastRipple.y)
-          if(ripples.current&&rippleDistance>72){
-            const ripple=ripples.current.children[rippleIndex%8] as HTMLElement
-            rippleIndex+=1
-            lastRipple={x:event.clientX,y:event.clientY}
-            ripple.style.left=`${event.clientX}px`
-            ripple.style.top=`${event.clientY}px`
-            animate(ripple,{opacity:[.52,0],scale:[.18,2.25],duration:1150,ease:'outExpo'})
-          }
           const now=performance.now()
-          if(displacement.current&&now-lastDistortion>110){
+          if(displacement.current&&now-lastDistortion>80){
             lastDistortion=now
-            animate(displacement.current,{scale:[18,30,20],duration:520,ease:'outExpo'})
+            animate(displacement.current,{scale:[24,44,28],duration:680,ease:'outExpo'})
           }
         }
         const exit=()=>{waterVisible=false;if(water.current)animate(water.current,{opacity:0,duration:520,ease:'outQuad'});if(cursor.current)animate(cursor.current,{opacity:0,duration:180,ease:'outQuad'})}
@@ -124,7 +123,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   return <main ref={root} className={`scene-shell ${className}`}>
     <div className="book-layer" aria-hidden="true"/>
     <div ref={water} className="water-reactive-layer" aria-hidden="true"/>
-    <div ref={ripples} className="water-ripple-field" aria-hidden="true">{Array.from({length:8},(_,index)=><i key={index}/>)}</div>
     <div className="paper-wash" aria-hidden="true"/>
     <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-background-displacement" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap ref={displacement} in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="1.6"/></filter></defs></svg>
     <div ref={cursor} className="custom-cursor" aria-hidden="true"><span/></div>

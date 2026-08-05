@@ -16,7 +16,7 @@
 .metric-line+.metric-line{padding-top:13px}
 .metric-line strong{display:block;font-family:var(--serif);font-size:clamp(27px,2.6vw,43px);font-weight:400;line-height:.86;letter-spacing:-.035em}
 .metric-label{display:block;margin-top:5px;font-size:8px;font-weight:650;letter-spacing:.13em;text-transform:uppercase;opacity:.62}
-.scroll-cue{position:absolute;z-index:14;bottom:3.5vh;left:50%;display:flex;flex-direction:column;align-items:center;gap:8px;color:inherit;font-size:7px;font-weight:750;letter-spacing:.16em;text-decoration:none;text-transform:uppercase;transform:translateX(-50%);opacity:.62}
+.scroll-cue{position:absolute;z-index:14;right:0;bottom:3.5vh;left:0;display:flex;width:max-content;margin-inline:auto;flex-direction:column;align-items:center;gap:8px;color:inherit;font-size:7px;font-weight:750;letter-spacing:.16em;text-decoration:none;text-transform:uppercase;opacity:.62}
 .scroll-cue-mark{position:relative;display:block;width:16px;height:32px;transform-origin:center}
 .scroll-cue-mark:before{content:'';position:absolute;top:0;left:50%;width:1px;height:29px;background:currentColor;transform:translateX(-50%)}
 .scroll-cue-mark:after{content:'';position:absolute;right:2px;bottom:2px;width:9px;height:9px;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(45deg)}
@@ -59,7 +59,7 @@
   .corner-metrics{position:static;display:block;order:3;width:min(100%,260px);align-self:center;margin-top:48px;text-align:center}
   .scroll-cue{top:calc(100svh - 104px);bottom:auto;width:max-content}
   .experience-section{padding:92px 18px 108px}
-  .experience-heading{margin-bottom:55px;text-align:left}
+  .experience-heading{max-width:540px;margin:0 auto 55px;text-align:center}
   .timeline-spine{top:6px;bottom:6px;left:4px}
   .timeline-body{margin-left:0}
   .experience-timeline{gap:55px;padding-left:30px}
