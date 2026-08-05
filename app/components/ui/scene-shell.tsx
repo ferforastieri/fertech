@@ -4,15 +4,15 @@ import { useEffect,useRef,type ReactNode } from 'react'
 import { animate,createScope,createTimeline,stagger } from 'animejs'
 import {useTranslations} from 'next-intl'
 import { Logo } from './logo'
+import './ui.css'
 
 const introCode=['const idea = human;','design.with(ia);','return beautiful;']
-import './ui.css'
 
 export function SceneShell({children,className=''}:{children:ReactNode;className?:string}){
   const book=useTranslations('Book')
   const root=useRef<HTMLElement>(null)
+  const cursor=useRef<HTMLDivElement>(null)
   const water=useRef<HTMLDivElement>(null)
-  const ripples=useRef<HTMLDivElement>(null)
   const noise=useRef<SVGFETurbulenceElement>(null)
   const displacement=useRef<SVGFEDisplacementMapElement>(null)
 
@@ -44,26 +44,36 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
       }
       if(self?.matches.pointer){
         if(noise.current)animate(noise.current,{baseFrequency:['0.008 0.014','0.02 0.028'],duration:2400,alternate:true,loop:true,ease:'inOutSine'})
-        let lastRipple=0
         let waterVisible=false
+        let animationFrame=0
+        let lastDistortion=0
+        const target={x:-300,y:-300}
+        const trail=[{x:-300,y:-300},{x:-300,y:-300},{x:-300,y:-300}]
+        const renderTrail=()=>{
+          trail[0].x+=(target.x-trail[0].x)*.24;trail[0].y+=(target.y-trail[0].y)*.24
+          trail[1].x+=(trail[0].x-trail[1].x)*.16;trail[1].y+=(trail[0].y-trail[1].y)*.16
+          trail[2].x+=(trail[1].x-trail[2].x)*.11;trail[2].y+=(trail[1].y-trail[2].y)*.11
+          if(water.current){
+            water.current.style.setProperty('--water-x',`${target.x}px`);water.current.style.setProperty('--water-y',`${target.y}px`)
+            trail.forEach((point,index)=>{water.current?.style.setProperty(`--trail-${index+1}-x`,`${point.x}px`);water.current?.style.setProperty(`--trail-${index+1}-y`,`${point.y}px`)})
+          }
+          animationFrame=requestAnimationFrame(renderTrail)
+        }
+        animationFrame=requestAnimationFrame(renderTrail)
         const move=(event:PointerEvent)=>{
-          if(water.current){water.current.style.setProperty('--water-x',`${event.clientX}px`);water.current.style.setProperty('--water-y',`${event.clientY}px`);if(!waterVisible){waterVisible=true;animate(water.current,{opacity:.92,duration:180,ease:'outQuad'})}}
+          target.x=event.clientX;target.y=event.clientY
+          if(cursor.current)animate(cursor.current,{x:event.clientX,y:event.clientY,duration:70,ease:'outQuad'})
+          if(water.current&&!waterVisible){waterVisible=true;trail.forEach(point=>{point.x=target.x;point.y=target.y});animate(water.current,{opacity:.9,duration:220,ease:'outQuad'})}
           const now=performance.now()
-          if(ripples.current&&now-lastRipple>72){
-            lastRipple=now
-            const ripple=document.createElement('span')
-            ripple.className='water-ripple'
-            ripple.style.left=`${event.clientX}px`
-            ripple.style.top=`${event.clientY}px`
-            ripples.current.appendChild(ripple)
-            animate(ripple,{scale:[.25,2.7],opacity:[.5,0],duration:920,ease:'outExpo',onComplete:()=>ripple.remove()})
-            if(displacement.current)animate(displacement.current,{scale:[16,38,18],duration:760,ease:'outElastic(1, .65)'})
+          if(displacement.current&&now-lastDistortion>110){
+            lastDistortion=now
+            animate(displacement.current,{scale:[18,30,20],duration:520,ease:'outExpo'})
           }
         }
         const exit=()=>{waterVisible=false;if(water.current)animate(water.current,{opacity:0,duration:520,ease:'outQuad'})}
         window.addEventListener('pointermove',move,{passive:true})
         document.documentElement.addEventListener('pointerleave',exit)
-        return()=>{window.removeEventListener('pointermove',move);document.documentElement.removeEventListener('pointerleave',exit)}
+        return()=>{cancelAnimationFrame(animationFrame);window.removeEventListener('pointermove',move);document.documentElement.removeEventListener('pointerleave',exit)}
       }
     })
     return()=>scope.revert()
@@ -74,7 +84,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     <div ref={water} className="water-reactive-layer" aria-hidden="true"/>
     <div className="paper-wash" aria-hidden="true"/>
     <svg className="cursor-filter" aria-hidden="true"><defs><filter id="water-background-displacement" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence ref={noise} type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="noise"/><feDisplacementMap ref={displacement} in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="1.6"/></filter></defs></svg>
-    <div ref={ripples} className="water-ripples" aria-hidden="true"/>
+    <div ref={cursor} className="precision-cursor" aria-hidden="true"/>
     <div className="book-intro" aria-hidden="true">
       <div className="intro-book">
         <div className="intro-book__shadow"/>
