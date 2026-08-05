@@ -1,8 +1,8 @@
 import type {Metadata} from 'next'
 import {siteContent} from '@/messages/site-content'
 
-const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL||process.env.VERCEL_PROJECT_PRODUCTION_URL
-export const siteUrl=new URL(configuredUrl?.startsWith('http')?configuredUrl:`https://${configuredUrl||'localhost:3000'}`)
+const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL||process.env.VERCEL_PROJECT_PRODUCTION_URL||'https://fer.tec.br'
+export const siteUrl=new URL(configuredUrl.startsWith('http')?configuredUrl:`https://${configuredUrl}`)
 
 export function pageMetadata(title:string,description:string,path:string):Metadata{
   return {

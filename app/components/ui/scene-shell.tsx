@@ -87,7 +87,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     const view=root.current?.querySelector<HTMLElement>('.route-view')
     if(!view)return
     if(!routeReady.current){routeReady.current=true;return}
-    const motion=animate(view,{opacity:[0,1],y:[18,0],filter:['blur(7px)','blur(0px)'],duration:520,ease:'outExpo'})
+    const motion=animate(view,{opacity:[0,1],y:[24,0],scale:[.994,1],filter:['blur(10px)','blur(0px)'],duration:680,ease:'outExpo'})
     return()=>{motion.revert()}
   },[pathname])
 

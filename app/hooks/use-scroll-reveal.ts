@@ -1,37 +1,55 @@
 'use client'
 
 import {type RefObject,useEffect} from 'react'
-import {animate} from 'animejs'
+import {animate,stagger} from 'animejs'
+import {usePathname} from 'next/navigation'
 
 type RevealRoot=HTMLElement|null
 
 export function useScrollReveal(root:RefObject<RevealRoot>,selector:string){
+  const pathname=usePathname()
   useEffect(()=>{
-    if(!root.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return
+    const container=root.current
+    if(!container)return
+    const elements=Array.from(container.querySelectorAll<HTMLElement>(selector))
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){elements.forEach(element=>{element.style.opacity='1';element.style.transform='none';element.style.filter='none'});return}
     let observer:IntersectionObserver|undefined
     let fallback=0
+    let frame=0
+    const motions:ReturnType<typeof animate>[]=[]
 
-    const observe=()=>{
-      if(!root.current||observer)return
-      observer=new IntersectionObserver(entries=>{
-        entries.forEach(entry=>{
+    const reveal=(targets:HTMLElement[],delay=0)=>{
+      if(!targets.length)return
+      targets.forEach(target=>target.dataset.revealed='true')
+      motions.push(animate(targets,{opacity:[0,1],y:[32,0],scale:[.985,1],filter:['blur(9px)','blur(0px)'],delay:stagger(64,{start:delay}),duration:820,ease:'outExpo'}))
+    }
+    const start=()=>{
+      if(observer)return
+      frame=requestAnimationFrame(()=>{
+        const fold=window.innerHeight*.96
+        const initial=elements.filter(element=>element.getBoundingClientRect().top<fold)
+        reveal(initial,90)
+        observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
           if(!entry.isIntersecting)return
           observer?.unobserve(entry.target)
-          animate(entry.target,{opacity:[0,1],y:[34,0],rotateX:[5,0],duration:760,ease:'outExpo'})
-        })
-      },{threshold:.12,rootMargin:'0px 0px -8% 0px'})
-      root.current.querySelectorAll(selector).forEach(element=>observer?.observe(element))
+          const target=entry.target as HTMLElement
+          if(target.dataset.revealed!=='true')reveal([target])
+        }),{threshold:.1,rootMargin:'0px 0px -7% 0px'})
+        elements.filter(element=>element.dataset.revealed!=='true').forEach(element=>observer?.observe(element))
+      })
     }
 
     const intro=document.querySelector<HTMLElement>('.server-system')
-    if(intro?.hidden)observe()
-    else window.addEventListener('site-ready',observe,{once:true})
-    fallback=window.setTimeout(observe,5000)
+    if(intro?.hidden||document.documentElement.dataset.fertecServerBooted==='true')start()
+    else window.addEventListener('site-ready',start,{once:true})
+    fallback=window.setTimeout(start,4200)
 
     return()=>{
-      window.removeEventListener('site-ready',observe)
+      window.removeEventListener('site-ready',start)
       window.clearTimeout(fallback)
+      cancelAnimationFrame(frame)
       observer?.disconnect()
+      motions.forEach(motion=>motion.revert())
     }
-  },[root,selector])
+  },[pathname,root,selector])
 }
