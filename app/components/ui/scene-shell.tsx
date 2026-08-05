@@ -19,6 +19,8 @@ const introPages=[
 export function SceneShell({children,className=''}:{children:ReactNode;className?:string}){
   const book=useTranslations('Book')
   const router=useRouter()
+  const routerRef=useRef(router)
+  routerRef.current=router
   const root=useRef<HTMLElement>(null)
   const cursor=useRef<HTMLDivElement>(null)
 
@@ -33,19 +35,22 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         const closedBookScale=mobileBook?Math.max(1,Math.min(1.72,(window.innerWidth*.86*2)/mobileOpenWidth,(window.innerHeight*.9)/(mobileOpenWidth/1.4))):1
         const setOpenedBook=()=>{
           if(!root.current)return
-          utils.set(root.current.querySelectorAll('.intro-book--entry'),{display:'none'})
-          utils.set(root.current.querySelectorAll('.intro-book--navigation'),{display:'block',opacity:1,x:'0%',y:0,scale:openedBookScale,rotateX:4})
-          ;([['four',-179,2],['three',-178.7,3],['two',-178.4,4]] as const).forEach(([layer,rotateY,z])=>utils.set(root.current!.querySelectorAll(`.intro-book--navigation .intro-page--${layer}`),{rotateY,z}))
-          utils.set(root.current.querySelectorAll('.intro-book--navigation .intro-page--one'),{rotateY:0,z:8})
-          utils.set(root.current.querySelectorAll('.intro-book--navigation .intro-page-code--front'),{opacity:0})
-          utils.set(root.current.querySelectorAll('.intro-book--navigation .intro-page-code--back'),{opacity:1})
-          utils.set(root.current.querySelectorAll('.intro-book--navigation .intro-page--one .intro-page-code--front'),{opacity:1})
-          utils.set(root.current.querySelectorAll('.intro-book--navigation .intro-page--one .intro-page-code--back'),{opacity:0})
+          const entryBook=root.current.querySelector<HTMLElement>('.intro-book--entry')
+          const navigationBook=root.current.querySelector<HTMLElement>('.navigation-book')
+          if(entryBook)entryBook.hidden=true
+          if(navigationBook)navigationBook.hidden=false
+          utils.set(root.current.querySelectorAll('.navigation-book'),{opacity:1,x:'0%',y:0,scale:openedBookScale,rotateX:4})
+          utils.set(root.current.querySelectorAll('.navigation-turning-page'),{rotateY:0,z:8})
+          utils.set(root.current.querySelectorAll('.navigation-turning-page .intro-page-code--front'),{opacity:1})
+          utils.set(root.current.querySelectorAll('.navigation-turning-page .intro-page-code--back'),{opacity:0})
         }
         const setClosedBook=()=>{
           if(!root.current)return
-          utils.set(root.current.querySelectorAll('.intro-book--navigation'),{display:'none'})
-          utils.set(root.current.querySelectorAll('.intro-book--entry'),{display:'block',opacity:1,x:'-25%',y:0,scale:closedBookScale,rotateX:4})
+          const entryBook=root.current.querySelector<HTMLElement>('.intro-book--entry')
+          const navigationBook=root.current.querySelector<HTMLElement>('.navigation-book')
+          if(navigationBook)navigationBook.hidden=true
+          if(entryBook)entryBook.hidden=false
+          utils.set(root.current.querySelectorAll('.intro-book--entry'),{opacity:1,x:'-25%',y:0,scale:closedBookScale,rotateX:4})
           utils.set(root.current.querySelectorAll('.intro-book--entry .intro-cover'),{rotateY:0,opacity:1})
           ;(['four','three','two','one'] as const).forEach((layer,index)=>utils.set(root.current!.querySelectorAll(`.intro-book--entry .intro-page--${layer}`),{rotateY:0,z:index+2}))
           utils.set(root.current.querySelectorAll('.intro-book--entry .intro-page-code--front'),{opacity:1})
@@ -62,10 +67,14 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
           }),{threshold:.12,rootMargin:'0px 0px -7% 0px'})
           root.current.querySelectorAll<HTMLElement>('.scroll-reveal').forEach(element=>revealObserver?.observe(element))
         }
-        if(intro?.hidden)setupScrollReveals()
+        const playEntryAnimation=document.documentElement.dataset.fertecEntryOpened!=='true'
+        if(!playEntryAnimation){
+          if(intro)intro.hidden=true
+          setupScrollReveals()
+        }else if(intro?.hidden)setupScrollReveals()
         else window.addEventListener('book-opened',setupScrollReveals,{once:true})
         self?.add(()=>{window.removeEventListener('book-opened',setupScrollReveals);revealObserver?.disconnect()})
-        if(intro&&root.current){
+        if(playEntryAnimation&&intro&&root.current){
           const page=root.current.querySelector('.intro-book--entry .intro-page--one')
           const front=root.current.querySelector('.intro-book--entry .intro-page--one .intro-page-code--front')
           const back=root.current.querySelector('.intro-book--entry .intro-page--one .intro-page-code--back')
@@ -73,7 +82,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
             setClosedBook()
             intro.hidden=false
             utils.set(intro,{opacity:1})
-            createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>{intro.hidden=true;window.dispatchEvent(new Event('book-opened'))}})
+            createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>{document.documentElement.dataset.fertecEntryOpened='true';intro.hidden=true;window.dispatchEvent(new Event('book-opened'))}})
               .add('.intro-book--entry .intro-cover',{rotateY:[0,-179],duration:900},100)
               .add('.intro-book--entry',{x:['-25%','0%'],scale:[closedBookScale,openedBookScale],duration:900},100)
               .add('.intro-book--entry .intro-spine',{scaleY:[.82,1],opacity:[.55,1],duration:420},260)
@@ -92,16 +101,17 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
           event.preventDefault()
           event.stopPropagation()
           if(!intro||!root.current)return
-          const page=root.current.querySelector('.intro-book--navigation .intro-page--one')
-          const front=root.current.querySelector('.intro-book--navigation .intro-page--one .intro-page-code--front')
-          const back=root.current.querySelector('.intro-book--navigation .intro-page--one .intro-page-code--back')
+          const page=root.current.querySelector('.navigation-turning-page')
+          const front=root.current.querySelector('.navigation-turning-page .intro-page-code--front')
+          const back=root.current.querySelector('.navigation-turning-page .intro-page-code--back')
           if(!page||!front||!back)return
           navigating=true
+          document.documentElement.dataset.fertecEntryOpened='true'
           setOpenedBook()
           intro.hidden=false
           utils.set(intro,{opacity:0})
           const destination=`${link.pathname}${link.search}${link.hash}`
-          routeTimer=window.setTimeout(()=>router.push(destination),260)
+          routeTimer=window.setTimeout(()=>routerRef.current.push(destination),260)
           createTimeline({defaults:{ease:'inOutQuart'},onComplete:()=>{intro.hidden=true;navigating=false}})
             .add(intro,{opacity:[0,1],duration:80},0)
             .add(page,{rotateY:[0,-178],z:[8,5],duration:430},40)
@@ -131,7 +141,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
       }
     })
     return()=>scope.revert()
-  },[router])
+  },[])
 
   return <main ref={root} className={`scene-shell ${className}`}>
     <div className="book-layer" aria-hidden="true"/>
@@ -149,15 +159,17 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         <div className="intro-cover"><div className="intro-cover__front"><div className="cover-rule"/><Logo/><div className="cover-title"><small>{book('portfolio')}</small><strong>Fernando<br/>Forastieri</strong><span>{book('disciplines')}</span></div><code className="intro-code">{introCode.map((line,lineIndex)=><span className="intro-code-line" key={line}>{line.split('').map((character,index)=><i className="intro-code-char" key={`${lineIndex}-${index}`}>{character===' '?'\u00a0':character}</i>)}</span>)}</code><p>{book('volume')}</p></div><div className="intro-cover__inside"/></div>
         <div className="intro-spine"/>
       </div>
-      <div className="intro-book intro-book--navigation">
-        <div className="intro-book__shadow"/>
-        <div className="intro-page-base intro-page-base--left"><code className="intro-page-code intro-page-code--static">{introPages[0].back.map(line=><span key={`left-${line}`}>{line}</span>)}</code></div>
-        <div className="intro-page-base intro-page-base--right"/>
-        {introPages.map(page=><div className={`intro-page intro-page--${page.layer}`} key={`navigation-${page.layer}`}>
-          <code className="intro-page-code intro-page-code--front">{page.front.map(line=><span key={line}>{line}</span>)}</code>
-          <code className="intro-page-code intro-page-code--back">{page.back.map(line=><span key={line}>{line}</span>)}</code>
-        </div>)}
-        <div className="intro-spine"/>
+      <div className="navigation-book" hidden>
+        <div className="navigation-book__shadow"/>
+        <div className="navigation-spread">
+          <div className="navigation-spread__page navigation-spread__page--left"><code className="intro-page-code intro-page-code--static">{introPages[1].front.map(line=><span key={`navigation-left-${line}`}>{line}</span>)}</code></div>
+          <div className="navigation-spread__page navigation-spread__page--right"><code className="intro-page-code intro-page-code--static">{introPages[2].front.map(line=><span key={`navigation-right-${line}`}>{line}</span>)}</code></div>
+        </div>
+        <div className="navigation-turning-page">
+          <code className="intro-page-code intro-page-code--front">{introPages[3].front.map(line=><span key={`navigation-front-${line}`}>{line}</span>)}</code>
+          <code className="intro-page-code intro-page-code--back">{introPages[3].back.map(line=><span key={`navigation-back-${line}`}>{line}</span>)}</code>
+        </div>
+        <div className="navigation-spine"/>
       </div>
     </div>
     {children}
