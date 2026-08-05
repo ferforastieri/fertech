@@ -27,15 +27,19 @@
 .about-principles p{margin:0;font-size:10px;line-height:1.7;opacity:.65}
 
 @media(max-width:767px){
-  .about-hero{grid-template-columns:1fr;gap:28px;padding-bottom:36px}
-  .about-hero h1{max-width:8ch;font-size:clamp(43px,13vw,58px);line-height:.86}
-  .about-photo{width:min(64vw,230px);justify-self:start}
-  .about-copy{grid-template-columns:1fr;margin:42px 0;gap:18px}
+  .about-page{text-align:center}
+  .about-hero{grid-template-columns:1fr;justify-items:center;gap:28px;padding-bottom:36px}
+  .about-hero h1{max-width:8ch;margin-inline:auto;font-size:clamp(43px,13vw,58px);line-height:.86}
+  .about-photo{width:min(64vw,230px);justify-self:center}
+  .about-copy{grid-template-columns:1fr;margin:42px 0;gap:18px;text-align:center}
   .about-copy p{grid-column:1;font-size:clamp(21px,6.7vw,29px);line-height:1.22}
-  .about-details,.about-stack{grid-template-columns:1fr;gap:28px;padding:38px 0}
-  .about-details h2,.about-stack h2{max-width:12ch;font-size:clamp(34px,10vw,44px)}
+  .about-details,.about-stack{grid-template-columns:1fr;justify-items:center;gap:28px;padding:38px 0;text-align:center}
+  .about-details h2,.about-stack h2{max-width:12ch;margin-inline:auto;font-size:clamp(34px,10vw,44px)}
   .about-details>div{grid-template-columns:1fr}
   .about-details article{padding:18px 0}
+  .about-details article p{max-width:38ch;margin-inline:auto}
+  .about-stack>div>span{margin-inline:auto}
+  .about-stack ul{justify-content:center}
   .about-principles{grid-template-columns:1fr}
   .about-principles article{min-height:0;padding:24px 22px}
   .about-principles h2{margin:28px 0 12px}

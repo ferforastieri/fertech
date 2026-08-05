@@ -52,13 +52,13 @@
 @media(min-width:1024px){.home-hero{padding:3.5vh 4.5vw}}
 @media(max-width:767px){
   .home-hero{display:flex;min-height:auto;flex-direction:column;padding:18px 18px 104px}
-  .home-stage{order:1;min-height:100svh;padding:148px 0 130px}
-  .central-composition{top:51%;width:calc(100vw - 36px);gap:18px}
+  .home-stage{order:1;display:grid;min-height:100svh;padding:148px 0 130px;place-items:center}
+  .central-composition{position:static;width:calc(100vw - 36px);gap:18px;transform:none}
   .identity-prompt{max-width:19ch;padding:0;font-size:clamp(29px,9.8vw,43px);line-height:.98}
   .scene-portrait{width:clamp(132px,42vw,170px);border-radius:20px}
   .corner-metrics{position:static;display:block;width:100%;text-align:left}
   .corner-metrics{order:4;margin-top:52px}
-  .scroll-cue{top:calc(100svh - 112px);bottom:auto}
+  .scroll-cue{top:calc(100svh - 104px);bottom:auto;width:max-content}
   .experience-section{padding:92px 18px 108px}
   .experience-heading{margin-bottom:55px;text-align:left}
   .timeline-spine{top:6px;bottom:6px;left:4px}
