@@ -52,7 +52,7 @@
 @media(min-width:1024px){.home-hero{padding:3.5vh 4.5vw}}
 @media(max-width:767px){
   .home-hero{display:flex;min-height:auto;flex-direction:column;padding:18px 18px 104px}
-  .home-stage{order:1;display:grid;min-height:100svh;padding:148px 0 130px;place-items:center}
+  .home-stage{order:1;display:grid;min-height:calc(100svh - 130px);padding:48px 0 130px;place-items:center}
   .central-composition{position:static;width:calc(100vw - 36px);gap:18px;transform:none}
   .identity-prompt{max-width:19ch;padding:0;font-size:clamp(29px,9.8vw,43px);line-height:.98}
   .scene-portrait{width:clamp(132px,42vw,170px);border-radius:20px}
