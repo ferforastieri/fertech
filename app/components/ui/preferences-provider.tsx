@@ -40,13 +40,9 @@ export function PreferencesProvider({children}:{children:ReactNode}){
     const initialTheme:Theme=storedTheme==='light'||storedTheme==='dark'
       ? storedTheme
       : matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'
-    const storedPosition=localStorage.getItem('aurora-nav-position')
-    const initialPosition=positions.includes(storedPosition as NavPosition)
-      ? storedPosition as NavPosition
-      : matchMedia('(max-width: 767px)').matches?'bottom':'top'
     setLocaleState(initialLocale)
     setTheme(initialTheme)
-    setNavPosition(initialPosition)
+    setNavPosition('top')
   },[])
 
   useEffect(()=>{

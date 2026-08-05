@@ -51,26 +51,32 @@ button.tree-row:hover,button.tree-row:focus-visible{background:color-mix(in srgb
 .folder-children{overflow:hidden}
 
 @media(max-width:767px){
-  .page-heading{grid-template-columns:1fr;gap:20px;padding-bottom:34px}
+  .page-heading{grid-template-columns:1fr;justify-items:center;gap:20px;padding-bottom:34px;text-align:center}
   .page-heading>p{grid-column:1}
   .page-heading h1{max-width:100%;font-size:clamp(45px,15vw,60px);line-height:.84;overflow-wrap:anywhere}
   .page-heading>span{max-width:36ch;font-size:12px;line-height:1.65}
   .project-columns{grid-template-columns:1fr;gap:54px;margin-top:38px}
-  .project-column>header{align-items:center}
-  .project-entry{grid-template-columns:24px minmax(0,1fr);gap:9px;padding:26px 0}
+  .project-column>header{justify-content:center;gap:14px;align-items:center;text-align:center}
+  .project-entry{grid-template-columns:1fr;justify-items:center;gap:10px;padding:30px 0;text-align:center}
+  .project-index{padding-top:0}
   .project-entry h3{font-size:clamp(31px,10vw,39px);overflow-wrap:anywhere}
+  .project-entry ul,.project-actions{justify-content:center}
   .project-actions{gap:7px}
   .project-actions a{gap:9px;padding:9px 10px}
-  .detail-back{margin-bottom:35px}
-  .detail-header{grid-template-columns:1fr;gap:20px;padding-bottom:34px}
+  .detail-back{display:flex;width:max-content;margin:0 auto 35px}
+  .detail-header{grid-template-columns:1fr;justify-items:center;gap:20px;padding-bottom:34px;text-align:center}
   .detail-header>p{grid-column:1}
   .detail-header h1{max-width:100%;font-size:clamp(43px,14vw,58px);line-height:.84;overflow-wrap:anywhere}
   .detail-header>span{font-size:12px;line-height:1.65}
-  .detail-tags{padding:20px 0}
-  .detail-specs{grid-template-columns:1fr;gap:32px;margin-top:28px;padding:30px 0}
-  .repository-section{grid-template-columns:1fr;gap:34px;margin-top:44px}
+  .detail-tags{justify-content:center;padding:20px 0}
+  .detail-specs{grid-template-columns:1fr;justify-items:center;gap:32px;margin-top:28px;padding:30px 0;text-align:center}
+  .detail-specs ul{justify-content:center}
+  .repository-section{grid-template-columns:1fr;justify-items:center;gap:34px;margin-top:44px;text-align:center}
+  .repository-copy>span{margin-inline:auto}
+  .repository-copy code{margin-inline:auto}
   .repository-copy h2{font-size:clamp(38px,12vw,52px)}
   .repository-copy code{overflow-wrap:anywhere}
+  .repository-section>div:last-child{width:100%;text-align:left}
   .repository-tree{min-height:310px;overflow-x:auto}
   .tree-row{padding-left:calc(7px + var(--tree-depth)*17px);font-size:10px}
 }
