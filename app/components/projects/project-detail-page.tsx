@@ -1,24 +1,18 @@
 'use client'
 
-import {useEffect,useRef} from 'react'
-import {animate,stagger} from 'animejs'
+import {useRef} from 'react'
 import {useTranslations} from 'next-intl'
 import {SiteFrame} from '@/app/components/ui/site-frame'
 import type {Project} from './project-data'
 import {RepositoryTree} from './repository-tree'
+import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
 import './projects.css'
 
 export function ProjectDetailPage({project}:{project:Project}){
   const t=useTranslations('Projects')
   const detail=useTranslations('ProjectDetail')
   const root=useRef<HTMLDivElement>(null)
-  useEffect(()=>{
-    if(!root.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return
-    const reveal=()=>animate(root.current!.querySelectorAll('.detail-reveal'),{opacity:[0,1],y:[25,0],delay:stagger(90),duration:650,ease:'outExpo'})
-    window.addEventListener('book-opened',reveal,{once:true})
-    const fallback=setTimeout(reveal,1250)
-    return()=>{window.removeEventListener('book-opened',reveal);clearTimeout(fallback)}
-  },[])
+  useScrollReveal(root,'.detail-reveal')
   return <SiteFrame><article ref={root} className="editorial-page project-detail">
     <a className="detail-back detail-reveal" href="/projetos">← {detail('back')}</a>
     <header className="detail-header detail-reveal"><p>{t(`groups.${project.group}`)}</p><h1>{project.title}</h1><span>{t(`items.${project.id}`)}</span></header>

@@ -9,8 +9,10 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
   const caret=useRef<HTMLSpanElement>(null)
 
   useEffect(()=>{
-    if(!prompt.current||!output.current||!caret.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return
+    if(!prompt.current||!output.current||!caret.current)return
     const portrait=document.querySelector<HTMLElement>('.scene-portrait')
+    const complete=()=>{document.documentElement.dataset.identityComplete='true';window.dispatchEvent(new Event('identity-complete'))}
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){output.current.textContent=role;complete();return}
     if(portrait)utils.set(portrait,{opacity:0,y:30,scale:.88})
     output.current.textContent=''
 
@@ -42,13 +44,14 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
           blink?.pause()
           animate(caret.current!,{opacity:[1,.35],duration:620,alternate:true,loop:true,ease:'inOutSine'})
           if(portrait)createTimeline({defaults:{ease:'outExpo'}}).add(portrait,{opacity:[0,1],y:[30,0],scale:[.88,1],rotate:[-3,0],duration:900})
+          complete()
         },
       })
     }
     const intro=document.querySelector<HTMLElement>('.book-intro')
     if(intro?.hidden)start()
     else window.addEventListener('book-opened',start,{once:true})
-    const fallback=window.setTimeout(start,1400)
+    const fallback=window.setTimeout(start,3200)
     return()=>{window.removeEventListener('book-opened',start);window.clearTimeout(fallback);timer?.cancel();blink?.revert()}
   },[passion,role])
 

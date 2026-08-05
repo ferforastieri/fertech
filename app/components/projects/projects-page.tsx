@@ -1,25 +1,17 @@
 'use client'
 
-import {useEffect,useRef} from 'react'
-import {animate,stagger} from 'animejs'
+import {useRef} from 'react'
 import {useTranslations} from 'next-intl'
 import Link from 'next/link'
 import {SiteFrame} from '@/app/components/ui/site-frame'
 import {projects} from './project-data'
+import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
 import './projects.css'
 
 export function ProjectsPage(){
   const t=useTranslations('Projects')
   const root=useRef<HTMLDivElement>(null)
-  useEffect(()=>{
-    if(!root.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return
-    const reveal=()=>{
-      animate(root.current!.querySelectorAll('.project-reveal'),{opacity:[0,1],y:[28,0],delay:stagger(70),duration:680,ease:'outExpo'})
-    }
-    window.addEventListener('book-opened',reveal,{once:true})
-    const fallback=setTimeout(reveal,1200)
-    return()=>{window.removeEventListener('book-opened',reveal);clearTimeout(fallback)}
-  },[])
+  useScrollReveal(root,'.project-reveal')
   const columns=(['personal','professional'] as const).map(group=>({group,items:projects.filter(project=>project.group===group)}))
   return <SiteFrame><div ref={root} className="editorial-page">
     <header className="page-heading project-reveal"><p>{t('eyebrow')}</p><h1>{t('title')}</h1><span>{t('description')}</span></header>

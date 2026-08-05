@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect,useRef} from 'react'
-import {animate,stagger} from 'animejs'
+import {animate} from 'animejs'
 import {useTranslations} from 'next-intl'
 
 const experienceKeys=['smart','inet','getninjas'] as const
@@ -13,14 +13,20 @@ export function ExperienceTimeline(){
   useEffect(()=>{
     if(!root.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return
     const items=root.current.querySelectorAll('.timeline-entry')
-    const observer=new IntersectionObserver(([entry])=>{
+    const sectionObserver=new IntersectionObserver(([entry])=>{
       if(!entry.isIntersecting)return
+      animate(root.current!.querySelector('.experience-heading')!,{opacity:[0,1],y:[28,0],duration:760,ease:'outExpo'})
       animate('.timeline-spine-progress',{scaleY:[0,1],duration:950,ease:'outExpo'})
-      animate(items,{opacity:[0,1],y:[34,0],delay:stagger(130),duration:720,ease:'outExpo'})
-      observer.disconnect()
-    },{threshold:.18})
-    observer.observe(root.current)
-    return()=>observer.disconnect()
+      sectionObserver.disconnect()
+    },{threshold:.1})
+    const itemObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      if(!entry.isIntersecting)return
+      itemObserver.unobserve(entry.target)
+      animate(entry.target,{opacity:[0,1],y:[38,0],rotateX:[5,0],duration:760,ease:'outExpo'})
+    }),{threshold:.18,rootMargin:'0px 0px -8% 0px'})
+    sectionObserver.observe(root.current)
+    items.forEach(item=>itemObserver.observe(item))
+    return()=>{sectionObserver.disconnect();itemObserver.disconnect()}
   },[])
 
   return <section ref={root} id="experiencia" className="experience-section" aria-labelledby="experience-title">

@@ -21,19 +21,33 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     const scope=createScope({root:root.current,mediaQueries:{reduce:'(prefers-reduced-motion: reduce)',pointer:'(pointer: fine)'}}).add(self=>{
       if(!self?.matches.reduce){
         const intro=root.current?.querySelector<HTMLElement>('.book-intro')
+        let revealObserver:IntersectionObserver|undefined
+        const setupScrollReveals=()=>{
+          if(revealObserver||!root.current)return
+          revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
+            if(!entry.isIntersecting)return
+            const element=entry.target as HTMLElement
+            revealObserver?.unobserve(element)
+            animate(element,{opacity:[0,1],y:[38,0],rotateX:[4,0],filter:['blur(8px)','blur(0px)'],duration:880,ease:'outExpo'})
+          }),{threshold:.12,rootMargin:'0px 0px -7% 0px'})
+          root.current.querySelectorAll<HTMLElement>('.scroll-reveal').forEach(element=>revealObserver?.observe(element))
+        }
+        if(intro?.hidden)setupScrollReveals()
+        else window.addEventListener('book-opened',setupScrollReveals,{once:true})
+        self?.add(()=>{window.removeEventListener('book-opened',setupScrollReveals);revealObserver?.disconnect()})
         createTimeline({defaults:{ease:'outExpo'},onComplete:()=>{if(intro)intro.hidden=true;window.dispatchEvent(new Event('book-opened'))}})
-          .add('.intro-book',{opacity:[0,1],scale:[.94,1],x:'-25%',y:[18,0],rotateX:[10,4],duration:210})
-          .add('.intro-code-char',{opacity:[0,1],y:[4,0],delay:stagger(7),duration:55,ease:'outQuad'},20)
-          .add('.intro-cover',{rotateY:[0,-179],duration:690,ease:'inOutQuart'},90)
-          .add('.intro-book',{x:['-25%','0%'],scale:[1,1.035],duration:690,ease:'inOutQuart'},90)
-          .add('.intro-page--one',{rotateY:[0,-177],z:[8,5],duration:570,ease:'inOutQuart'},185)
-          .add('.intro-page--two',{rotateY:[0,-169],z:[6,4],duration:535,ease:'inOutQuart'},225)
-          .add('.intro-page--three',{rotateY:[0,-158],z:[4,3],duration:500,ease:'inOutQuart'},265)
-          .add('.intro-page--four',{rotateY:[0,-146],z:[2,2],duration:465,ease:'inOutQuart'},305)
-          .add('.intro-spine',{scaleY:[.6,1],opacity:[0,1],duration:260},180)
-          .add('.scene-item',{opacity:[0,1],y:[12,0],delay:stagger(42),duration:410},610)
-          .add('.scene-panel',{opacity:[0,1],y:[18,0],duration:460},610)
-          .add('.book-intro',{opacity:[1,0],scale:[1,1.018],duration:230,ease:'outQuad'},700)
+          .add('.intro-book',{opacity:[0,1],scale:[.92,1],x:'-25%',y:[26,0],rotateX:[12,4],duration:520})
+          .add('.intro-code-char',{opacity:[0,1],y:[5,0],delay:stagger(16),duration:100,ease:'outQuad'},170)
+          .add('.intro-cover',{rotateY:[0,-179],duration:1500,ease:'inOutQuart'},480)
+          .add('.intro-book',{x:['-25%','0%'],scale:[1,1.035],duration:1500,ease:'inOutQuart'},480)
+          .add('.intro-page--one',{rotateY:[0,-177],z:[8,5],duration:1220,ease:'inOutQuart'},800)
+          .add('.intro-page--two',{rotateY:[0,-169],z:[6,4],duration:1140,ease:'inOutQuart'},900)
+          .add('.intro-page--three',{rotateY:[0,-158],z:[4,3],duration:1060,ease:'inOutQuart'},1000)
+          .add('.intro-page--four',{rotateY:[0,-146],z:[2,2],duration:980,ease:'inOutQuart'},1100)
+          .add('.intro-spine',{scaleY:[.6,1],opacity:[0,1],duration:520},820)
+          .add('.scene-item',{opacity:[0,1],y:[16,0],delay:stagger(60),duration:620},1940)
+          .add('.scene-panel',{opacity:[0,1],y:[22,0],duration:620},1940)
+          .add('.book-intro',{opacity:[1,0],scale:[1,1.012],duration:420,ease:'outQuad'},2110)
         animate('.book-layer',{scale:[1.08,1.13],x:['-1.5%','1.5%'],y:['-1%','1%'],duration:12000,alternate:true,loop:true,ease:'inOutSine'})
         animate('.scroll-cue-mark',{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
 

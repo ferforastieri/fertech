@@ -1,10 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import {useEffect,useRef} from 'react'
-import {animate,stagger} from 'animejs'
+import {useRef} from 'react'
 import {useTranslations} from 'next-intl'
 import {SiteFrame} from '@/app/components/ui/site-frame'
+import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
 import './about.css'
 
 const paragraphs=['collaboration','fullstack','human','games'] as const
@@ -13,13 +13,7 @@ const highlights=['development','architecture','design'] as const
 export function AboutPage(){
   const t=useTranslations('About')
   const root=useRef<HTMLDivElement>(null)
-  useEffect(()=>{
-    if(!root.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return
-    const reveal=()=>animate(root.current!.querySelectorAll('.about-reveal'),{opacity:[0,1],y:[26,0],delay:stagger(90),duration:720,ease:'outExpo'})
-    window.addEventListener('book-opened',reveal,{once:true})
-    const fallback=setTimeout(reveal,1200)
-    return()=>{window.removeEventListener('book-opened',reveal);clearTimeout(fallback)}
-  },[])
+  useScrollReveal(root,'.about-reveal')
   return <SiteFrame><div ref={root} className="editorial-page about-page">
     <header className="about-hero about-reveal"><div><p>{t('eyebrow')}</p><h1>{t('title')}</h1></div><Image src="/assets/fernando.png" alt="Fernando Forastieri" width={420} height={420} className="about-photo"/></header>
     <section className="about-copy">{paragraphs.map(key=><p className="about-reveal" key={key}>{t(`paragraphs.${key}`)}</p>)}</section>

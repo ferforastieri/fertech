@@ -15,14 +15,13 @@ export function TypedText({text,delay=0,className}:{text:string;delay?:number;cl
     const start=()=>{
       if(started)return
       started=true
-      const duration=Math.max(180,text.length*22)
+      const duration=Math.max(220,text.length*32)
       timer=createTimer({delay,duration,frameRate:30,onUpdate:self=>{if(output.current)output.current.textContent=text.slice(0,Math.ceil(self.currentTime/duration*text.length))}})
     }
-    const intro=document.querySelector<HTMLElement>('.book-intro')
-    if(intro?.hidden)start()
-    else window.addEventListener('book-opened',start,{once:true})
-    const fallback=window.setTimeout(start,1400)
-    return()=>{window.removeEventListener('book-opened',start);window.clearTimeout(fallback);timer?.cancel()}
+    if(document.documentElement.dataset.identityComplete==='true')start()
+    else window.addEventListener('identity-complete',start,{once:true})
+    const fallback=window.setTimeout(start,7500)
+    return()=>{window.removeEventListener('identity-complete',start);window.clearTimeout(fallback);timer?.cancel()}
   },[delay,text])
 
   return <span className={className} aria-label={text}><span ref={output} aria-hidden="true"/></span>
