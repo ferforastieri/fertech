@@ -7,6 +7,7 @@ import {useTranslations} from 'next-intl'
 import {usePathname} from 'next/navigation'
 import {usePreferences,type Locale} from './preferences-provider'
 import {siteContent} from '@/messages/site-content'
+import {TechMonogram} from './tech-monogram'
 
 function Icon({children}:{children:ReactNode}){return <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>}
 
@@ -39,7 +40,7 @@ export function FloatingNavigation(){
       <Icon><path d={navPosition==='right'?(drawerOpen?'m15 6-6 6 6 6':'m9 6 6 6-6 6'):(drawerOpen?'m9 6 6 6-6 6':'m15 6-6 6 6 6')}/></Icon>
     </button>
     <nav id="main-floating-navigation" className={`floating-nav floating-nav--${navPosition}`} aria-label={t('main')}>
-      <Link className={`nav-control${currentPath==='/'?' is-active':''}`} href="/" aria-label={t('home')} title={t('home')}><Icon><path d="m4 11 8-7 8 7v9h-6v-6h-4v6H4Z"/></Icon></Link>
+      <Link className={`nav-control${currentPath==='/'?' is-active':''}`} href="/" aria-label={t('home')} title={t('home')}><TechMonogram className="nav-icon"/></Link>
       <Link className={`nav-control${currentPath.startsWith('/projetos')?' is-active':''}`} href="/projetos" aria-label={t('projects')} title={t('projects')}><Icon><path d="M4 7h16v12H4zM8 7V4h8v3"/></Icon></Link>
       <Link className={`nav-control${currentPath==='/sobre'?' is-active':''}`} href="/sobre" aria-label={t('about')} title={t('about')}><Icon><circle cx="12" cy="8" r="3"/><path d="M5 20c.6-4 3-6 7-6s6.4 2 7 6"/></Icon></Link>
       <Link className={`nav-control${currentPath==='/curriculo'?' is-active':''}`} href="/curriculo" aria-label={t('resume')} title={t('resume')}><Icon><path d="M6 3h9l3 3v15H6zM15 3v4h4M9 11h6M9 15h6M9 18h4"/></Icon></Link>

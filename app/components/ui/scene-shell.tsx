@@ -4,10 +4,15 @@ import {useEffect,useRef,type ReactNode} from 'react'
 import {animate} from 'animejs'
 import {usePathname} from 'next/navigation'
 import {WaterSurface} from './water-surface'
+import {usePreferences} from './preferences-provider'
+import {siteContent} from '@/messages/site-content'
 import './ui.css'
 
 export function SceneShell({children,className=''}:{children:ReactNode;className?:string}){
+  const {navPosition}=usePreferences()
   const pathname=usePathname()
+  const isAbout=pathname.replace(/\/$/,'')==='/sobre'
+  const isHome=(pathname.replace(/\/$/,'')||'/')==='/'
   const root=useRef<HTMLElement>(null)
   const routeReady=useRef(false)
   const cursor=useRef<HTMLDivElement>(null)
@@ -46,8 +51,9 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     return()=>{motion.revert()}
   },[pathname])
 
-  return <main ref={root} className={`scene-shell ${className}`}>
+  return <main ref={root} className={`scene-shell scene-shell--nav-${navPosition}${isAbout?' scene-shell--about':''}${isHome?' scene-shell--home':''} ${className}`}>
     <div className="server-layer" aria-hidden="true"/>
+    {isAbout&&<div className="about-shell-background" style={{backgroundImage:`url(${siteContent.assets.aboutBook})`}} aria-hidden="true"/>}
     <WaterSurface/>
     <div className="paper-wash" aria-hidden="true"/>
     <div ref={cursor} className="custom-cursor" aria-hidden="true"><span/></div>

@@ -9,6 +9,6 @@ import {siteContent} from '@/messages/site-content'
 export function SiteFrame({children,className=''}:{children:ReactNode;className?:string}){return <SceneShell className={className}>
   <FloatingNavigation/>
   <Link className="corner-logo scene-item" href="/" aria-label={siteContent.identity.name}><Logo/></Link>
-  <GlobalProfile/>
   <div className="route-view">{children}</div>
+  <GlobalProfile/>
 </SceneShell>}

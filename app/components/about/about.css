@@ -1,8 +1,4 @@
 .about-page{max-width:1020px}
-.about-book-background{position:fixed;z-index:-12;inset:0;background-position:center;background-size:cover;filter:grayscale(.88) sepia(.18) contrast(1.08) brightness(.42);pointer-events:none}
-.about-book-background:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,15,13,.82),rgba(15,15,13,.48) 52%,rgba(15,15,13,.78)),linear-gradient(180deg,rgba(15,15,13,.18),rgba(15,15,13,.58))}
-[data-theme='light'] .about-book-background{filter:grayscale(.82) sepia(.18) contrast(.78) brightness(1.1);opacity:.38}
-[data-theme='light'] .about-book-background:after{background:rgba(246,242,234,.42)}
 .about-hero{display:grid;grid-template-columns:minmax(0,1fr) 190px;grid-template-areas:'eyebrow note' 'title note';align-items:end;gap:20px 48px;padding-bottom:44px;border-bottom:1px solid color-mix(in srgb,var(--paper) 24%,transparent);opacity:0}
 .about-hero>p,.about-resume>div>p,.about-interests>header>p{grid-area:eyebrow;margin:0 0 13px;font-size:var(--type-caption);font-weight:750;letter-spacing:.2em;text-transform:uppercase;opacity:.58}
 .about-hero h1{grid-area:title;max-width:800px;margin:0;font-family:var(--serif);font-size:clamp(54px,7.4vw,102px);font-weight:400;line-height:.82;letter-spacing:-.045em}
@@ -30,7 +26,6 @@
   .about-hero{grid-template-columns:1fr;grid-template-areas:'eyebrow' 'title' 'note';justify-items:center;gap:16px;padding-bottom:30px}
   .about-hero h1{max-width:9ch;margin-inline:auto;font-size:clamp(42px,12.5vw,56px);line-height:.86}
   .about-hero>aside{max-width:34ch;padding:18px 0 0;border-top:1px solid color-mix(in srgb,var(--paper) 26%,transparent);border-left:0}
-  .about-book-background{background-position:58% center;filter:grayscale(.9) sepia(.2) contrast(1.05) brightness(.34)}
   .about-resume{grid-template-columns:1fr;justify-items:center;gap:16px;padding:24px 0}
   .about-resume>p{max-width:36ch}
   .about-copy{grid-template-columns:1fr;gap:15px;margin:36px 0}
