@@ -16,36 +16,116 @@ export function ResumePage(){
   const [exporting,setExporting]=useState(false)
   useScrollReveal(root,'.resume-reveal')
   const download=async()=>{
-    if(!root.current||exporting)return
+    if(exporting)return
     setExporting(true)
     try{
-      await document.fonts.ready
-      const [{default:html2canvas},{jsPDF}]=await Promise.all([import('html2canvas'),import('jspdf')])
-      const canvas=await html2canvas(root.current,{scale:2,useCORS:true,backgroundColor:'#181714',onclone:documentClone=>{
-        const clone=documentClone.querySelector<HTMLElement>('[data-resume-document]')
-        if(!clone)return
-        clone.style.setProperty('background-color','#181714','important')
-        clone.style.setProperty('color','#e7dfd1','important')
-        clone.querySelectorAll<HTMLElement>('*').forEach(element=>{
-          element.style.setProperty('color','#e7dfd1','important')
-          element.style.setProperty('background-color','transparent','important')
-          element.style.setProperty('border-color','rgba(231, 223, 209, 0.28)','important')
-          element.style.setProperty('outline-color','#e7dfd1','important')
-          element.style.setProperty('text-decoration-color','#e7dfd1','important')
-          element.style.setProperty('box-shadow','none','important')
-          element.style.setProperty('text-shadow','none','important')
-        })
-        clone.querySelectorAll<HTMLElement>('.resume-education-list article').forEach(element=>element.style.setProperty('background-color','#181714','important'))
-        clone.querySelectorAll<HTMLElement>('.resume-reveal').forEach(element=>{element.style.opacity='1';element.style.transform='none';element.style.filter='none'})
-      }})
+      const {jsPDF}=await import('jspdf')
       const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'})
       const pageWidth=pdf.internal.pageSize.getWidth()
       const pageHeight=pdf.internal.pageSize.getHeight()
-      const imageHeight=canvas.height*pageWidth/canvas.width
-      const image=canvas.toDataURL('image/jpeg',.94)
-      for(let offset=0,page=0;offset<imageHeight;offset+=pageHeight,page++){
-        if(page>0)pdf.addPage()
-        pdf.addImage(image,'JPEG',0,-offset,pageWidth,imageHeight,undefined,'FAST')
+      const margin=18
+      const contentWidth=pageWidth-margin*2
+      const bottom=pageHeight-18
+      let y=margin
+
+      const nextPage=()=>{pdf.addPage();y=margin}
+      const ensureSpace=(height:number)=>{if(y+height>bottom)nextPage()}
+      const line=(offset=0)=>{ensureSpace(6);pdf.setDrawColor(185,185,185);pdf.setLineWidth(.25);pdf.line(margin,y+offset,pageWidth-margin,y+offset)}
+      const paragraph=(text:string,size=10,leading=4.5)=>{
+        pdf.setFont('helvetica','normal')
+        pdf.setFontSize(size)
+        pdf.setTextColor(45,45,45)
+        const lines=pdf.splitTextToSize(text,contentWidth)
+        ensureSpace(lines.length*leading+2)
+        pdf.text(lines,margin,y)
+        y+=lines.length*leading+2
+      }
+      const section=(title:string)=>{
+        ensureSpace(13)
+        if(y>margin)line()
+        y+=6
+        pdf.setFont('helvetica','bold')
+        pdf.setFontSize(11)
+        pdf.setTextColor(25,25,25)
+        pdf.text(title.toUpperCase(),margin,y)
+        y+=7
+      }
+      const item=(title:string,subtitle:string,detail:string)=>{
+        ensureSpace(18)
+        pdf.setFont('helvetica','bold')
+        pdf.setFontSize(10.5)
+        pdf.setTextColor(30,30,30)
+        pdf.text(title,margin,y)
+        y+=4.8
+        pdf.setFont('helvetica','normal')
+        pdf.setFontSize(9.5)
+        pdf.setTextColor(85,85,85)
+        const subtitleLines=pdf.splitTextToSize(subtitle,contentWidth)
+        ensureSpace(subtitleLines.length*4.2)
+        pdf.text(subtitleLines,margin,y)
+        y+=subtitleLines.length*4.2
+        paragraph(detail,9.5,4.2)
+        y+=3
+      }
+
+      pdf.setProperties({title:`${siteContent.identity.name} - ${t('role')}`,author:siteContent.identity.name,subject:t('eyebrow')})
+      pdf.setFont('helvetica','bold')
+      pdf.setFontSize(22)
+      pdf.setTextColor(25,25,25)
+      pdf.text(siteContent.identity.name,margin,y)
+      y+=8
+      pdf.setFont('helvetica','normal')
+      pdf.setFontSize(11)
+      pdf.setTextColor(75,75,75)
+      pdf.text(t('role'),margin,y)
+      y+=5
+      pdf.setFontSize(9)
+      pdf.text(`${t('location')}  |  ${siteContent.contacts.email}`,margin,y)
+      y+=4.5
+      pdf.text(`${siteContent.contacts.linkedin}  |  ${siteContent.contacts.github}`,margin,y)
+      y+=8
+
+      section(t('summaryEyebrow'))
+      paragraph(t('summary'))
+
+      section(t('experience'))
+      experiences.forEach(key=>item(
+        t(`experiences.${key}.role`),
+        `${t(`experiences.${key}.company`)} | ${t(`experiences.${key}.location`)} | ${t(`experiences.${key}.period`)}`,
+        t(`experiences.${key}.description`),
+      ))
+
+      section(t('education'))
+      education.forEach(key=>item(
+        t(`educationItems.${key}.course`),
+        `${t(`educationItems.${key}.school`)} | ${t(`educationItems.${key}.period`)}`,
+        '',
+      ))
+
+      section(t('skills'))
+      Object.entries(siteContent.resumeSkills).forEach(([group,items])=>{
+        ensureSpace(11)
+        pdf.setFont('helvetica','bold')
+        pdf.setFontSize(9.5)
+        pdf.setTextColor(45,45,45)
+        pdf.text(`${t(`skillGroups.${group}`)}:`,margin,y)
+        const labelWidth=pdf.getTextWidth(`${t(`skillGroups.${group}`)}: `)
+        pdf.setFont('helvetica','normal')
+        const skillLines=pdf.splitTextToSize(items.join(' · '),contentWidth-labelWidth)
+        pdf.text(skillLines,margin+labelWidth,y)
+        y+=Math.max(1,skillLines.length)*4.5+2
+      })
+
+      section(t('languages'))
+      paragraph(t('languageValue'),9.5,4.2)
+
+      const pages=pdf.getNumberOfPages()
+      for(let page=1;page<=pages;page++){
+        pdf.setPage(page)
+        pdf.setFont('helvetica','normal')
+        pdf.setFontSize(8)
+        pdf.setTextColor(120,120,120)
+        pdf.text(`${siteContent.identity.name} · ${page}/${pages}`,pageWidth-margin,pageHeight-10,{align:'right'})
       }
       pdf.save(t('downloadFileName'))
     }catch(error){console.error('Não foi possível gerar o currículo em PDF.',error)}finally{setExporting(false)}
