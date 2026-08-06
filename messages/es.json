@@ -34,14 +34,6 @@
     "projects": "Proyectos realizados",
     "drive": "Dedicación creativa"
   },
-  "System": {
-    "rackLabel": "Fertec · núcleo de procesamiento",
-    "terminalLabel": "Terminal del sistema Fertec",
-    "online": "Todos los sistemas en línea",
-    "units": ["01","02","03","04","05"],
-    "bootCode": ["$ iniciando interfaz","✓ memoria verificada","✓ servicios conectados","const portfolio = await boot();","loading: design-system","loading: artificial-intelligence","loading: product-engineering","status: ready"],
-    "transitionCode": ["> resolviendo destino","GET /portfolio/next","compilando componentes...","sincronizando traducciones...","cargando experiencia...","renderizando interfaz...","status 200 · listo"]
-  },
   "Experience": {
     "eyebrow": "Trayectoria profesional",
     "title": "Experiencia construida en capas.",

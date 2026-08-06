@@ -14,7 +14,6 @@ export function useScrollReveal(root:RefObject<RevealRoot>,selector:string){
     const elements=Array.from(container.querySelectorAll<HTMLElement>(selector))
     if(matchMedia('(prefers-reduced-motion: reduce)').matches){elements.forEach(element=>{element.style.opacity='1';element.style.transform='none';element.style.filter='none'});return}
     let observer:IntersectionObserver|undefined
-    let fallback=0
     let frame=0
     const motions:ReturnType<typeof animate>[]=[]
 
@@ -39,14 +38,9 @@ export function useScrollReveal(root:RefObject<RevealRoot>,selector:string){
       })
     }
 
-    const intro=document.querySelector<HTMLElement>('.server-system')
-    if(intro?.hidden||document.documentElement.dataset.fertecServerBooted==='true')start()
-    else window.addEventListener('site-ready',start,{once:true})
-    fallback=window.setTimeout(start,4200)
+    start()
 
     return()=>{
-      window.removeEventListener('site-ready',start)
-      window.clearTimeout(fallback)
       cancelAnimationFrame(frame)
       observer?.disconnect()
       motions.forEach(motion=>motion.revert())

@@ -18,10 +18,7 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
 
     let timer:ReturnType<typeof createTimer>|undefined
     let blink:ReturnType<typeof animate>|undefined
-    let started=false
     const start=()=>{
-      if(started)return
-      started=true
       const passionType=passion.length*28
       const pause=620
       const passionDelete=passion.length*14
@@ -47,11 +44,8 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
         },
       })
     }
-    const intro=document.querySelector<HTMLElement>('.server-system')
-    if(intro?.hidden)start()
-    else window.addEventListener('site-ready',start,{once:true})
-    const fallback=window.setTimeout(start,5000)
-    return()=>{window.removeEventListener('site-ready',start);window.clearTimeout(fallback);timer?.cancel();blink?.revert()}
+    start()
+    return()=>{timer?.cancel();blink?.revert()}
   },[passion,role])
 
   return <div className="identity-stage">

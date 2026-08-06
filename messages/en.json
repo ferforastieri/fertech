@@ -34,14 +34,6 @@
     "projects": "Projects completed",
     "drive": "Creative dedication"
   },
-  "System": {
-    "rackLabel": "Fertec · processing core",
-    "terminalLabel": "Fertec system terminal",
-    "online": "All systems online",
-    "units": ["01","02","03","04","05"],
-    "bootCode": ["$ initializing interface","✓ memory verified","✓ services connected","const portfolio = await boot();","loading: design-system","loading: artificial-intelligence","loading: product-engineering","status: ready"],
-    "transitionCode": ["> resolving destination","GET /portfolio/next","compiling components...","syncing translations...","loading experience...","rendering interface...","status 200 · ready"]
-  },
   "Experience": {
     "eyebrow": "Professional journey",
     "title": "Experience built in layers.",
