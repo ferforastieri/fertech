@@ -89,7 +89,7 @@ export function WaterSurface(){
 
   useEffect(()=>{
     const element=canvas.current
-    if(!element||matchMedia('(pointer: coarse)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return
+    if(!element||matchMedia('(prefers-reduced-motion: reduce)').matches)return
     const gl=element.getContext('webgl',{alpha:false,antialias:false,premultipliedAlpha:false})
     if(!gl)return
     const simulation=createProgram(gl,simulationShader)

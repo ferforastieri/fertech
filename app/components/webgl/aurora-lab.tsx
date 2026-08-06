@@ -16,10 +16,12 @@ uniform float u_scene;
 uniform float u_motion;
 uniform float u_density;
 uniform float u_pointScale;
+uniform float u_trail;
 varying float v_alpha;
 varying float v_energy;
 
 float hash(float n){return fract(sin(n)*43758.5453123);}
+vec2 rotate(vec2 point,float angle){float c=cos(angle);float s=sin(angle);return vec2(point.x*c-point.y*s,point.x*s+point.y*c);}
 void main(){
   float id=a_seed.w;
   float active=step(id,u_density);
@@ -89,6 +91,39 @@ void main(){
     energy=.9;
   }
 
+  if(u_trail>.5){
+    p=a_seed.xy;
+    float phase=t*1.35+id*17.0;
+    if(u_scene<.5){
+      if(u_motion<.5)p=rotate(p,phase*.16);
+      else if(u_motion<1.5)p.y+=sin(p.x*9.0+phase)*.045;
+      else p+=vec2(sin(phase*1.9),cos(phase*1.37))*.032;
+    }else if(u_scene<1.5){
+      p=rotate(p,phase*.12)*(1.0+.08*sin(phase));
+    }else if(u_scene<2.5){
+      p.y+=sin(p.x*14.0+phase)*.065;
+    }else if(u_scene<3.5){
+      p=floor(p*11.0+.5)/11.0+vec2(sin(phase),cos(phase))*.012;
+    }else if(u_scene<4.5){
+      p*=.72+.18*sin(phase*.45);
+      p=rotate(p,phase*.08);
+    }else if(u_scene<5.5){
+      p.y+=sin(p.x*8.0+phase)*.075;
+    }else{
+      p+=vec2(sin(phase*1.7),cos(phase*1.3))*.045;
+    }
+    depth=sin(phase);
+    energy=.72;
+  }else if(u_scene>=.5){
+    if(u_motion<.5){
+      p=rotate(p,t*.055+id*.14);
+    }else if(u_motion<1.5){
+      p.y+=sin(p.x*7.0+t*1.4+id*8.0)*.045;
+    }else{
+      p+=vec2(sin(t*1.7+id*19.0),cos(t*1.3+id*23.0))*.055;
+    }
+  }
+
   vec2 repel=p-u_pointer;
   float distanceToPointer=max(length(repel),.025);
   p+=normalize(repel)*smoothstep(.22,0.0,distanceToPointer)*.055;
@@ -143,7 +178,7 @@ export function AuroraLab({settings,clearToken,label}:{settings:AuroraSettings;c
     const trailBuffer=gl.createBuffer()
     const trail:number[]=[]
     const position=gl.getAttribLocation(shaderProgram,'a_seed')
-    const uniforms={resolution:gl.getUniformLocation(shaderProgram,'u_resolution'),pointer:gl.getUniformLocation(shaderProgram,'u_pointer'),time:gl.getUniformLocation(shaderProgram,'u_time'),scene:gl.getUniformLocation(shaderProgram,'u_scene'),motion:gl.getUniformLocation(shaderProgram,'u_motion'),density:gl.getUniformLocation(shaderProgram,'u_density'),pointScale:gl.getUniformLocation(shaderProgram,'u_pointScale'),color:gl.getUniformLocation(shaderProgram,'u_color')}
+    const uniforms={resolution:gl.getUniformLocation(shaderProgram,'u_resolution'),pointer:gl.getUniformLocation(shaderProgram,'u_pointer'),time:gl.getUniformLocation(shaderProgram,'u_time'),scene:gl.getUniformLocation(shaderProgram,'u_scene'),motion:gl.getUniformLocation(shaderProgram,'u_motion'),density:gl.getUniformLocation(shaderProgram,'u_density'),pointScale:gl.getUniformLocation(shaderProgram,'u_pointScale'),trail:gl.getUniformLocation(shaderProgram,'u_trail'),color:gl.getUniformLocation(shaderProgram,'u_color')}
     const pointer={x:9,y:9,down:false}
     const updatePointer=(event:PointerEvent)=>{const rect=element.getBoundingClientRect();pointer.x=((event.clientX-rect.left)/rect.width)*2-1;pointer.y=1-((event.clientY-rect.top)/rect.height)*2;if(pointer.down&&settingsRef.current.drawing){trail.push(pointer.x,pointer.y,Math.random(),Math.min(.999,trail.length/4/420));if(trail.length>420*4)trail.splice(0,4)}}
     const down=(event:PointerEvent)=>{pointer.down=true;element.setPointerCapture?.(event.pointerId);updatePointer(event)}
@@ -160,9 +195,9 @@ export function AuroraLab({settings,clearToken,label}:{settings:AuroraSettings;c
       if(!current.paused)elapsed+=Math.min(now-last,34)*.001*current.speed
       last=now
       gl.viewport(0,0,element.width,element.height);gl.clearColor(.02,.019,.017,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE)
-      gl.useProgram(shaderProgram);gl.uniform2f(uniforms.resolution,element.width,element.height);gl.uniform2f(uniforms.pointer,pointer.x,pointer.y);gl.uniform1f(uniforms.time,elapsed);gl.uniform1f(uniforms.scene,scenes.indexOf(current.scene));gl.uniform1f(uniforms.motion,['orbit','wave','chaos'].indexOf(current.motion));gl.uniform1f(uniforms.density,Math.min(1,current.density/180));gl.uniform1f(uniforms.pointScale,Math.min(devicePixelRatio,1.65));const color=rgb(current.color);gl.uniform3f(uniforms.color,...color)
+      gl.useProgram(shaderProgram);gl.uniform2f(uniforms.resolution,element.width,element.height);gl.uniform2f(uniforms.pointer,pointer.x,pointer.y);gl.uniform1f(uniforms.time,elapsed);gl.uniform1f(uniforms.scene,scenes.indexOf(current.scene));gl.uniform1f(uniforms.motion,['orbit','wave','chaos'].indexOf(current.motion));gl.uniform1f(uniforms.density,Math.min(1,current.density/180));gl.uniform1f(uniforms.pointScale,Math.min(devicePixelRatio,1.65));gl.uniform1f(uniforms.trail,0);const color=rgb(current.color);gl.uniform3f(uniforms.color,...color)
       bind(baseBuffer);gl.drawArrays(gl.POINTS,0,count)
-      if(trail.length){gl.bindBuffer(gl.ARRAY_BUFFER,trailBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(trail),gl.DYNAMIC_DRAW);gl.vertexAttribPointer(position,4,gl.FLOAT,false,0,0);gl.uniform1f(uniforms.scene,0);gl.uniform1f(uniforms.motion,1);gl.uniform1f(uniforms.density,1);gl.uniform1f(uniforms.pointScale,current.brush*1.35);gl.uniform2f(uniforms.pointer,9,9);gl.drawArrays(gl.POINTS,0,trail.length/4)}
+      if(trail.length){gl.bindBuffer(gl.ARRAY_BUFFER,trailBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(trail),gl.DYNAMIC_DRAW);gl.vertexAttribPointer(position,4,gl.FLOAT,false,0,0);gl.uniform1f(uniforms.scene,scenes.indexOf(current.scene));gl.uniform1f(uniforms.motion,['orbit','wave','chaos'].indexOf(current.motion));gl.uniform1f(uniforms.density,1);gl.uniform1f(uniforms.pointScale,current.brush*1.35);gl.uniform1f(uniforms.trail,1);gl.uniform2f(uniforms.pointer,9,9);gl.drawArrays(gl.POINTS,0,trail.length/4)}
       raf=requestAnimationFrame(draw)
     }
     raf=requestAnimationFrame(draw)

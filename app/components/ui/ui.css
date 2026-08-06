@@ -108,7 +108,7 @@
   .language-dropdown--right{top:50%;right:calc(100% + 42px);bottom:auto;left:auto;transform:translateY(-50%)}
   .editorial-page{width:calc(100% - 36px);padding:16px 0 24px}
   .scene-shell:has(.floating-nav-root--top) .corner-logo{top:max(70px,calc(env(safe-area-inset-top) + 66px))}
-  .custom-cursor,.water-surface{display:none}
+  .custom-cursor{display:none}
   [data-theme='light'] .paper-wash{background:linear-gradient(rgba(246,242,234,.42),rgba(246,242,234,.62))}
 }
 
