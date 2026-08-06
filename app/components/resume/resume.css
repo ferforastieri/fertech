@@ -2,15 +2,17 @@
 .resume-header{display:grid;grid-template-columns:minmax(0,1fr) 190px;grid-template-areas:'eyebrow photo' 'title photo' 'meta photo' 'links links';align-items:end;gap:20px 48px;padding-bottom:48px;border-bottom:1px solid color-mix(in srgb,var(--paper) 28%,transparent);opacity:0}
 .resume-header>p{grid-area:eyebrow;margin:0;font-size:var(--type-caption);font-weight:750;letter-spacing:.2em;text-transform:uppercase;opacity:.55}
 .resume-header h1{grid-area:title;margin:0;font-family:var(--serif);font-size:clamp(62px,9vw,118px);font-weight:400;line-height:.78;letter-spacing:-.055em}
-.resume-photo{grid-area:photo;aspect-ratio:1;width:190px;height:auto;border-radius:24px;object-fit:cover;filter:grayscale(1) contrast(1.08);box-shadow:0 20px 55px rgba(0,0,0,.24)}
-.resume-header>div{grid-area:meta;display:grid;gap:6px}
-.resume-header>div strong{font-family:var(--serif);font-size:25px;font-weight:400}
-.resume-header>div span{font-size:var(--type-label);letter-spacing:.11em;text-transform:uppercase;opacity:.55}
+.resume-photo-frame{position:relative;grid-area:photo;width:190px;aspect-ratio:1;overflow:hidden;border-radius:24px;box-shadow:0 20px 55px rgba(0,0,0,.24)}
+.resume-photo-frame:after{position:absolute;inset:0;background:color-mix(in srgb,var(--terminal) 26%,transparent);content:'';mix-blend-mode:color;pointer-events:none}
+.resume-photo{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1);mix-blend-mode:luminosity}
+.resume-header>div:not(.resume-photo-frame){grid-area:meta;display:grid;gap:6px}
+.resume-header>div:not(.resume-photo-frame) strong{font-family:var(--serif);font-size:25px;font-weight:400}
+.resume-header>div:not(.resume-photo-frame) span{font-size:var(--type-label);letter-spacing:.11em;text-transform:uppercase;opacity:.55}
 .resume-header nav{grid-area:links;display:flex;flex-wrap:wrap;justify-content:flex-start;gap:10px;margin-top:4px}
 .resume-header nav a,.resume-header nav button,.resume-footer a{display:inline-flex;min-height:36px;align-items:center;justify-content:center;padding:0 12px;border:1px solid color-mix(in srgb,var(--paper) 34%,transparent);border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:var(--type-caption);font-weight:700;line-height:1;letter-spacing:.09em;text-align:center;text-decoration:none;text-transform:uppercase;white-space:nowrap}
 .resume-header nav button{cursor:pointer}.resume-header nav button:disabled{cursor:wait;opacity:.55}
-.resume-header nav .resume-download{min-height:44px;margin-left:auto;padding:0 18px;border-color:var(--paper);background:var(--paper);color:var(--ink);font-size:var(--type-label);box-shadow:0 12px 30px rgba(0,0,0,.18);transition:transform .24s ease,box-shadow .24s ease}
-.resume-download span{font-family:var(--serif);font-size:17px;line-height:1}.resume-header nav .resume-download:hover,.resume-header nav .resume-download:focus-visible{outline:0;transform:translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)}
+.resume-header nav .resume-download{min-height:44px;gap:8px;margin-left:auto;padding:0 18px;border-color:var(--paper);background:var(--paper);color:var(--ink);font-size:var(--type-label);box-shadow:0 12px 30px rgba(0,0,0,.18);transition:transform .24s ease,box-shadow .24s ease}
+.resume-download-icon{width:15px;height:15px;flex:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.5}.resume-header nav .resume-download:hover,.resume-header nav .resume-download:focus-visible{outline:0;transform:translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)}
 .resume-summary{display:grid;grid-template-columns:minmax(180px,.4fr) 1fr;gap:56px;padding:64px 0;opacity:0}
 .resume-summary>p,.resume-section-title>p,.resume-footer>p{margin:0;font-size:var(--type-caption);font-weight:750;letter-spacing:.18em;text-transform:uppercase;opacity:.5}
 .resume-summary h2{margin:0;font-family:var(--serif);font-size:clamp(27px,3.5vw,43px);font-weight:400;line-height:1.13;letter-spacing:-.02em}
@@ -42,9 +44,9 @@
   .resume-page{text-align:center}
   .resume-header{grid-template-columns:1fr;grid-template-areas:'eyebrow' 'title' 'photo' 'meta' 'links';justify-items:center;gap:18px;padding-bottom:36px}
   .resume-header h1{font-size:clamp(52px,17vw,68px)}
-  .resume-photo{width:min(48vw,180px);border-radius:20px}
+  .resume-photo-frame{width:min(48vw,180px);border-radius:20px}
   .resume-header nav{justify-content:center}
-  .resume-header nav .resume-download{width:100%;max-width:290px;margin:4px auto 0;justify-content:center;gap:18px}
+  .resume-header nav .resume-download{width:100%;max-width:290px;margin:4px auto 0;justify-content:center}
   .resume-summary,.resume-section{grid-template-columns:1fr;justify-items:center;gap:30px;padding:40px 0}
   .resume-summary h2{font-size:clamp(24px,7.5vw,32px)}
   .resume-section-title h2{max-width:none;margin-inline:auto}

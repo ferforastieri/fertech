@@ -27,6 +27,21 @@ export function ResumePage(){
       const contentWidth=pageWidth-margin*2
       const bottom=pageHeight-18
       let y=margin
+      const portrait=await new Promise<string>((resolve,reject)=>{
+        const image=new window.Image()
+        image.onload=()=>{
+          const canvas=document.createElement('canvas')
+          canvas.width=image.naturalWidth
+          canvas.height=image.naturalHeight
+          const context=canvas.getContext('2d')
+          if(!context){reject(new Error('Canvas indisponível'));return}
+          context.filter='grayscale(1) contrast(1.08)'
+          context.drawImage(image,0,0)
+          resolve(canvas.toDataURL('image/jpeg',.9))
+        }
+        image.onerror=()=>reject(new Error('Foto do currículo indisponível'))
+        image.src='/assets/fernando.png'
+      })
 
       const nextPage=()=>{pdf.addPage();y=margin}
       const ensureSpace=(height:number)=>{if(y+height>bottom)nextPage()}
@@ -69,6 +84,8 @@ export function ResumePage(){
       }
 
       pdf.setProperties({title:`${siteContent.identity.name} - ${t('role')}`,author:siteContent.identity.name,subject:t('eyebrow')})
+      const photoSize=34
+      pdf.addImage(portrait,'JPEG',pageWidth-margin-photoSize,margin,photoSize,photoSize,undefined,'FAST')
       pdf.setFont('helvetica','bold')
       pdf.setFontSize(22)
       pdf.setTextColor(25,25,25)
@@ -83,7 +100,7 @@ export function ResumePage(){
       pdf.text(`${t('location')}  |  ${siteContent.contacts.email}`,margin,y)
       y+=4.5
       pdf.text(`${siteContent.contacts.linkedin}  |  ${siteContent.contacts.github}`,margin,y)
-      y+=8
+      y=Math.max(y+8,margin+photoSize+7)
 
       section(t('summaryEyebrow'))
       paragraph(t('summary'))
@@ -134,9 +151,9 @@ export function ResumePage(){
     <header className="resume-header resume-reveal">
       <p>{t('eyebrow')}</p>
       <h1>{t('title')}</h1>
-      <Image className="resume-photo" src="/assets/fernando.png" alt={t('portraitAlt')} width={320} height={320} priority/>
+      <div className="resume-photo-frame"><Image className="resume-photo" src="/assets/fernando.png" alt={t('portraitAlt')} width={320} height={320} priority/></div>
       <div><strong>{t('role')}</strong><span>{t('location')}</span></div>
-      <nav aria-label={t('contact')}><a href={`mailto:${siteContent.contacts.email}`}>{t('email')} ↗</a><a href={siteContent.contacts.linkedin} target="_blank" rel="noreferrer">{t('linkedin')} ↗</a><a href={siteContent.contacts.github} target="_blank" rel="noreferrer">{t('github')} ↗</a><button className="resume-download" type="button" onClick={download} disabled={exporting} data-html2canvas-ignore>{t(exporting?'generating':'download')} <span aria-hidden="true">↓</span></button></nav>
+      <nav aria-label={t('contact')}><a href={`mailto:${siteContent.contacts.email}`}>{t('email')} ↗</a><a href={siteContent.contacts.linkedin} target="_blank" rel="noreferrer">{t('linkedin')} ↗</a><a href={siteContent.contacts.github} target="_blank" rel="noreferrer">{t('github')} ↗</a><button className="resume-download" type="button" onClick={download} disabled={exporting} data-html2canvas-ignore>{t(exporting?'generating':'download')} <svg className="resume-download-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 13h10"/></svg></button></nav>
     </header>
 
     <section className="resume-summary resume-reveal"><p>{t('summaryEyebrow')}</p><h2>{t('summary')}</h2></section>

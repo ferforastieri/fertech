@@ -9,7 +9,7 @@ import './webgl.css'
 
 const scenes:AuroraScene[]=['field','prism','signal','grid','tunnel','terrain','aim']
 const motions:AuroraMotion[]=['orbit','wave','chaos']
-const colors=['#00ff41','#effff2','#b7ffc7','#4fdb72','#087a25']
+const colors=['#c9804a','#f5e6d2','#dfbd98','#a8663d','#66321c']
 
 export function WebGLPage(){
   const t=useTranslations('WebGL')

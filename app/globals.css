@@ -2,12 +2,12 @@
 @import '@fontsource/instrument-serif';
 
 :root{
-  --paper:#effff2;
-  --paper-light:#b7ffc7;
-  --ink:#020a03;
-  --graphite:#167a32;
-  --terminal:#00ff41;
-  --terminal-deep:#032b0d;
+  --paper:#f5e6d2;
+  --paper-light:#dfbd98;
+  --ink:#1c0e08;
+  --graphite:#70432c;
+  --terminal:#c9804a;
+  --terminal-deep:#3b1d10;
   --serif:'Instrument Serif',Georgia,serif;
   --sans:'Manrope Variable',Arial,sans-serif;
   --type-micro:clamp(.5625rem,.52rem + .18vw,.6875rem);
@@ -19,12 +19,12 @@
 }
 
 [data-theme='light']{
-  --paper:#06421f;
-  --paper-light:#0b7137;
-  --ink:#f7fff9;
-  --graphite:#4e9a68;
-  --terminal:#00a62b;
-  --terminal-deep:#d8ffe4;
+  --paper:#56311e;
+  --paper-light:#875438;
+  --ink:#fff8ef;
+  --graphite:#af8061;
+  --terminal:#8e4d29;
+  --terminal-deep:#f8dfc5;
 }
 
 *{box-sizing:border-box}

@@ -24,7 +24,7 @@ export const metadata:Metadata={
   twitter:{card:'summary_large_image',title:siteContent.identity.name,description:siteContent.metadata.description},
   robots:{index:true,follow:true,googleBot:{index:true,follow:true,'max-image-preview':'large','max-snippet':-1,'max-video-preview':-1}},
 }
-export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:[{media:'(prefers-color-scheme: dark)',color:'#04140a'},{media:'(prefers-color-scheme: light)',color:'#f7fff9'}]}
+export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:[{media:'(prefers-color-scheme: dark)',color:'#1c0e08'},{media:'(prefers-color-scheme: light)',color:'#fff8ef'}]}
 
 export default function Layout({children}:{children:React.ReactNode}){
   const person={
