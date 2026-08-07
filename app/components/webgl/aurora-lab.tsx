@@ -103,7 +103,76 @@ void main(){
   }
 
   if(u_trail>.5){
-    p=trailAnchor+p*.14;
+    float born=a_seed.z;
+    float seed=a_seed.w;
+    float age=max(0.0,t-born);
+    vec2 local=vec2(0.0);
+    p=trailAnchor;
+    depth=sin(seed*31.0+t*2.0);
+    energy=.72;
+
+    if(u_scene<.5){
+      if(u_motion<.5){
+        float angle=seed*6.283+age*(.8+seed*.9);
+        float radius=.008+seed*.025+min(age*.028,.085);
+        local=vec2(cos(angle)*radius,sin(angle*1.55)*radius*.72);
+      }else if(u_motion<1.5){
+        local.y=sin(t*1.35+trailAnchor.x*7.0+seed*6.0)*.19;
+      }else{
+        local=vec2(sin(t*1.8+seed*12.0),cos(t*1.43+seed*13.0))*.18;
+      }
+    }else if(u_scene<1.5){
+      float ring=floor(seed*9.0)/9.0;
+      float angle=seed*56.0+t*(.12+ring*.22);
+      float radius=.018+ring*.08;
+      local=vec2(cos(angle)*radius,sin(angle)*radius*.58);
+      local.y+=sin(angle*3.0+t)*.008;
+      depth=cos(angle);
+      energy=.8;
+    }else if(u_scene<2.5){
+      local.x=mod(age*.18+seed*.12,.24)-.12;
+      float signalX=trailAnchor.x+local.x;
+      float carrier=sin(signalX*18.0+t*2.0)*.16+sin(signalX*47.0-t*1.25)*.045;
+      local.y=carrier;
+      depth=sin(signalX*10.0+t);
+      energy=.65+abs(carrier)*1.5;
+    }else if(u_scene<3.5){
+      float stepSize=1.72/25.0;
+      p=floor((trailAnchor+.86)/stepSize+.5)*stepSize-.86;
+      float pulse=sin(length(p-trailAnchor)*18.0-t*3.2+seed*6.283);
+      local.y=pulse*.022;
+      depth=pulse;
+      energy=.45+pulse*.28;
+    }else if(u_scene<4.5){
+      float z=fract(seed-age*.075);
+      float angle=seed*82.0+t*.24;
+      float radius=.008+z*.105;
+      local=vec2(cos(angle),sin(angle))*radius;
+      depth=1.0-z;
+      energy=1.0-z*.58;
+    }else if(u_scene<5.5){
+      float h=sin(trailAnchor.x*8.0+t)+cos(trailAnchor.y*7.0-t*.8);
+      local=vec2((seed-.5)*.035,h*.055-(trailAnchor.y*trailAnchor.y)*.08);
+      depth=h*.5+trailAnchor.y;
+      energy=.38+h*.12;
+    }else{
+      float angle=seed*190.0;
+      float radius=.018+hash(seed*91.0)*.055;
+      local=vec2(cos(angle),sin(angle))*radius;
+      depth=1.0;
+      energy=.9;
+    }
+
+    if(u_scene>=.5){
+      if(u_motion<.5){
+        local=rotate(local,t*.055+seed*.14);
+      }else if(u_motion<1.5){
+        local.y+=sin((trailAnchor.x+local.x)*7.0+t*1.4+seed*8.0)*.045;
+      }else{
+        local+=vec2(sin(t*1.7+seed*19.0),cos(t*1.3+seed*23.0))*.055;
+      }
+    }
+    p+=local;
   }
 
   vec2 repel=p-u_pointer;
@@ -177,18 +246,19 @@ export function AuroraLab({settings,clearToken,label}:{settings:AuroraSettings;c
     const trailBuffer=gl.createBuffer()
     const trail:number[]=[]
     const trailCapacity=3600
-    const particlesPerSample=18
+    const particlesPerSample=8
     const position=gl.getAttribLocation(shaderProgram,'a_seed')
     const uniforms={resolution:gl.getUniformLocation(shaderProgram,'u_resolution'),pointer:gl.getUniformLocation(shaderProgram,'u_pointer'),time:gl.getUniformLocation(shaderProgram,'u_time'),scene:gl.getUniformLocation(shaderProgram,'u_scene'),motion:gl.getUniformLocation(shaderProgram,'u_motion'),density:gl.getUniformLocation(shaderProgram,'u_density'),pointScale:gl.getUniformLocation(shaderProgram,'u_pointScale'),trail:gl.getUniformLocation(shaderProgram,'u_trail'),color:gl.getUniformLocation(shaderProgram,'u_color')}
     const pointer={x:9,y:9,down:false}
-    const updatePointer=(event:PointerEvent)=>{const rect=element.getBoundingClientRect();const aspectScale=Math.max(1,(rect.width/rect.height)*.73);const samples=event.getCoalescedEvents?.()||[event];samples.forEach(sample=>{pointer.x=(((sample.clientX-rect.left)/rect.width)*2-1)*aspectScale;pointer.y=1-((sample.clientY-rect.top)/rect.height)*2;if(pointer.down&&settingsRef.current.drawing){for(let particle=0;particle<particlesPerSample;particle++){trail.push(pointer.x,pointer.y,Math.random(),Math.random());if(trail.length>trailCapacity*4)trail.splice(0,4)}}})}
+    let elapsed=0
+    const updatePointer=(event:PointerEvent)=>{const rect=element.getBoundingClientRect();const aspectScale=Math.max(1,(rect.width/rect.height)*.73);const samples=event.getCoalescedEvents?.()||[event];samples.forEach(sample=>{pointer.x=(((sample.clientX-rect.left)/rect.width)*2-1)*aspectScale;pointer.y=1-((sample.clientY-rect.top)/rect.height)*2;if(pointer.down&&settingsRef.current.drawing){for(let particle=0;particle<particlesPerSample;particle++){trail.push(pointer.x,pointer.y,elapsed,Math.random());if(trail.length>trailCapacity*4)trail.splice(0,4)}}})}
     const down=(event:PointerEvent)=>{pointer.down=true;element.setPointerCapture?.(event.pointerId);updatePointer(event)}
     const up=()=>{pointer.down=false}
     const leave=()=>{if(!pointer.down){pointer.x=9;pointer.y=9}}
     element.addEventListener('pointermove',updatePointer);element.addEventListener('pointerdown',down);element.addEventListener('pointerup',up);element.addEventListener('pointercancel',up);element.addEventListener('pointerleave',leave)
     const resize=()=>{const rect=element.getBoundingClientRect(),ratio=Math.min(devicePixelRatio,1.65);element.width=Math.max(1,Math.round(rect.width*ratio));element.height=Math.max(1,Math.round(rect.height*ratio))}
     const observer=new ResizeObserver(resize);observer.observe(element);resize()
-    let raf=0,last=performance.now(),elapsed=0,lastClear=clearRef.current
+    let raf=0,last=performance.now(),lastClear=clearRef.current
     const bind=(buffer:WebGLBuffer|null)=>{gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,4,gl.FLOAT,false,0,0)}
     const draw=(now:number)=>{
       const current=settingsRef.current
