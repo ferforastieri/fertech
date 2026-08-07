@@ -159,7 +159,6 @@ export function ResumePage(){
 
     <section className="resume-summary resume-reveal grid grid-cols-1 justify-items-center gap-[30px] py-10 opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:grid-cols-[minmax(180px,.4fr)_1fr] md:justify-items-stretch md:gap-14 md:py-16">
       <aside className="grid justify-items-center gap-3 text-center md:justify-items-start md:text-left">
-        <span className="font-display text-[clamp(58px,7vw,88px)] leading-[.72] font-normal tracking-[-.06em] opacity-30">01</span>
         <p className="m-0 text-caption font-[750] tracking-[.18em] uppercase opacity-50">{t('summaryEyebrow')}</p>
         <i className="h-9 w-px bg-[color-mix(in_srgb,var(--paper)_32%,transparent)] md:h-14" aria-hidden="true"/>
         <strong className="max-w-[18ch] font-display text-lg leading-[1.08] font-normal italic opacity-72">{t('summaryNote')}</strong>
