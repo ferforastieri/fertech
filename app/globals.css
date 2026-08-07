@@ -43,7 +43,7 @@ html{scroll-behavior:smooth}
 ::selection{background:var(--paper);color:var(--ink)}
 
 .custom-cursor__arrow,.custom-cursor__pointer{transition:opacity 120ms ease,transform 180ms cubic-bezier(.22,1,.36,1)}
-.custom-cursor__pointer{opacity:0;transform:scale(.72) rotate(-8deg);transform-origin:8px 2px}
+.custom-cursor__pointer{opacity:0;transform:scale(.76) rotate(-6deg);transform-origin:6px 2px}
 .custom-cursor[data-variant='pointer'] .custom-cursor__arrow{opacity:0;transform:scale(.72) rotate(8deg)}
 .custom-cursor[data-variant='pointer'] .custom-cursor__pointer{opacity:1;transform:scale(1) rotate(0)}
 

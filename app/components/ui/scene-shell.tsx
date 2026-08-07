@@ -77,9 +77,9 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     <div className="paper-wash pointer-events-none fixed inset-0 -z-10 [background:var(--desktop-wash)] max-md:[background:var(--mobile-wash)]" style={washStyle} aria-hidden="true"/>
     <div ref={cursor} className="custom-cursor pointer-events-none fixed top-[-2px] left-[-2px] z-80 h-[30px] w-6 origin-[2px_2px] opacity-0 will-change-[transform,opacity] max-md:hidden" data-variant="default" aria-hidden="true">
       <span className="custom-cursor__arrow absolute inset-0 before:absolute before:inset-0 before:bg-ink before:content-[''] before:[clip-path:polygon(0_0,100%_61%,61%_66%,49%_100%,35%_94%,47%_64%,17%_78%)] after:absolute after:inset-0.5 after:bg-paper after:content-[''] after:[clip-path:polygon(0_0,100%_61%,61%_66%,49%_100%,35%_94%,47%_64%,17%_78%)]"/>
-      <svg className="custom-cursor__pointer absolute top-0 left-[-8px] h-7 w-7 overflow-visible" viewBox="0 0 24 24" fill="var(--ink)" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 14a8 8 0 0 1-8 8H9c-2.8 0-4.2-1.4-5.6-3.2L.6 15.2c-.7-.9-.5-2.3.4-3s2.3-.5 3 .4L6 15V4a2 2 0 0 1 4 0v7-1a2 2 0 0 1 4 0v1-1a2 2 0 0 1 4 0v2-1a2 2 0 0 1 4 0Z" stroke="var(--ink)" strokeWidth="4"/>
-        <path d="M22 14a8 8 0 0 1-8 8H9c-2.8 0-4.2-1.4-5.6-3.2L.6 15.2c-.7-.9-.5-2.3.4-3s2.3-.5 3 .4L6 15V4a2 2 0 0 1 4 0v7-1a2 2 0 0 1 4 0v1-1a2 2 0 0 1 4 0v2-1a2 2 0 0 1 4 0Z" stroke="var(--paper)" strokeWidth="1.6"/>
+      <svg className="custom-cursor__pointer absolute top-0 left-[-6px] h-6 w-6 overflow-visible" viewBox="0 0 24 24" fill="var(--paper)" strokeLinecap="square" strokeLinejoin="miter">
+        <path d="M22 14a8 8 0 0 1-8 8H9c-2.8 0-4.2-1.4-5.6-3.2L.6 15.2c-.7-.9-.5-2.3.4-3s2.3-.5 3 .4L6 15V4a2 2 0 0 1 4 0v7-1a2 2 0 0 1 4 0v1-1a2 2 0 0 1 4 0v2-1a2 2 0 0 1 4 0Z" stroke="var(--ink)" strokeWidth="3.5"/>
+        <path d="M22 14a8 8 0 0 1-8 8H9c-2.8 0-4.2-1.4-5.6-3.2L.6 15.2c-.7-.9-.5-2.3.4-3s2.3-.5 3 .4L6 15V4a2 2 0 0 1 4 0v7-1a2 2 0 0 1 4 0v1-1a2 2 0 0 1 4 0v2-1a2 2 0 0 1 4 0Z" stroke="var(--paper)" strokeWidth="1.2"/>
       </svg>
     </div>
 

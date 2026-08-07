@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import {TypedText} from './typed-text'
+import {SocialIcon,type SocialNetwork} from './social-icon'
 import {siteContent} from '@/messages/site-content'
 
 export function GlobalProfile(){
@@ -10,6 +11,7 @@ export function GlobalProfile(){
   const year=new Date().getFullYear()
   const detailLabel='mb-2 block text-micro font-[760] tracking-[.2em] uppercase opacity-45'
   const corner='text-small leading-[1.5] text-[color-mix(in_srgb,var(--paper)_76%,transparent)]'
+  const networks:SocialNetwork[]=['github','linkedin','x']
 
   return <>
     <aside className="global-profile scene-item relative z-30 mx-auto mt-6 mb-[calc(32px+env(safe-area-inset-bottom))] hidden w-[min(calc(100%_-_48px),300px)] border-t border-[color-mix(in_srgb,var(--paper)_32%,transparent)] pt-6 text-center text-[color-mix(in_srgb,var(--paper)_92%,transparent)] md:fixed md:top-[26px] md:right-[4.5vw] md:m-0 md:block md:w-[min(21vw,250px)] md:border-0 md:pt-0 md:text-right md:max-[1100px]:w-[210px]">
@@ -33,15 +35,16 @@ export function GlobalProfile(){
 
       <div className="hidden grid-cols-[1fr_auto_1fr] items-start gap-8 md:grid">
         <div className={`${corner} text-left`}><span className={detailLabel}>{profile('base')}</span><span>{profile('location')}</span></div>
-        <p className="m-0 text-center text-micro font-[760] tracking-[.22em] uppercase opacity-48">{profile('eyebrow')}</p>
+        <div className="flex flex-col items-center gap-3">
+          <p className="m-0 text-center text-micro font-[760] tracking-[.22em] uppercase opacity-48">{profile('eyebrow')}</p>
+          <a className="group inline-flex min-h-9 items-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-4 py-2 text-caption font-[760] tracking-[.13em] text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none" href={`mailto:${siteContent.contacts.email}`}><span>{profile('cta')}</span><span className="font-display text-lg font-normal transition-transform duration-250 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true">↗</span></a>
+        </div>
         <div className={`${corner} text-right`}><span className={detailLabel}>{profile('write')}</span><a className="text-inherit underline decoration-[color-mix(in_srgb,var(--paper)_30%,transparent)] underline-offset-4 transition-opacity hover:opacity-65 focus-visible:opacity-65 focus-visible:outline-none" href={`mailto:${siteContent.contacts.email}`}>{siteContent.contacts.email}</a></div>
       </div>
 
       <div className="mt-6 grid justify-items-center gap-4 md:mt-5 md:grid-cols-[1fr_auto_1fr] md:items-end md:justify-items-stretch md:gap-8">
-        <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-caption font-[720] tracking-[.12em] uppercase md:col-start-2 md:row-start-1" aria-label={profile('networks')}>
-          <a className="text-inherit no-underline opacity-68 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none" href={siteContent.contacts.github} target="_blank" rel="noreferrer">{siteContent.networks.github} ↗</a>
-          <a className="text-inherit no-underline opacity-68 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none" href={siteContent.contacts.linkedin} target="_blank" rel="noreferrer">{siteContent.networks.linkedin} ↗</a>
-          <a className="text-inherit no-underline opacity-68 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none" href={siteContent.contacts.x} target="_blank" rel="noreferrer">{siteContent.networks.x} ↗</a>
+        <nav className="flex flex-wrap justify-center gap-1 md:col-start-2 md:row-start-1" aria-label={profile('networks')}>
+          {networks.map(network=><a className="grid h-9 w-9 place-items-center rounded-full text-inherit no-underline opacity-68 transition-[background,color,opacity] hover:bg-paper hover:text-ink hover:opacity-100 focus-visible:bg-paper focus-visible:text-ink focus-visible:opacity-100 focus-visible:outline-none" href={siteContent.contacts[network]} target="_blank" rel="noreferrer" aria-label={siteContent.networks[network]} title={siteContent.networks[network]} key={network}><SocialIcon network={network} className="h-4 w-4 text-sm"/></a>)}
         </nav>
         <p className={`${corner} m-0 text-center md:col-start-1 md:row-start-1 md:text-left`}>© {year} {siteContent.identity.name}<span className="hidden sm:inline"> · </span><span className="block sm:inline">{profile('copyright')}</span></p>
         <Link className="group text-caption font-[720] tracking-[.12em] text-inherit uppercase no-underline opacity-68 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none md:col-start-3 md:row-start-1 md:justify-self-end" href="/">{profile('home')} <span className="inline-block transition-transform duration-250 group-hover:-translate-y-1" aria-hidden="true">↑</span></Link>
