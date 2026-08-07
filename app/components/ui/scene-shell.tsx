@@ -86,11 +86,12 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         const natural={left:rendered.left,right:rendered.right,top:rendered.top+previousShift,bottom:rendered.bottom+previousShift,height:rendered.height}
         const target=moving.getBoundingClientRect()
         const sharesColumn=target.right>natural.left&&target.left<natural.right
-        const start=natural.bottom+32
-        const distance=Math.max(natural.height*.8,64)
+        const clearance=56
+        const start=natural.bottom+clearance
+        const distance=natural.height+clearance
         const raw=sharesColumn?Math.min(1,Math.max(0,(start-target.top)/distance)):0
         const progress=reducedMotion.matches&&raw>0?1:raw
-        const shift=progress*(natural.height+42)
+        const shift=progress*distance
         fixed.dataset.collisionShift=String(shift)
         fixed.style.transform=`translate3d(0,${-shift}px,0)`
         fixed.style.opacity=String(1-progress)
@@ -102,8 +103,10 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     window.addEventListener('resize',schedule,{passive:true})
     desktop.addEventListener('change',schedule)
     reducedMotion.addEventListener('change',schedule)
+    const resizeObserver=new ResizeObserver(schedule)
+    pairs.forEach(({fixed,moving})=>{resizeObserver.observe(fixed);resizeObserver.observe(moving)})
     schedule()
-    return()=>{if(raf)cancelAnimationFrame(raf);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);desktop.removeEventListener('change',schedule);reducedMotion.removeEventListener('change',schedule);pairs.forEach(({fixed})=>reset(fixed))}
+    return()=>{if(raf)cancelAnimationFrame(raf);resizeObserver.disconnect();window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);desktop.removeEventListener('change',schedule);reducedMotion.removeEventListener('change',schedule);pairs.forEach(({fixed})=>reset(fixed))}
   },[isHome])
 
   const dark=theme==='dark'
