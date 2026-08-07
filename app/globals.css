@@ -42,5 +42,10 @@
 html{scroll-behavior:smooth}
 ::selection{background:var(--paper);color:var(--ink)}
 
+.custom-cursor__arrow,.custom-cursor__pointer{transition:opacity 120ms ease,transform 180ms cubic-bezier(.22,1,.36,1)}
+.custom-cursor__pointer{opacity:0;transform:scale(.72) rotate(-8deg);transform-origin:8px 2px}
+.custom-cursor[data-variant='pointer'] .custom-cursor__arrow{opacity:0;transform:scale(.72) rotate(8deg)}
+.custom-cursor[data-variant='pointer'] .custom-cursor__pointer{opacity:1;transform:scale(1) rotate(0)}
+
 @media(hover:hover) and (pointer:fine){html,html *,html *::before,html *::after{cursor:none!important}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
