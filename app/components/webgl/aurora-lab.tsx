@@ -274,5 +274,5 @@ export function AuroraLab({settings,clearToken,label}:{settings:AuroraSettings;c
     raf=requestAnimationFrame(draw)
     return()=>{cancelAnimationFrame(raf);observer.disconnect();element.removeEventListener('pointermove',updatePointer);element.removeEventListener('pointerdown',down);element.removeEventListener('pointerup',up);element.removeEventListener('pointercancel',up);element.removeEventListener('pointerleave',leave);gl.deleteBuffer(baseBuffer);gl.deleteBuffer(trailBuffer);gl.deleteProgram(shaderProgram)}
   },[])
-  return <canvas ref={canvas} className="aurora-lab block h-full min-h-[470px] w-full touch-none md:min-h-[610px]" aria-label={label}/>
+  return <canvas ref={canvas} className="aurora-lab block h-full min-h-[390px] w-full touch-none md:min-h-[520px] min-[901px]:min-h-[480px]" aria-label={label}/>
 }

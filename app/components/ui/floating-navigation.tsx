@@ -6,7 +6,6 @@ import {useTranslations} from 'next-intl'
 import {usePathname} from 'next/navigation'
 import {usePreferences,type Locale} from './preferences-provider'
 import {siteContent} from '@/messages/site-content'
-import {TechMonogram} from './tech-monogram'
 
 const iconClass='nav-icon h-[15px] w-[15px] md:h-[18px] md:w-[18px]'
 const controlBase='nav-control grid h-[35px] w-[clamp(25px,7.8vw,35px)] place-items-center rounded-full border-0 bg-transparent p-0 text-inherit no-underline transition-colors duration-200 hover:bg-paper hover:text-ink focus-visible:bg-paper focus-visible:text-ink focus-visible:shadow-[inset_0_0_0_1px_var(--ink),0_0_0_2px_var(--paper)] focus-visible:outline-none md:h-10 md:w-10'
@@ -57,7 +56,7 @@ export function FloatingNavigation(){
       <Icon><path d={navPosition==='right'?(drawerOpen?'m15 6-6 6 6 6':'m9 6 6 6-6 6'):(drawerOpen?'m9 6 6 6-6 6':'m15 6-6 6 6 6')}/></Icon>
     </button>
     <nav id="main-floating-navigation" className={`floating-nav floating-nav--${navPosition} isolate flex w-max max-w-[calc(100vw-20px)] items-center justify-center gap-0 rounded-full border border-[color-mix(in_srgb,var(--paper)_28%,transparent)] bg-[color-mix(in_srgb,var(--ink)_72%,transparent)] p-1 text-paper shadow-[0_14px_45px_rgba(0,0,0,.22)] backdrop-blur-[18px] [[data-theme=light]_&]:border-[rgba(23,22,18,.24)] [[data-theme=light]_&]:bg-[rgba(246,242,234,.94)] [[data-theme=light]_&]:shadow-[0_14px_42px_rgba(48,42,32,.14)] md:gap-0.5 md:p-[5px] ${vertical?`max-h-[calc(100svh-36px)] w-[46px] flex-col overflow-y-auto transition-transform duration-340 ease-[cubic-bezier(.22,1,.36,1)] md:w-max md:translate-x-0 md:overflow-visible ${navPosition==='left'?'rounded-l-none rounded-r-[22px] md:rounded-full':'rounded-r-none rounded-l-[22px] md:rounded-full'} ${drawerOpen?'translate-x-0':navPosition==='left'?'-translate-x-[110%]':'translate-x-[110%]'}`:''}`} aria-label={t('main')}>
-      <Link className={control(currentPath==='/')} style={selectedStyle(currentPath==='/')} href="/" aria-current={currentPath==='/'?'page':undefined} aria-label={t('home')} title={t('home')}><TechMonogram className={iconClass}/></Link>
+      <Link className={control(currentPath==='/')} style={selectedStyle(currentPath==='/')} href="/" aria-current={currentPath==='/'?'page':undefined} aria-label={t('home')} title={t('home')}><Icon><path d="M3.5 11.2 12 4l8.5 7.2"/><path d="M5.5 10v9.5h13V10M9.5 19.5v-6h5v6"/></Icon></Link>
       <Link className={control(currentPath.startsWith('/projetos'))} style={selectedStyle(currentPath.startsWith('/projetos'))} href="/projetos" aria-current={currentPath.startsWith('/projetos')?'page':undefined} aria-label={t('projects')} title={t('projects')}><Icon><path d="M4 7h16v12H4zM8 7V4h8v3"/></Icon></Link>
       <Link className={control(currentPath==='/sobre')} style={selectedStyle(currentPath==='/sobre')} href="/sobre" aria-current={currentPath==='/sobre'?'page':undefined} aria-label={t('about')} title={t('about')}><Icon><circle cx="12" cy="8" r="3"/><path d="M5 20c.6-4 3-6 7-6s6.4 2 7 6"/></Icon></Link>
       <Link className={control(currentPath==='/curriculo')} style={selectedStyle(currentPath==='/curriculo')} href="/curriculo" aria-current={currentPath==='/curriculo'?'page':undefined} aria-label={t('resume')} title={t('resume')}><Icon><path d="M6 3h9l3 3v15H6zM15 3v4h4M9 11h6M9 15h6M9 18h4"/></Icon></Link>
