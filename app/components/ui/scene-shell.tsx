@@ -65,6 +65,47 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     return()=>motion.cancel()
   },[pathname])
 
+  useEffect(()=>{
+    if(!isHome||!root.current)return
+    const desktop=matchMedia('(min-width: 768px)')
+    const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)')
+    const elements=[
+      [root.current.querySelector<HTMLElement>('.corner-logo'),root.current.querySelector<HTMLElement>('.corner-metrics')],
+      [root.current.querySelector<HTMLElement>('.global-profile--corner'),root.current.querySelector<HTMLElement>('.home-summary')],
+    ] as const
+    const pairs=elements.flatMap(([fixed,moving])=>fixed&&moving?[{fixed,moving}]:[])
+    if(!pairs.length)return
+    let raf=0
+    const reset=(element:HTMLElement)=>{element.style.transform='';element.style.opacity='';element.style.pointerEvents='';delete element.dataset.collisionShift}
+    const update=()=>{
+      raf=0
+      if(!desktop.matches){pairs.forEach(({fixed})=>reset(fixed));return}
+      pairs.forEach(({fixed,moving})=>{
+        const rendered=fixed.getBoundingClientRect()
+        const previousShift=Number(fixed.dataset.collisionShift||0)
+        const natural={left:rendered.left,right:rendered.right,top:rendered.top+previousShift,bottom:rendered.bottom+previousShift,height:rendered.height}
+        const target=moving.getBoundingClientRect()
+        const sharesColumn=target.right>natural.left&&target.left<natural.right
+        const start=natural.bottom+32
+        const distance=Math.max(natural.height*.8,64)
+        const raw=sharesColumn?Math.min(1,Math.max(0,(start-target.top)/distance)):0
+        const progress=reducedMotion.matches&&raw>0?1:raw
+        const shift=progress*(natural.height+42)
+        fixed.dataset.collisionShift=String(shift)
+        fixed.style.transform=`translate3d(0,${-shift}px,0)`
+        fixed.style.opacity=String(1-progress)
+        fixed.style.pointerEvents=progress>.85?'none':''
+      })
+    }
+    const schedule=()=>{if(!raf)raf=requestAnimationFrame(update)}
+    window.addEventListener('scroll',schedule,{passive:true})
+    window.addEventListener('resize',schedule,{passive:true})
+    desktop.addEventListener('change',schedule)
+    reducedMotion.addEventListener('change',schedule)
+    schedule()
+    return()=>{if(raf)cancelAnimationFrame(raf);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);desktop.removeEventListener('change',schedule);reducedMotion.removeEventListener('change',schedule);pairs.forEach(({fixed})=>reset(fixed))}
+  },[isHome])
+
   const dark=theme==='dark'
   const desktopWash=dark?'radial-gradient(circle at 50% 42%,rgba(231,223,209,.25),transparent 34%),linear-gradient(90deg,rgba(24,23,20,.7),transparent 32%,transparent 68%,rgba(24,23,20,.7)),linear-gradient(180deg,rgba(24,23,20,.12),rgba(24,23,20,.22))':'radial-gradient(circle at 50% 42%,rgba(255,253,248,.3),transparent 42%),linear-gradient(90deg,rgba(242,237,228,.68),rgba(242,237,228,.28) 34%,rgba(242,237,228,.28) 66%,rgba(242,237,228,.68)),linear-gradient(180deg,rgba(242,237,228,.22),rgba(242,237,228,.48))'
   const mobileWash=dark?'linear-gradient(rgba(24,23,20,.38),rgba(24,23,20,.6))':'linear-gradient(rgba(246,242,234,.42),rgba(246,242,234,.62))'
