@@ -5,7 +5,6 @@
     "projects": "Projects",
     "about": "About me",
     "resume": "Resume",
-    "webgl": "WebGL lab",
     "contact": "Get in touch",
     "theme": "Switch theme",
     "move": "Move navigation",
@@ -64,6 +63,5 @@
     "personalEyebrow":"Personal fragments","personalTitle":"Curiosity","personalNote":"A way of moving through the world.","personalTopics":"Games · Hardware · People",
     "interestsEyebrow":"Away from work","interestsTitle":"Things that stay with me.",
     "interests":{"stories":{"title":"Writing","description":"Short stories, ideas and notes that turn thoughts into something worth sharing."},"worlds":{"title":"Games","description":"Narratives, systems and worlds worth getting lost in — alone or with friends."},"hardware":{"title":"Hardware","description":"The satisfaction of assembling, adjusting and understanding what exists behind the screen."},"learning":{"title":"Learning","description":"Books, conversations and personal projects that begin because one question simply will not go away."}}
-  },
-  "WebGL":{"eyebrow":"Generative laboratory","title":"Code in motion.","description":"A new take on the Aurora playground: particles, signals, depth and procedural forms built in pure WebGL. Pick an experiment and reshape the system in real time.","canvasLabel":"Interactive generative WebGL experiment","experimentsLabel":"Select WebGL experiment","controls":"System controls","motion":"Motion","motions":{"orbit":"Orbit","wave":"Wave","chaos":"Chaos"},"color":"Color","elements":"Elements","speed":"Speed","brush":"Brush","pause":"Pause","resume":"Resume","randomize":"Vary","clear":"Clear","drawingEnabled":"Drawing on","enableDrawing":"Enable drawing","hint":"Click and drag to draw between the particles.","hintExplore":"Move the pointer to disturb the field.","status":"Real-time WebGL · no Three.js","scenes":{"field":{"eyebrow":"Interactive field","title":"Particle canvas","description":"Freehand drawing, orbits, waves and procedural chaos responding to the pointer."},"prism":{"eyebrow":"Composition","title":"Prismatic core","description":"Emissive rings organized into a rotating graphic structure."},"signal":{"eyebrow":"Sculpture","title":"Living signal","description":"Layered frequencies form a moving data sculpture."},"grid":{"eyebrow":"Data pulse","title":"Reactive grid","description":"A generative matrix responds to distance and pointer presence."},"tunnel":{"eyebrow":"Depth","title":"Particle tunnel","description":"A continuous flow turns points into an immersive spatial passage."},"terrain":{"eyebrow":"Topography","title":"Procedural terrain","description":"A point mesh deforms in real time like a digital landscape."},"aim":{"eyebrow":"Experiment","title":"Target constellation","description":"Particle clusters emerge as targets in a procedural composition."}}}
+  }
 }

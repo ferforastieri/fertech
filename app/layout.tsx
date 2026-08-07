@@ -14,7 +14,7 @@ export const metadata:Metadata={
   creator:siteContent.identity.name,
   publisher:siteContent.identity.name,
   category:'technology',
-  keywords:['Fernando Forastieri','Engenheiro de Software','Desenvolvedor Fullstack','Next.js','React','Inteligência Artificial','WebGL'],
+  keywords:['Fernando Forastieri','Engenheiro de Software','Desenvolvedor Fullstack','Next.js','React','Inteligência Artificial'],
   alternates:{canonical:'/'},
   manifest:'/manifest.webmanifest',
   icons:{icon:[{url:'/icon',type:'image/png'}],apple:'/pwa-icon.svg'},

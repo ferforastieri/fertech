@@ -29,10 +29,6 @@ export function useScrollReveal(root:RefObject<RevealRoot>,selector:string){
         {opacity:0,transform:'perspective(900px) rotateX(7deg) translateY(34px)',filter:'blur(7px)'},
         {opacity:1,transform:'perspective(900px) rotateX(0) translateY(0)',filter:'blur(0)'},
       ]
-      if(route==='/webgl')return [
-        {opacity:0,transform:'translateY(22px) scaleX(.94)',clipPath:'inset(0 50% 0 50%)',filter:'brightness(.55)'},
-        {opacity:1,transform:'translateY(0) scaleX(1)',clipPath:'inset(0 0 0 0)',filter:'brightness(1)'},
-      ]
       if(route.startsWith('/projetos')){
         const direction=index%2===0?-1:1
         return [

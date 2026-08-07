@@ -64,7 +64,7 @@ export function PreferencesProvider({children}:{children:ReactNode}){
     toggleTheme:()=>setTheme(current=>current==='dark'?'light':'dark'),
     cycleNavPosition:()=>setNavPosition(current=>{
       const next=positions[(positions.indexOf(current)+1)%positions.length]
-      localStorage.setItem('aurora-nav-position',next)
+      localStorage.setItem('fertec-nav-position',next)
       return next
     }),
   }),[locale,theme,navPosition])

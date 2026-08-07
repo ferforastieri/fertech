@@ -5,7 +5,6 @@
     "projects": "Proyectos",
     "about": "Sobre mí",
     "resume": "Currículum",
-    "webgl": "Laboratorio WebGL",
     "contact": "Contactar",
     "theme": "Cambiar tema",
     "move": "Mover navegación",
@@ -64,6 +63,5 @@
     "personalEyebrow":"Fragmentos personales","personalTitle":"Curiosidad","personalNote":"Una forma de estar en el mundo.","personalTopics":"Juegos · Hardware · Personas",
     "interestsEyebrow":"Fuera del trabajo","interestsTitle":"Cosas que me acompañan.",
     "interests":{"stories":{"title":"Escribir","description":"Relatos, ideas y notas que convierten pensamientos en algo que merece ser compartido."},"worlds":{"title":"Juegos","description":"Narrativas, sistemas y mundos en los que vale la pena perderse — solo o con amigos."},"hardware":{"title":"Hardware","description":"La satisfacción de montar, ajustar y comprender lo que existe detrás de la pantalla."},"learning":{"title":"Aprender","description":"Libros, conversaciones y proyectos personales que empiezan porque una pregunta no se va de la cabeza."}}
-  },
-  "WebGL":{"eyebrow":"Laboratorio generativo","title":"Código en movimiento.","description":"Una reinterpretación del playground Aurora: partículas, señales, profundidad y formas procedurales creadas en WebGL puro. Elige un experimento y transforma el sistema en tiempo real.","canvasLabel":"Experimento generativo interactivo en WebGL","experimentsLabel":"Seleccionar experimento WebGL","controls":"Controles del sistema","motion":"Movimiento","motions":{"orbit":"Órbita","wave":"Onda","chaos":"Caos"},"color":"Color","elements":"Elementos","speed":"Velocidad","brush":"Pincel","pause":"Pausar","resume":"Continuar","randomize":"Variar","clear":"Limpiar","drawingEnabled":"Dibujo activo","enableDrawing":"Activar dibujo","hint":"Haz clic y arrastra para dibujar entre las partículas.","hintExplore":"Mueve el puntero para perturbar el campo.","status":"WebGL en tiempo real · sin Three.js","scenes":{"field":{"eyebrow":"Campo interactivo","title":"Lienzo de partículas","description":"Dibujo libre, órbitas, ondas y caos procedural que responden al puntero."},"prism":{"eyebrow":"Composición","title":"Núcleo prismático","description":"Anillos emisivos organizados en una estructura gráfica giratoria."},"signal":{"eyebrow":"Escultura","title":"Señal viva","description":"Frecuencias superpuestas forman una escultura de datos en movimiento."},"grid":{"eyebrow":"Pulso de datos","title":"Cuadrícula reactiva","description":"Una matriz generativa responde a la distancia y a la presencia del puntero."},"tunnel":{"eyebrow":"Profundidad","title":"Túnel de partículas","description":"Un flujo continuo transforma puntos en un pasaje espacial inmersivo."},"terrain":{"eyebrow":"Topografía","title":"Terreno procedural","description":"Una malla de puntos se deforma en tiempo real como un paisaje digital."},"aim":{"eyebrow":"Experimento","title":"Constelación de objetivos","description":"Grupos de partículas aparecen como objetivos en una composición procedural."}}}
+  }
 }

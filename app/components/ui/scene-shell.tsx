@@ -48,9 +48,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
         ?[{opacity:0,transform:'translate3d(54px,0,0)',clipPath:'inset(0 0 0 18%)',filter:'blur(8px)'},{opacity:1,transform:'translate3d(0,0,0)',clipPath:'inset(0 0 0 0)',filter:'blur(0)'}]
         :route==='/curriculo'
           ?[{opacity:0,transform:'perspective(1200px) rotateX(5deg) translateY(38px)',filter:'blur(9px)'},{opacity:1,transform:'perspective(1200px) rotateX(0) translateY(0)',filter:'blur(0)'}]
-          :route==='/webgl'
-            ?[{opacity:0,transform:'scaleX(.94) translateY(20px)',clipPath:'inset(0 0 12% 0)',filter:'blur(5px) brightness(.65)'},{opacity:1,transform:'scaleX(1) translateY(0)',clipPath:'inset(0 0 0 0)',filter:'blur(0) brightness(1)'}]
-            :route.startsWith('/projetos/')
+          :route.startsWith('/projetos/')
               ?[{opacity:0,transform:'translate3d(-44px,22px,0) scale(.98)',filter:'blur(10px)'},{opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'}]
               :[{opacity:0,transform:'translateY(48px) skewY(.8deg)',filter:'blur(10px)'},{opacity:1,transform:'translateY(0) skewY(0)',filter:'blur(0)'}]
     view.style.transformOrigin=route==='/curriculo'?'50% 0':'50% 50%'
