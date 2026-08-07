@@ -40,9 +40,13 @@ export function PreferencesProvider({children}:{children:ReactNode}){
     const initialTheme:Theme=storedTheme==='light'||storedTheme==='dark'
       ? storedTheme
       : matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'
+    const storedNavPosition=localStorage.getItem('fertec-nav-position')
+    const initialNavPosition:NavPosition=positions.includes(storedNavPosition as NavPosition)
+      ? storedNavPosition as NavPosition
+      :'top'
     setLocaleState(initialLocale)
     setTheme(initialTheme)
-    setNavPosition('top')
+    setNavPosition(initialNavPosition)
   },[])
 
   useEffect(()=>{
