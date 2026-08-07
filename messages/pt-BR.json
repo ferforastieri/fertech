@@ -25,7 +25,14 @@
   "Profile": {
     "signature": "Fernando Forastieri",
     "introduction": "Desenvolvedor fullstack com foco em frontend e experiência do usuário.",
-    "cta": "Vamos conversar"
+    "cta": "Vamos conversar",
+    "eyebrow": "Contato e colaborações",
+    "base": "Base",
+    "location": "Sorocaba, SP · Brasil",
+    "write": "Escreva",
+    "networks": "Redes profissionais",
+    "home": "Voltar ao início",
+    "copyright": "Todos os direitos reservados."
   },
   "Metrics": {
     "aria": "Indicadores profissionais",

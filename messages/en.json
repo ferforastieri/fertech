@@ -25,7 +25,14 @@
   "Profile": {
     "signature": "Fernando Forastieri",
     "introduction": "Full-stack developer focused on frontend and user experience.",
-    "cta": "Let's talk"
+    "cta": "Let's talk",
+    "eyebrow": "Contact and collaborations",
+    "base": "Based in",
+    "location": "Sorocaba, SP · Brazil",
+    "write": "Write",
+    "networks": "Professional networks",
+    "home": "Back to home",
+    "copyright": "All rights reserved."
   },
   "Metrics": {
     "aria": "Professional indicators",
