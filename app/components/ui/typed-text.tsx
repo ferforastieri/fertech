@@ -1,7 +1,6 @@
 'use client'
 
 import {useEffect,useRef} from 'react'
-import {createTimer} from 'animejs'
 
 export function TypedText({text,className}:{text:string;className?:string}){
   const output=useRef<HTMLSpanElement>(null)
@@ -10,13 +9,16 @@ export function TypedText({text,className}:{text:string;className?:string}){
     if(!output.current)return
     if(matchMedia('(prefers-reduced-motion: reduce)').matches){output.current.textContent=text;return}
     output.current.textContent=''
-    let timer:ReturnType<typeof createTimer>|undefined
-    const start=()=>{
-      const duration=Math.max(220,text.length*32)
-      timer=createTimer({duration,frameRate:30,onUpdate:self=>{if(output.current)output.current.textContent=text.slice(0,Math.ceil(self.currentTime/duration*text.length))}})
+    const duration=Math.max(220,text.length*32)
+    const startedAt=performance.now()
+    let raf=0
+    const tick=(now:number)=>{
+      const progress=Math.min(1,(now-startedAt)/duration)
+      if(output.current)output.current.textContent=text.slice(0,Math.ceil(progress*text.length))
+      if(progress<1)raf=requestAnimationFrame(tick)
     }
-    start()
-    return()=>{timer?.cancel()}
+    raf=requestAnimationFrame(tick)
+    return()=>cancelAnimationFrame(raf)
   },[text])
 
   return <span className={className} aria-label={text}><span ref={output} aria-hidden="true"/></span>

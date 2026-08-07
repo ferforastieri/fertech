@@ -1,15 +1,13 @@
 'use client'
 
-import {useEffect,useRef,type ReactNode} from 'react'
-import {animate} from 'animejs'
+import {useEffect,useRef,type CSSProperties,type ReactNode} from 'react'
 import {usePathname} from 'next/navigation'
 import {WaterSurface} from './water-surface'
 import {usePreferences} from './preferences-provider'
 import {siteContent} from '@/messages/site-content'
-import './ui.css'
 
 export function SceneShell({children,className=''}:{children:ReactNode;className?:string}){
-  const {navPosition}=usePreferences()
+  const {navPosition,theme}=usePreferences()
   const pathname=usePathname()
   const isAbout=pathname.replace(/\/$/,'')==='/sobre'
   const isHome=(pathname.replace(/\/$/,'')||'/')==='/'
@@ -20,19 +18,23 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   useEffect(()=>{
     if(!root.current)return
     if(matchMedia('(pointer: fine)').matches){
-        const move=(event:PointerEvent)=>{if(cursor.current)animate(cursor.current,{x:event.clientX,y:event.clientY,opacity:1,duration:95,ease:'outQuad'})}
-        const exit=()=>{if(cursor.current)animate(cursor.current,{opacity:0,duration:180,ease:'outQuad'})}
-        const over=(event:PointerEvent)=>{if((event.target as Element).closest('a,button,[role="button"]')&&cursor.current)animate(cursor.current,{scale:.76,rotate:-8,duration:180,ease:'outBack'})}
-        const out=(event:PointerEvent)=>{if((event.target as Element).closest('a,button,[role="button"]')&&cursor.current)animate(cursor.current,{scale:1,rotate:0,duration:180,ease:'outBack'})}
-        const down=()=>{if(cursor.current)animate(cursor.current,{scale:.62,duration:100,ease:'outQuad'})}
-        const up=()=>{if(cursor.current)animate(cursor.current,{scale:1,duration:190,ease:'outBack'})}
+        const state={x:innerWidth/2,y:innerHeight/2,targetX:innerWidth/2,targetY:innerHeight/2,scale:1,targetScale:1,rotation:0,targetRotation:0,opacity:0,targetOpacity:0}
+        let raf=0
+        const render=()=>{const element=cursor.current;if(element){state.x+=(state.targetX-state.x)*.38;state.y+=(state.targetY-state.y)*.38;state.scale+=(state.targetScale-state.scale)*.24;state.rotation+=(state.targetRotation-state.rotation)*.24;state.opacity+=(state.targetOpacity-state.opacity)*.3;element.style.transform=`translate3d(${state.x}px,${state.y}px,0) scale(${state.scale}) rotate(${state.rotation}deg)`;element.style.opacity=String(state.opacity)}raf=requestAnimationFrame(render)}
+        const move=(event:PointerEvent)=>{state.targetX=event.clientX;state.targetY=event.clientY;state.targetOpacity=1}
+        const exit=()=>{state.targetOpacity=0}
+        const over=(event:PointerEvent)=>{if((event.target as Element).closest('a,button,[role="button"]')){state.targetScale=.76;state.targetRotation=-8}}
+        const out=(event:PointerEvent)=>{if((event.target as Element).closest('a,button,[role="button"]')){state.targetScale=1;state.targetRotation=0}}
+        const down=()=>{state.targetScale=.62}
+        const up=()=>{state.targetScale=1;state.targetRotation=0}
+        raf=requestAnimationFrame(render)
         window.addEventListener('pointermove',move,{passive:true})
         root.current?.addEventListener('pointerover',over)
         root.current?.addEventListener('pointerout',out)
         window.addEventListener('pointerdown',down)
         window.addEventListener('pointerup',up)
         document.documentElement.addEventListener('pointerleave',exit)
-        return()=>{window.removeEventListener('pointermove',move);root.current?.removeEventListener('pointerover',over);root.current?.removeEventListener('pointerout',out);window.removeEventListener('pointerdown',down);window.removeEventListener('pointerup',up);document.documentElement.removeEventListener('pointerleave',exit)}
+        return()=>{cancelAnimationFrame(raf);window.removeEventListener('pointermove',move);root.current?.removeEventListener('pointerover',over);root.current?.removeEventListener('pointerout',out);window.removeEventListener('pointerdown',down);window.removeEventListener('pointerup',up);document.documentElement.removeEventListener('pointerleave',exit)}
     }
   },[])
 
@@ -40,23 +42,28 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     const view=root.current?.querySelector<HTMLElement>('.route-view')
     if(!view)return
     if(!routeReady.current){routeReady.current=true;return}
-    const motion=animate(view,{opacity:[0,1],y:[24,0],scale:[.994,1],filter:['blur(10px)','blur(0px)'],duration:680,ease:'outExpo'})
-    return()=>{motion.revert()}
+    const motion=view.animate([{opacity:0,transform:'translateY(24px) scale(.994)',filter:'blur(10px)'},{opacity:1,transform:'translateY(0) scale(1)',filter:'blur(0)'}],{duration:680,easing:'cubic-bezier(.16,1,.3,1)',fill:'both'})
+    return()=>motion.cancel()
   },[pathname])
 
   useEffect(()=>{
     const mark=root.current?.querySelector<HTMLElement>('.scroll-cue-mark')
     if(!mark)return
-    const motion=animate(mark,{y:[0,8],opacity:[.42,1],duration:760,alternate:true,loop:true,ease:'inOutSine'})
-    return()=>{motion.revert()}
+    const motion=mark.animate([{transform:'translateY(0)',opacity:.42},{transform:'translateY(8px)',opacity:1}],{duration:760,direction:'alternate',iterations:Infinity,easing:'ease-in-out'})
+    return()=>motion.cancel()
   },[pathname])
 
-  return <main ref={root} className={`scene-shell scene-shell--nav-${navPosition}${isAbout?' scene-shell--about':''}${isHome?' scene-shell--home':''} ${className}`}>
-    <div className="server-layer" aria-hidden="true"/>
-    {isAbout&&<div className="about-shell-background" style={{backgroundImage:`url(${siteContent.assets.aboutBook})`}} aria-hidden="true"/>}
+  const dark=theme==='dark'
+  const desktopWash=dark?'radial-gradient(circle at 50% 42%,rgba(231,223,209,.25),transparent 34%),linear-gradient(90deg,rgba(24,23,20,.7),transparent 32%,transparent 68%,rgba(24,23,20,.7)),linear-gradient(180deg,rgba(24,23,20,.12),rgba(24,23,20,.22))':'radial-gradient(circle at 50% 42%,rgba(255,253,248,.3),transparent 42%),linear-gradient(90deg,rgba(242,237,228,.68),rgba(242,237,228,.28) 34%,rgba(242,237,228,.28) 66%,rgba(242,237,228,.68)),linear-gradient(180deg,rgba(242,237,228,.22),rgba(242,237,228,.48))'
+  const mobileWash=dark?'linear-gradient(rgba(24,23,20,.38),rgba(24,23,20,.6))':'linear-gradient(rgba(246,242,234,.42),rgba(246,242,234,.62))'
+  const washStyle={'--desktop-wash':isAbout?'transparent':desktopWash,'--mobile-wash':isAbout?'transparent':mobileWash} as CSSProperties
+
+  return <main ref={root} className={`scene-shell scene-shell--nav-${navPosition}${isAbout?' scene-shell--about':''}${isHome?' scene-shell--home':''} relative isolate min-h-svh overflow-x-hidden bg-ink text-paper ${className}`}>
+    <div className={`server-layer pointer-events-none fixed inset-0 -z-20 bg-cover bg-center max-md:bg-[position:54%_center] ${dark?'[filter:sepia(.28)_saturate(.5)_contrast(.9)]':'opacity-42 [filter:grayscale(.62)_sepia(.2)_contrast(.82)_brightness(1.18)]'}`} style={{backgroundImage:"linear-gradient(rgba(12,13,13,.62),rgba(12,13,13,.7)),url('https://images.pexels.com/photos/5408005/pexels-photo-5408005.jpeg?auto=compress&cs=tinysrgb&w=1920')"}} aria-hidden="true"/>
+    {isAbout&&<div className={`about-shell-background pointer-events-none fixed inset-0 z-0 bg-cover bg-center after:absolute after:inset-0 after:content-[''] max-md:bg-[position:58%_center] ${dark?'[filter:grayscale(.88)_sepia(.18)_contrast(1.08)_brightness(.42)] after:bg-[linear-gradient(90deg,rgba(15,15,13,.82),rgba(15,15,13,.48)_52%,rgba(15,15,13,.78)),linear-gradient(180deg,rgba(15,15,13,.18),rgba(15,15,13,.58))] max-md:[filter:grayscale(.9)_sepia(.2)_contrast(1.05)_brightness(.34)]':'opacity-38 [filter:grayscale(.82)_sepia(.18)_contrast(.78)_brightness(1.1)] after:bg-[rgba(246,242,234,.42)]'}`} style={{backgroundImage:`url(${siteContent.assets.aboutBook})`}} aria-hidden="true"/>}
     <WaterSurface/>
-    <div className="paper-wash" aria-hidden="true"/>
-    <div ref={cursor} className="custom-cursor" aria-hidden="true"><span/></div>
+    <div className="paper-wash pointer-events-none fixed inset-0 -z-10 [background:var(--desktop-wash)] max-md:[background:var(--mobile-wash)]" style={washStyle} aria-hidden="true"/>
+    <div ref={cursor} className="custom-cursor pointer-events-none fixed top-[-2px] left-[-2px] z-80 h-[30px] w-6 origin-[2px_2px] opacity-0 will-change-[transform,opacity] before:absolute before:inset-0 before:bg-ink before:content-[''] before:[clip-path:polygon(0_0,100%_61%,61%_66%,49%_100%,35%_94%,47%_64%,17%_78%)] max-md:hidden" aria-hidden="true"><span className="absolute inset-0.5 bg-paper [clip-path:polygon(0_0,100%_61%,61%_66%,49%_100%,35%_94%,47%_64%,17%_78%)]"/></div>
 
     {children}
   </main>

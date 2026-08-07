@@ -209,5 +209,5 @@ export function WaterSurface(){
     }
   },[])
 
-  return <canvas ref={canvas} className="water-surface" aria-hidden="true"/>
+  return <canvas ref={canvas} className="water-surface pointer-events-none fixed inset-0 -z-15 h-full w-full [filter:sepia(.36)_contrast(.82)_brightness(.58)] [[data-theme=light]_&]:opacity-40 [[data-theme=light]_&]:[filter:grayscale(.58)_sepia(.2)_contrast(.74)_brightness(1.18)] motion-reduce:hidden" aria-hidden="true"/>
 }

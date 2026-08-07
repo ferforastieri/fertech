@@ -11,7 +11,7 @@ Reunir em uma única aplicação o trabalho e a identidade de Fernando sem trans
 - leitura clara em desktop e mobile;
 - temas claro e escuro;
 - conteúdo em português, inglês e espanhol;
-- transições e entradas coordenadas por Anime.js;
+- transições e entradas coordenadas por Web Animations API e `requestAnimationFrame`;
 - páginas pré-renderizadas para carregamento rápido e indexação;
 - instalação como PWA e navegação básica offline.
 
@@ -29,11 +29,11 @@ Reunir em uma única aplicação o trabalho e a identidade de Fernando sem trans
 | Camada | Tecnologias |
 | --- | --- |
 | Aplicação | Next.js 16, React 19 e TypeScript 5 |
-| Animação | Anime.js 4 e Web Animations API |
+| Animação | Web Animations API e `requestAnimationFrame` |
 | Gráficos | WebGL 1.0, GLSL e Canvas |
 | Conteúdo | next-intl e catálogos JSON tipados |
-| Estilo | CSS por módulo visual, Manrope e Instrument Serif locais |
-| PDF | jsPDF e html2canvas, carregados sob demanda |
+| Estilo | Tailwind CSS 4, Manrope e Instrument Serif locais |
+| PDF | jsPDF carregado sob demanda |
 | PWA | Web App Manifest, Service Worker e cache offline nativos |
 | SEO | Metadata API, Open Graph gerado, JSON-LD, sitemap e robots |
 | Entrega | Vercel e domínio `fer.tec.br` |
@@ -87,7 +87,7 @@ Next.js App Router
    ↓
 SceneShell global
    ├── preferências de tema, idioma e navegação
-   ├── transições Anime.js
+   ├── animações nativas do navegador
    └── conteúdo da rota
 ```
 

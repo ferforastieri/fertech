@@ -1,7 +1,6 @@
 'use client'
 
 import {type RefObject,useEffect} from 'react'
-import {animate,stagger} from 'animejs'
 import {usePathname} from 'next/navigation'
 
 type RevealRoot=HTMLElement|null
@@ -15,12 +14,15 @@ export function useScrollReveal(root:RefObject<RevealRoot>,selector:string){
     if(matchMedia('(prefers-reduced-motion: reduce)').matches){elements.forEach(element=>{element.style.opacity='1';element.style.transform='none';element.style.filter='none'});return}
     let observer:IntersectionObserver|undefined
     let frame=0
-    const motions:ReturnType<typeof animate>[]=[]
+    const motions:Animation[]=[]
 
     const reveal=(targets:HTMLElement[],delay=0)=>{
       if(!targets.length)return
       targets.forEach(target=>target.dataset.revealed='true')
-      motions.push(animate(targets,{opacity:[0,1],y:[32,0],scale:[.985,1],filter:['blur(9px)','blur(0px)'],delay:stagger(64,{start:delay}),duration:820,ease:'outExpo'}))
+      targets.forEach((target,index)=>motions.push(target.animate([
+        {opacity:0,transform:'translateY(32px) scale(.985)',filter:'blur(9px)'},
+        {opacity:1,transform:'translateY(0) scale(1)',filter:'blur(0)'},
+      ],{duration:820,delay:delay+index*64,easing:'cubic-bezier(.16,1,.3,1)',fill:'both'})))
     }
     const start=()=>{
       if(observer)return
@@ -43,7 +45,7 @@ export function useScrollReveal(root:RefObject<RevealRoot>,selector:string){
     return()=>{
       cancelAnimationFrame(frame)
       observer?.disconnect()
-      motions.forEach(motion=>motion.revert())
+      motions.forEach(motion=>motion.cancel())
     }
   },[pathname,root,selector])
 }

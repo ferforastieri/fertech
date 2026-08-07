@@ -26,6 +26,7 @@ void main(){
   float id=a_seed.w;
   float active=step(id,u_density);
   float t=u_time;
+  vec2 trailAnchor=a_seed.xy;
   vec2 p=a_seed.xy;
   float depth=a_seed.z;
   float energy=.45;
@@ -91,30 +92,7 @@ void main(){
     energy=.9;
   }
 
-  if(u_trail>.5){
-    p=a_seed.xy;
-    float phase=t*1.35+id*17.0;
-    if(u_scene<.5){
-      if(u_motion<.5)p=rotate(p,phase*.16);
-      else if(u_motion<1.5)p.y+=sin(p.x*9.0+phase)*.045;
-      else p+=vec2(sin(phase*1.9),cos(phase*1.37))*.032;
-    }else if(u_scene<1.5){
-      p=rotate(p,phase*.12)*(1.0+.08*sin(phase));
-    }else if(u_scene<2.5){
-      p.y+=sin(p.x*14.0+phase)*.065;
-    }else if(u_scene<3.5){
-      p=floor(p*11.0+.5)/11.0+vec2(sin(phase),cos(phase))*.012;
-    }else if(u_scene<4.5){
-      p*=.72+.18*sin(phase*.45);
-      p=rotate(p,phase*.08);
-    }else if(u_scene<5.5){
-      p.y+=sin(p.x*8.0+phase)*.075;
-    }else{
-      p+=vec2(sin(phase*1.7),cos(phase*1.3))*.045;
-    }
-    depth=sin(phase);
-    energy=.72;
-  }else if(u_scene>=.5){
+  if(u_scene>=.5){
     if(u_motion<.5){
       p=rotate(p,t*.055+id*.14);
     }else if(u_motion<1.5){
@@ -124,9 +102,30 @@ void main(){
     }
   }
 
+  if(u_trail>.5){
+    p=trailAnchor+p*.14;
+  }
+
   vec2 repel=p-u_pointer;
   float distanceToPointer=max(length(repel),.025);
-  p+=normalize(repel)*smoothstep(.22,0.0,distanceToPointer)*.055;
+  float pointerForce=smoothstep(.26,0.0,distanceToPointer);
+  if(u_trail<.5&&pointerForce>0.0){
+    if(u_scene<.5){
+      p+=normalize(repel)*pointerForce*.07;
+    }else if(u_scene<1.5){
+      p=u_pointer+rotate(repel,pointerForce*.32);
+    }else if(u_scene<2.5){
+      p.y+=sin(distanceToPointer*34.0-t*5.0)*pointerForce*.075;
+    }else if(u_scene<3.5){
+      p+=normalize(repel)*sin(distanceToPointer*28.0-t*4.0)*pointerForce*.045;
+    }else if(u_scene<4.5){
+      p=u_pointer+repel*(1.0-pointerForce*.24);
+    }else if(u_scene<5.5){
+      p.y+=cos(repel.x*24.0-t*3.0)*pointerForce*.065;
+    }else{
+      p-=normalize(repel)*pointerForce*.055;
+    }
+  }
   float aspect=u_resolution.x/u_resolution.y;
   p.x/=max(1.0,aspect*.73);
   gl_Position=vec4(p,0.0,1.0);
@@ -177,10 +176,12 @@ export function AuroraLab({settings,clearToken,label}:{settings:AuroraSettings;c
     gl.bindBuffer(gl.ARRAY_BUFFER,baseBuffer);gl.bufferData(gl.ARRAY_BUFFER,seeds,gl.STATIC_DRAW)
     const trailBuffer=gl.createBuffer()
     const trail:number[]=[]
+    const trailCapacity=3600
+    const particlesPerSample=18
     const position=gl.getAttribLocation(shaderProgram,'a_seed')
     const uniforms={resolution:gl.getUniformLocation(shaderProgram,'u_resolution'),pointer:gl.getUniformLocation(shaderProgram,'u_pointer'),time:gl.getUniformLocation(shaderProgram,'u_time'),scene:gl.getUniformLocation(shaderProgram,'u_scene'),motion:gl.getUniformLocation(shaderProgram,'u_motion'),density:gl.getUniformLocation(shaderProgram,'u_density'),pointScale:gl.getUniformLocation(shaderProgram,'u_pointScale'),trail:gl.getUniformLocation(shaderProgram,'u_trail'),color:gl.getUniformLocation(shaderProgram,'u_color')}
     const pointer={x:9,y:9,down:false}
-    const updatePointer=(event:PointerEvent)=>{const rect=element.getBoundingClientRect();pointer.x=((event.clientX-rect.left)/rect.width)*2-1;pointer.y=1-((event.clientY-rect.top)/rect.height)*2;if(pointer.down&&settingsRef.current.drawing){trail.push(pointer.x,pointer.y,Math.random(),Math.min(.999,trail.length/4/420));if(trail.length>420*4)trail.splice(0,4)}}
+    const updatePointer=(event:PointerEvent)=>{const rect=element.getBoundingClientRect();const aspectScale=Math.max(1,(rect.width/rect.height)*.73);const samples=event.getCoalescedEvents?.()||[event];samples.forEach(sample=>{pointer.x=(((sample.clientX-rect.left)/rect.width)*2-1)*aspectScale;pointer.y=1-((sample.clientY-rect.top)/rect.height)*2;if(pointer.down&&settingsRef.current.drawing){for(let particle=0;particle<particlesPerSample;particle++){trail.push(pointer.x,pointer.y,Math.random(),Math.random());if(trail.length>trailCapacity*4)trail.splice(0,4)}}})}
     const down=(event:PointerEvent)=>{pointer.down=true;element.setPointerCapture?.(event.pointerId);updatePointer(event)}
     const up=()=>{pointer.down=false}
     const leave=()=>{if(!pointer.down){pointer.x=9;pointer.y=9}}
@@ -203,5 +204,5 @@ export function AuroraLab({settings,clearToken,label}:{settings:AuroraSettings;c
     raf=requestAnimationFrame(draw)
     return()=>{cancelAnimationFrame(raf);observer.disconnect();element.removeEventListener('pointermove',updatePointer);element.removeEventListener('pointerdown',down);element.removeEventListener('pointerup',up);element.removeEventListener('pointercancel',up);element.removeEventListener('pointerleave',leave);gl.deleteBuffer(baseBuffer);gl.deleteBuffer(trailBuffer);gl.deleteProgram(shaderProgram)}
   },[])
-  return <canvas ref={canvas} className="aurora-lab" aria-label={label}/>
+  return <canvas ref={canvas} className="aurora-lab block h-full min-h-[470px] w-full touch-none md:min-h-[610px]" aria-label={label}/>
 }

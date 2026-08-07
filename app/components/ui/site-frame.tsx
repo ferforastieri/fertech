@@ -8,7 +8,7 @@ import {siteContent} from '@/messages/site-content'
 
 export function SiteFrame({children,className=''}:{children:ReactNode;className?:string}){return <SceneShell className={className}>
   <FloatingNavigation/>
-  <Link className="corner-logo scene-item" href="/" aria-label={siteContent.identity.name}><Logo/></Link>
-  <div className="route-view">{children}</div>
+  <Link className="corner-logo scene-item fixed top-[26px] left-[4.5vw] z-30 text-paper no-underline max-md:hidden" href="/" aria-label={siteContent.identity.name}><Logo/></Link>
+  <div className="route-view relative z-1 min-h-svh min-w-0 will-change-[opacity,transform,filter]">{children}</div>
   <GlobalProfile/>
 </SceneShell>}

@@ -4,7 +4,6 @@ import {PwaRegistration} from '@/app/components/ui/pwa-registration'
 import {siteContent} from '@/messages/site-content'
 import {siteUrl} from './seo'
 import './globals.css'
-import './components/ui/ui.css'
 
 export const metadata:Metadata={
   metadataBase:siteUrl,
@@ -31,5 +30,5 @@ export default function Layout({children}:{children:React.ReactNode}){
     '@context':'https://schema.org','@type':'Person',name:siteContent.identity.name,url:siteUrl.href,jobTitle:siteContent.identity.jobTitle,address:{'@type':'PostalAddress',addressLocality:'Sorocaba',addressRegion:'SP',addressCountry:'BR'},sameAs:[siteContent.contacts.linkedin,siteContent.contacts.github,siteContent.contacts.x],email:`mailto:${siteContent.contacts.email}`,
   }
   const website={'@context':'https://schema.org','@type':'WebSite',name:siteContent.identity.brand,url:siteUrl.href,description:siteContent.metadata.description,inLanguage:['pt-BR','en','es'],author:{'@type':'Person',name:siteContent.identity.name}}
-  return <html lang="pt-BR" data-theme="dark"><body suppressHydrationWarning><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify([person,website]).replace(/</g,'\\u003c')}}/><PreferencesProvider><PwaRegistration/>{children}</PreferencesProvider></body></html>
+  return <html lang="pt-BR" data-theme="dark" className="min-h-full min-w-80 bg-ink scroll-smooth font-sans"><body className="min-h-full bg-ink font-sans" suppressHydrationWarning><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify([person,website]).replace(/</g,'\\u003c')}}/><PreferencesProvider><PwaRegistration/>{children}</PreferencesProvider></body></html>
 }
