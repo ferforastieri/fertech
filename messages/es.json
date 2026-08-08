@@ -11,6 +11,9 @@
     "language": "Seleccionar idioma",
     "openMenu": "Abrir navegación",
     "closeMenu": "Cerrar navegación",
+    "pages": "Navegación entre páginas",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
     "portuguese": "Portugués",
     "english": "Inglés",
     "spanish": "Español"
