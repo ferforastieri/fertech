@@ -28,11 +28,11 @@ export function GlobalProfile(){
         <p className="global-profile__signature mt-4 mb-0 origin-center -rotate-2 font-display text-[clamp(38px,10vw,50px)] leading-[.82] italic"><TypedText text={profile('signature')}/></p>
         <p className="global-profile__introduction mt-5 mb-0 max-w-[32ch] text-small leading-[1.55] font-[540] opacity-68"><TypedText text={profile('introduction')}/></p>
         <a className="global-profile__contact group mt-5 inline-flex min-h-10 items-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-4 py-2 text-caption font-[760] tracking-[.13em] text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none" href={`mailto:${siteContent.contacts.email}`}><span>{profile('cta')}</span><span className="font-display text-lg font-normal transition-transform duration-250 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true">↗</span></a>
+      </div>
 
-        <div className="mt-7 grid w-full gap-5 sm:grid-cols-2">
-          <div className={`${corner} text-center sm:text-left`}><span className={detailLabel}>{profile('base')}</span><span>{profile('location')}</span></div>
-          <div className={`${corner} min-w-0 text-center sm:text-right`}><span className={detailLabel}>{profile('write')}</span><a className="break-all text-inherit underline decoration-[color-mix(in_srgb,var(--paper)_30%,transparent)] underline-offset-4" href={`mailto:${siteContent.contacts.email}`}>{siteContent.contacts.email}</a></div>
-        </div>
+      <div className="mx-auto mt-7 grid w-full max-w-[420px] gap-5 px-1 text-center md:hidden sm:grid-cols-2">
+        <div className={`${corner} text-center sm:text-left`}><span className={detailLabel}>{profile('base')}</span><span>{profile('location')}</span></div>
+        <div className={`${corner} min-w-0 text-center sm:text-right`}><span className={detailLabel}>{profile('write')}</span><a className="break-all text-inherit underline decoration-[color-mix(in_srgb,var(--paper)_30%,transparent)] underline-offset-4" href={`mailto:${siteContent.contacts.email}`}>{siteContent.contacts.email}</a></div>
       </div>
 
       <div className="hidden grid-cols-[1fr_auto_1fr] items-start gap-8 md:grid">
