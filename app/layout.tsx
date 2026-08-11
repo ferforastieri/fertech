@@ -5,6 +5,9 @@ import {siteContent} from '@/messages/site-content'
 import {siteUrl} from './seo'
 import './globals.css'
 
+const socialTitle=`${siteContent.identity.name} — ${siteContent.identity.jobTitle}`
+const socialImage='/opengraph-image/?social=v2'
+
 export const metadata:Metadata={
   metadataBase:siteUrl,
   title:{default:siteContent.identity.name,template:`%s — ${siteContent.identity.name}`},
@@ -19,8 +22,8 @@ export const metadata:Metadata={
   manifest:'/manifest.webmanifest',
   icons:{icon:[{url:'/icon',type:'image/png'}],apple:'/pwa-icon.svg'},
   appleWebApp:{capable:true,title:siteContent.identity.brand,statusBarStyle:'black-translucent'},
-  openGraph:{type:'website',locale:'pt_BR',url:'/',siteName:siteContent.identity.brand,title:siteContent.identity.name,description:siteContent.metadata.description},
-  twitter:{card:'summary_large_image',title:siteContent.identity.name,description:siteContent.metadata.description},
+  openGraph:{type:'website',locale:'pt_BR',url:'/',siteName:siteContent.identity.brand,title:socialTitle,description:siteContent.metadata.description,images:[{url:socialImage,width:1200,height:630,alt:`${siteContent.identity.name}, ${siteContent.identity.jobTitle}`}]},
+  twitter:{card:'summary_large_image',title:socialTitle,description:siteContent.metadata.description,images:[socialImage]},
   robots:{index:true,follow:true,googleBot:{index:true,follow:true,'max-image-preview':'large','max-snippet':-1,'max-video-preview':-1}},
 }
 export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:[{media:'(prefers-color-scheme: dark)',color:'#181714'},{media:'(prefers-color-scheme: light)',color:'#e9e1d4'}]}

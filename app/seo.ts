@@ -5,11 +5,13 @@ const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL||process.env.VERCEL_PROJECT
 export const siteUrl=new URL(configuredUrl.startsWith('http')?configuredUrl:`https://${configuredUrl}`)
 
 export function pageMetadata(title:string,description:string,path:string):Metadata{
+  const socialTitle=`${title} — ${siteContent.identity.name}`
+  const socialImage='/opengraph-image/?social=v2'
   return {
     title,
     description,
     alternates:{canonical:path},
-    openGraph:{title,description,url:path,type:'website',siteName:siteContent.identity.brand,locale:'pt_BR',images:[{url:'/opengraph-image',width:1200,height:630,alt:`${siteContent.identity.name} — ${title}`}]},
-    twitter:{card:'summary_large_image',title,description,images:['/opengraph-image']},
+    openGraph:{title:socialTitle,description,url:path,type:'website',siteName:siteContent.identity.brand,locale:'pt_BR',images:[{url:socialImage,width:1200,height:630,alt:`${siteContent.identity.name} — ${title}`}]},
+    twitter:{card:'summary_large_image',title:socialTitle,description,images:[socialImage]},
   }
 }
