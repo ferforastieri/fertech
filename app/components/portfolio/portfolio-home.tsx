@@ -20,8 +20,7 @@ export function PortfolioHome(){
       <div className="central-composition static flex w-full flex-col items-center gap-2.5 md:absolute md:top-1/2 md:left-1/2 md:w-[min(76vw,980px)] md:-translate-x-1/2 md:-translate-y-1/2 md:gap-[clamp(18px,2.2vh,30px)]">
         <AnimatedIdentity passion={t('passion')} role={t('role')}/>
         <Card className="scene-portrait relative z-10 aspect-square w-[clamp(132px,42vw,170px)] shrink-0 overflow-hidden rounded-[20px] p-0 shadow-[0_25px_50px_-12px_rgba(0,0,0,.5)] md:w-[clamp(138px,16vw,220px)] md:rounded-3xl">
-          <Image src="/assets/fernando.png" alt={t('portraitAlt')} fill priority sizes="(max-width: 768px) 170px, 285px" className="object-cover mix-blend-luminosity [filter:grayscale(1)_contrast(1.1)]"/>
-          <div className="absolute inset-0 bg-[color-mix(in_srgb,var(--paper)_10%,transparent)] mix-blend-color"/>
+          <Image src="/assets/fernando.png" alt={t('portraitAlt')} fill priority sizes="(max-width: 768px) 170px, 285px" className="object-cover"/>
         </Card>
       </div>
     </section>

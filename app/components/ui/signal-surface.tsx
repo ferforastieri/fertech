@@ -48,15 +48,23 @@ vec2 coverUv(vec2 uv){
 }
 float heightAt(vec2 point){return texture2D(u_state,point).r*2.0-1.0;}
 void main(){
+  float center=heightAt(v_uv);
   float left=heightAt(v_uv-vec2(u_texel.x,0.0));
   float right=heightAt(v_uv+vec2(u_texel.x,0.0));
   float bottom=heightAt(v_uv-vec2(0.0,u_texel.y));
   float top=heightAt(v_uv+vec2(0.0,u_texel.y));
   vec2 gradient=vec2(right-left,top-bottom);
-  vec2 imageUv=coverUv(v_uv+gradient*.055);
+  vec2 imageUv=coverUv(v_uv);
   vec3 color=texture2D(u_image,imageUv).rgb;
-  float crest=clamp(length(gradient)*2.4,0.0,.16);
-  color+=crest;
+  vec2 gridCell=abs(fract(v_uv*vec2(72.0,42.0))-.5);
+  float grid=smoothstep(.455,.5,max(gridCell.x,gridCell.y));
+  float node=smoothstep(.46,.5,min(gridCell.x,gridCell.y));
+  float signal=clamp(abs(center)*5.5+length(gradient)*3.2,0.0,1.0);
+  float luminance=dot(color,vec3(.299,.587,.114));
+  color=mix(vec3(luminance),color,.18)*.88;
+  color+=vec3(.72,.84,.8)*grid*(.025+signal*.34);
+  color+=vec3(.88,.94,.9)*node*signal*.22;
+  color+=vec3(.68,.8,.76)*signal*.07;
   gl_FragColor=vec4(color,1.0);
 }`
 
@@ -84,7 +92,7 @@ function createProgram(gl:WebGLRenderingContext,fragmentSource:string){
   return program
 }
 
-export function WaterSurface(){
+export function SignalSurface(){
   const canvas=useRef<HTMLCanvasElement>(null)
 
   useEffect(()=>{
@@ -209,5 +217,5 @@ export function WaterSurface(){
     }
   },[])
 
-  return <canvas ref={canvas} className="water-surface pointer-events-none fixed inset-0 -z-15 h-full w-full [filter:sepia(.36)_contrast(.82)_brightness(.58)] [[data-theme=light]_&]:opacity-40 [[data-theme=light]_&]:[filter:grayscale(.58)_sepia(.2)_contrast(.74)_brightness(1.18)] motion-reduce:hidden" aria-hidden="true"/>
+  return <canvas ref={canvas} className="signal-surface pointer-events-none fixed inset-0 -z-15 h-full w-full [filter:sepia(.28)_contrast(.88)_brightness(.58)] [[data-theme=light]_&]:opacity-42 [[data-theme=light]_&]:[filter:grayscale(.5)_sepia(.16)_contrast(.78)_brightness(1.16)] motion-reduce:hidden" aria-hidden="true"/>
 }
