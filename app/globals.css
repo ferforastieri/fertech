@@ -84,6 +84,20 @@ html{scroll-behavior:smooth}
   opacity:1;
 }
 
+@media(min-width:768px){
+  .editorial-page,.experience-section{
+    transition:padding-top 340ms cubic-bezier(.22,1,.36,1);
+  }
+
+  .scene-shell:not(.scene-shell--nav-top) .editorial-page{
+    padding-top:clamp(28px,4vh,48px);
+  }
+
+  .scene-shell:not(.scene-shell--nav-top) .experience-section{
+    padding-top:clamp(64px,8vh,96px);
+  }
+}
+
 .custom-cursor__arrow,.custom-cursor__pointer{transition:opacity 120ms ease,transform 180ms cubic-bezier(.22,1,.36,1)}
 .custom-cursor__pointer{opacity:0;transform:scale(.76) rotate(-6deg);transform-origin:6px 2px}
 .custom-cursor[data-variant='pointer'] .custom-cursor__arrow{opacity:0;transform:scale(.72) rotate(8deg)}

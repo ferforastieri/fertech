@@ -4,7 +4,7 @@ import {useEffect,useRef,useState} from 'react'
 import type {TreeNode} from './project-data'
 
 function FolderNode({node,depth=0}:{node:TreeNode;depth?:number}){
-  const [open,setOpen]=useState(depth<2)
+  const [open,setOpen]=useState(depth<3)
   const children=useRef<HTMLDivElement>(null)
   const activeMotion=useRef<Animation|null>(null)
   useEffect(()=>()=>activeMotion.current?.cancel(),[])
@@ -27,7 +27,7 @@ function FolderNode({node,depth=0}:{node:TreeNode;depth?:number}){
   if(node.type==='file')return <div className={`${rowClass} tree-file`} style={{'--tree-depth':depth} as React.CSSProperties}><span className="relative h-4 w-[13px] flex-none rounded-[1px] border border-[color-mix(in_srgb,var(--paper)_48%,transparent)] after:absolute after:top-[-1px] after:right-[-1px] after:border-t-[5px] after:border-t-ink after:border-l-[5px] after:border-l-transparent after:content-['']"/><span>{node.name}</span></div>
   return <div className="tree-folder">
     <button className={`${rowClass} folder-row hover:bg-[color-mix(in_srgb,var(--paper)_9%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--paper)_9%,transparent)] focus-visible:outline-none`} style={{'--tree-depth':depth} as React.CSSProperties} type="button" onClick={toggle} aria-expanded={open}><span className={`relative h-3 w-[17px] flex-none origin-bottom-left rounded-sm border border-[color-mix(in_srgb,var(--paper)_65%,transparent)] bg-[color-mix(in_srgb,var(--paper)_10%,transparent)] transition-[transform,background-color] duration-220 before:absolute before:bottom-full before:left-px before:h-[3px] before:w-[7px] before:rounded-t-sm before:border before:border-b-0 before:border-[color-mix(in_srgb,var(--paper)_65%,transparent)] before:content-[''] ${open?'skew-x-[-7deg] bg-[color-mix(in_srgb,var(--paper)_22%,transparent)]':''}`}/><span>{node.name}</span><small className="ml-auto font-sans text-[13px] opacity-40">{open?'−':'+'}</small></button>
-    <div ref={children} className="overflow-hidden" hidden={!open}>{node.children?.map(child=><FolderNode key={`${node.name}/${child.name}`} node={child} depth={depth+1}/>)}</div>
+    <div ref={children} className="overflow-hidden" hidden={!open}>{open&&node.children?.map(child=><FolderNode key={`${node.name}/${child.name}`} node={child} depth={depth+1}/>)}</div>
   </div>
 }
 
