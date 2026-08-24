@@ -26,13 +26,13 @@ export function FloatingNavigation(){
   const [drawerOpen,setDrawerOpen]=useState(false)
   const vertical=navPosition==='left'||navPosition==='right'
   const rootPosition={
-    top:'sticky top-[max(10px,env(safe-area-inset-top))] mx-auto mt-[max(10px,env(safe-area-inset-top))] w-max md:fixed md:top-5 md:left-1/2 md:m-0 md:-translate-x-1/2',
+    top:'fixed bottom-[max(12px,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 md:top-5 md:bottom-auto md:m-0',
     bottom:'fixed bottom-[max(12px,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 md:bottom-5',
     left:'fixed top-1/2 left-0 -translate-y-1/2 md:left-5',
     right:'fixed top-1/2 right-0 -translate-y-1/2 md:right-5',
   }[navPosition]
   const dropdownPosition={
-    top:'top-[calc(100%+9px)] left-1/2 -translate-x-1/2',
+    top:'bottom-[calc(100%+9px)] left-1/2 -translate-x-1/2 md:top-[calc(100%+9px)] md:bottom-auto',
     bottom:'bottom-[calc(100%+9px)] left-1/2 -translate-x-1/2',
     left:'top-1/2 left-[calc(100%+42px)] -translate-y-1/2 md:left-[calc(100%+9px)]',
     right:'top-1/2 right-[calc(100%+42px)] -translate-y-1/2 md:right-[calc(100%+9px)]',

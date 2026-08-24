@@ -11,7 +11,8 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
   useEffect(()=>{
     if(!prompt.current||!output.current||!caret.current)return
     const portrait=document.querySelector<HTMLElement>('.scene-portrait')
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches){output.current.textContent=role;return}
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){prompt.current.dataset.phase='role';output.current.textContent=role;return}
+    prompt.current.dataset.phase='passion'
     output.current.textContent=''
     const passionType=passion.length*28
     const pause=620
@@ -29,7 +30,7 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
       if(time<=passionType)output.current.textContent=passion.slice(0,Math.ceil(time/passionType*passion.length))
       else if(time<=passionType+pause)output.current.textContent=passion
       else if(time<=roleStart)output.current.textContent=passion.slice(0,Math.max(0,passion.length-Math.ceil((time-passionType-pause)/passionDelete*passion.length)))
-      else output.current.textContent=role.slice(0,Math.ceil((time-roleStart)/roleType*role.length))
+      else{prompt.current!.dataset.phase='role';output.current.textContent=role.slice(0,Math.ceil((time-roleStart)/roleType*role.length))}
       if(time<duration){raf=requestAnimationFrame(tick);return}
       caretMotion.cancel()
       caretMotion=caret.current!.animate([{opacity:1},{opacity:.35}],{duration:620,direction:'alternate',iterations:Infinity,easing:'ease-in-out'})
@@ -38,8 +39,8 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
     return()=>{cancelAnimationFrame(raf);caretMotion.cancel();portraitMotion?.cancel()}
   },[passion,role])
 
-  return <div className="identity-stage text-center">
+  return <div className="identity-stage w-full text-center">
     <h1 id="portfolio-title" className="sr-only">{siteContent.identity.name}</h1>
-    <p ref={prompt} className="identity-prompt mx-auto min-h-[1.55em] max-w-[19ch] overflow-visible p-0 font-display text-[clamp(27px,9vw,39px)] leading-[.94] tracking-[-.03em] motion-reduce:hidden md:min-h-[2em] md:w-max md:max-w-full md:whitespace-pre-line md:px-4 md:text-[clamp(38px,4vw,60px)] md:leading-[.88]" aria-live="polite"><span ref={output}/><span ref={caret} className="typed-caret ml-[5px] inline-block h-[1.15em] w-px origin-center bg-paper motion-reduce:hidden" aria-hidden="true"/></p>
+    <p ref={prompt} className="identity-prompt mx-auto min-h-[2em] w-full max-w-none overflow-visible p-0 font-display text-[clamp(27px,9vw,39px)] leading-[.94] tracking-[-.03em] motion-reduce:hidden md:w-max md:max-w-full md:whitespace-pre-line md:px-4 md:text-[clamp(38px,4vw,60px)] md:leading-[.88]" aria-live="polite"><span ref={output}/><span ref={caret} className="typed-caret inline-block h-[1.15em] w-px translate-x-[5px] origin-center bg-paper motion-reduce:hidden" aria-hidden="true"/></p>
   </div>
 }

@@ -94,6 +94,13 @@ html{scroll-behavior:smooth}
   box-shadow:inset 0 1px 0 color-mix(in srgb,var(--paper) 10%,transparent);
 }
 
+@media(max-width:767px){
+  .identity-prompt[data-phase='role']{
+    white-space:pre;
+    font-size:clamp(27px,8vw,36px);
+  }
+}
+
 .route-view:has(.project-explorer){min-height:0}
 
 @media(min-width:768px){

@@ -3,11 +3,10 @@
 import {useEffect,useRef} from 'react'
 import {useTranslations} from 'next-intl'
 import Link from 'next/link'
-import type {NavPosition} from '@/app/components/ui/preferences-provider'
 
 const experienceKeys=['smart','inet','getninjas'] as const
 
-export function ExperienceTimeline({navPosition}:{navPosition:NavPosition}){
+export function ExperienceTimeline(){
   const t=useTranslations('Experience')
   const root=useRef<HTMLElement>(null)
 
@@ -30,7 +29,7 @@ export function ExperienceTimeline({navPosition}:{navPosition:NavPosition}){
     return()=>{sectionObserver.disconnect();itemObserver.disconnect()}
   },[])
 
-  return <section ref={root} id="experiencia" className={`experience-section relative min-h-0 px-[18px] pt-4 md:min-h-svh md:px-[4.5vw] md:pt-[clamp(110px,14vh,170px)] ${navPosition==='top'?'scroll-mt-[52px] md:scroll-mt-0':''}`} aria-labelledby="experience-title">
+  return <section ref={root} id="experiencia" className="experience-section relative min-h-0 px-[18px] pt-4 md:min-h-svh md:px-[4.5vw] md:pt-[clamp(110px,14vh,170px)]" aria-labelledby="experience-title">
     <header className="experience-heading mx-auto mb-4 max-w-[540px] text-center opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:mb-20 md:max-w-[720px]">
       <p className="m-0 text-label font-bold tracking-[.2em] uppercase opacity-58">{t('eyebrow')}</p>
       <h2 className="mt-2 mb-0 font-display text-[clamp(48px,7vw,104px)] leading-[.88] font-normal tracking-[-.045em] md:mt-3.5" id="experience-title">{t('title')}</h2>
