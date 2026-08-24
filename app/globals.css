@@ -84,6 +84,8 @@ html{scroll-behavior:smooth}
   opacity:1;
 }
 
+.route-view:has(.project-explorer){min-height:0}
+
 @media(min-width:768px){
   .editorial-page,.experience-section{
     transition:padding-top 340ms cubic-bezier(.22,1,.36,1);
