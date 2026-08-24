@@ -92,7 +92,9 @@ function createProgram(gl:WebGLRenderingContext,fragmentSource:string){
   return program
 }
 
-export function SignalSurface(){
+const defaultImage='https://images.pexels.com/photos/5408005/pexels-photo-5408005.jpeg?auto=compress&cs=tinysrgb&w=1920'
+
+export function SignalSurface({imageSrc=defaultImage}:{imageSrc?:string}){
   const canvas=useRef<HTMLCanvasElement>(null)
 
   useEffect(()=>{
@@ -138,7 +140,7 @@ export function SignalSurface(){
     let imageAspect=1.5
     const image=new Image()
     image.crossOrigin='anonymous'
-    image.src='https://images.pexels.com/photos/5408005/pexels-photo-5408005.jpeg?auto=compress&cs=tinysrgb&w=1920'
+    image.src=imageSrc
     image.onload=()=>{imageAspect=image.naturalWidth/image.naturalHeight;gl.bindTexture(gl.TEXTURE_2D,imageTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image)}
 
     const positionLocation=new Map<WebGLProgram,number>()
@@ -215,7 +217,7 @@ export function SignalSurface(){
       gl.deleteProgram(simulation)
       gl.deleteProgram(render)
     }
-  },[])
+  },[imageSrc])
 
   return <canvas ref={canvas} className="signal-surface pointer-events-none fixed inset-0 -z-15 h-full w-full [filter:sepia(.28)_contrast(.88)_brightness(.58)] [[data-theme=light]_&]:opacity-42 [[data-theme=light]_&]:[filter:grayscale(.5)_sepia(.16)_contrast(.78)_brightness(1.16)] motion-reduce:hidden" aria-hidden="true"/>
 }
