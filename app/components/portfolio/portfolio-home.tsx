@@ -42,7 +42,7 @@ export function PortfolioHome(){
     </div>
     <aside className="home-summary-desktop home-scroll-fade scene-item absolute bottom-[3.5vh] left-[4.5vw] z-12 hidden w-[min(21vw,250px)] text-left text-[color-mix(in_srgb,var(--paper)_88%,transparent)] md:block md:max-[1100px]:w-[210px] md:will-change-[transform,opacity]">
       <p className="m-0 origin-left -rotate-2 font-display text-[clamp(29px,2.7vw,42px)] leading-none italic"><TypedText text={t('resumeEyebrow')}/></p>
-      <p className="home-supporting-copy mt-3 mr-auto mb-0 max-w-[34ch] text-small leading-[1.5]">{t('resumeIntro')}</p>
+      <p className="home-supporting-copy mt-3 mr-auto mb-0 max-w-[34ch] text-small leading-[1.5]"><TypedText text={t('resumeIntro')}/></p>
       <Link className="group mt-3 inline-flex min-h-9 items-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-[15px] py-2 text-label font-[760] tracking-[.12em] whitespace-nowrap text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none" href="/curriculo"><span>{t('resumeCta')}</span><span className="font-display text-lg font-normal transition-transform duration-250 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true">↗</span></Link>
     </aside>
     <HomePillLink className="home-experience-cta scroll-cue scene-item static z-20 order-4 mx-auto w-max md:absolute md:right-0 md:left-0" href="#experiencia" label={t('scroll')} arrow="down" onClick={showExperienceAndFooter}/>

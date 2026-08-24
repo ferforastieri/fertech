@@ -44,21 +44,17 @@ export function GlobalFooter({hideOnHome=false}:{hideOnHome?:boolean}={}){
     const scrollToDocumentEnd=()=>{
       window.scrollTo({
         top:document.documentElement.scrollHeight-window.innerHeight,
-        behavior:'smooth'
+        behavior:'auto'
       })
     }
     const frame=window.requestAnimationFrame(scrollToDocumentEnd)
-    const transitionEnd=window.setTimeout(scrollToDocumentEnd,360)
 
-    return()=>{
-      window.cancelAnimationFrame(frame)
-      window.clearTimeout(transitionEnd)
-    }
+    return()=>window.cancelAnimationFrame(frame)
   },[hidden,navPosition])
 
   if(hidden)return null
 
-  return <footer id="contato" className={`global-profile relative z-10 mx-auto mt-10 w-[calc(100%_-_36px)] px-1 pt-0 text-paper transition-[padding-bottom] duration-340 ease-[cubic-bezier(.22,1,.36,1)] md:mt-12 md:w-[calc(100%_-_9vw)] md:border-t md:border-[color-mix(in_srgb,var(--paper)_22%,transparent)] md:px-0 md:pt-5 ${navPosition==='bottom'?'pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-[88px]':'pb-[calc(24px+env(safe-area-inset-bottom))] md:pb-5'}`}>
+  return <footer id="contato" className={`global-profile relative z-10 mx-auto mt-10 w-[calc(100%_-_36px)] px-1 pt-0 text-paper md:mt-12 md:w-[calc(100%_-_9vw)] md:border-t md:border-[color-mix(in_srgb,var(--paper)_22%,transparent)] md:px-0 md:pt-5 ${navPosition==='bottom'?'pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-[88px]':'pb-[calc(24px+env(safe-area-inset-bottom))] md:pb-5'}`}>
       <div className="mx-auto flex w-full max-w-[420px] flex-col items-center border-y border-[color-mix(in_srgb,var(--paper)_28%,transparent)] px-1 py-6 text-center md:hidden">
         <p className="m-0 text-micro font-[760] tracking-[.22em] uppercase opacity-48">{profile('eyebrow')}</p>
         <p className="global-profile__signature mt-4 mb-0 origin-center -rotate-2 font-display text-[clamp(38px,10vw,50px)] leading-[.82] italic"><TypedText text={profile('signature')}/></p>
