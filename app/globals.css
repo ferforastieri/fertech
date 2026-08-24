@@ -143,6 +143,18 @@ html{scroll-behavior:smooth}
     white-space:pre;
     font-size:clamp(27px,8vw,36px);
   }
+
+  .home-experience-cta{
+    transition:transform 340ms cubic-bezier(.22,1,.36,1),background-color 250ms ease,color 250ms ease;
+  }
+
+  .scene-shell--nav-bottom .home-experience-cta{
+    transform:translateY(-52px);
+  }
+
+  .scene-shell:not(.scene-shell--nav-bottom) .home-experience-cta{
+    transform:translateY(0);
+  }
 }
 
 .route-view:has(.project-explorer){min-height:0}

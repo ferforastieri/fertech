@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import {useEffect,useRef} from 'react'
 import {useTranslations} from 'next-intl'
 import {usePathname} from 'next/navigation'
 import {TypedText} from './typed-text'
@@ -26,8 +27,36 @@ export function GlobalFooter({hideOnHome=false}:{hideOnHome?:boolean}={}){
   const detailLabel='mb-2 block text-micro font-[760] tracking-[.2em] uppercase opacity-45'
   const corner='text-small leading-[1.5] text-[color-mix(in_srgb,var(--paper)_76%,transparent)]'
   const networks:SocialNetwork[]=['github','linkedin','x']
+  const isHome=(pathname.replace(/\/$/,'')||'/')==='/'
+  const hidden=hideOnHome&&isHome
+  const previousNavPosition=useRef(navPosition)
 
-  if(hideOnHome&&(pathname.replace(/\/$/,'')||'/')==='/')return null
+  useEffect(()=>{
+    const previousPosition=previousNavPosition.current
+    previousNavPosition.current=navPosition
+
+    if(hidden||previousPosition===navPosition||navPosition!=='bottom')return
+
+    const root=document.documentElement
+    const distanceFromBottom=root.scrollHeight-(window.scrollY+window.innerHeight)
+    if(distanceFromBottom>180)return
+
+    const scrollToDocumentEnd=()=>{
+      window.scrollTo({
+        top:document.documentElement.scrollHeight-window.innerHeight,
+        behavior:'smooth'
+      })
+    }
+    const frame=window.requestAnimationFrame(scrollToDocumentEnd)
+    const transitionEnd=window.setTimeout(scrollToDocumentEnd,360)
+
+    return()=>{
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(transitionEnd)
+    }
+  },[hidden,navPosition])
+
+  if(hidden)return null
 
   return <footer id="contato" className={`global-profile relative z-10 mx-auto mt-10 w-[calc(100%_-_36px)] px-1 pt-0 text-paper transition-[padding-bottom] duration-340 ease-[cubic-bezier(.22,1,.36,1)] md:mt-12 md:w-[calc(100%_-_9vw)] md:border-t md:border-[color-mix(in_srgb,var(--paper)_22%,transparent)] md:px-0 md:pt-5 ${navPosition==='bottom'?'pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-[88px]':'pb-[calc(24px+env(safe-area-inset-bottom))] md:pb-5'}`}>
       <div className="mx-auto flex w-full max-w-[420px] flex-col items-center border-y border-[color-mix(in_srgb,var(--paper)_28%,transparent)] px-1 py-6 text-center md:hidden">
