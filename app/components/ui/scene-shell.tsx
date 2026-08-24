@@ -62,6 +62,34 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
     if(!isHome||!root.current)return
     const desktop=matchMedia('(min-width: 768px)')
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)')
+    const elements=Array.from(root.current.querySelectorAll<HTMLElement>('.home-scroll-fade'))
+    if(!elements.length)return
+    let raf=0
+    const reset=()=>elements.forEach(element=>{element.style.opacity='';element.style.transform='';element.style.pointerEvents=''})
+    const update=()=>{
+      raf=0
+      if(!desktop.matches){reset();return}
+      const distance=Math.max(220,innerHeight*.34)
+      const progress=Math.min(1,Math.max(0,scrollY/distance))
+      elements.forEach(element=>{
+        element.style.opacity=String(1-progress)
+        element.style.transform=reducedMotion.matches?'none':`translate3d(0,${-progress*18}px,0)`
+        element.style.pointerEvents=progress>.85?'none':''
+      })
+    }
+    const schedule=()=>{if(!raf)raf=requestAnimationFrame(update)}
+    window.addEventListener('scroll',schedule,{passive:true})
+    window.addEventListener('resize',schedule,{passive:true})
+    desktop.addEventListener('change',schedule)
+    reducedMotion.addEventListener('change',schedule)
+    schedule()
+    return()=>{if(raf)cancelAnimationFrame(raf);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);desktop.removeEventListener('change',schedule);reducedMotion.removeEventListener('change',schedule);reset()}
+  },[isHome])
+
+  useEffect(()=>{
+    if(!isHome||!root.current)return
+    const desktop=matchMedia('(min-width: 768px)')
+    const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)')
     const elements=[
       [root.current.querySelector<HTMLElement>('.corner-logo'),root.current.querySelector<HTMLElement>('.corner-metrics')],
       [root.current.querySelector<HTMLElement>('.global-profile--corner'),root.current.querySelector<HTMLElement>('.home-summary')],

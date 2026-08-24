@@ -30,9 +30,9 @@ export function ExperienceTimeline(){
   },[])
 
   return <section ref={root} id="experiencia" className="experience-section relative min-h-0 px-[18px] pt-4 md:min-h-svh md:px-[4.5vw] md:pt-[clamp(110px,14vh,170px)]" aria-labelledby="experience-title">
-    <header className="experience-heading mx-auto mb-4 max-w-[540px] text-center opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:mb-20 md:max-w-[720px]">
+    <header className="experience-heading mx-auto mb-4 w-full max-w-[1100px] text-center opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:mb-20">
       <p className="m-0 text-label font-bold tracking-[.2em] uppercase opacity-58">{t('eyebrow')}</p>
-      <h2 className="mt-2 mb-0 font-display text-[clamp(48px,7vw,104px)] leading-[.88] font-normal tracking-[-.045em] md:mt-3.5" id="experience-title">{t('title')}</h2>
+      <h2 className="mt-2 mb-0 whitespace-nowrap font-display text-[clamp(32px,8.2vw,44px)] leading-[.88] font-normal tracking-[-.045em] md:mt-3.5 md:text-[clamp(48px,5.5vw,88px)]" id="experience-title">{t('title')}</h2>
       <Link className="group mt-6 inline-flex min-h-10 items-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-4 py-2 text-caption font-[760] tracking-[.12em] whitespace-nowrap text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none md:mt-8 md:min-h-9 md:px-[15px] md:text-label" href="/curriculo"><span>{t('resumeCta')}</span><span className="font-display text-lg font-normal transition-transform duration-250 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true">↗</span></Link>
     </header>
     <div className="timeline-body relative ml-0 max-w-[1060px] md:mx-auto"><div className="timeline-spine absolute top-1.5 bottom-1.5 left-1 w-px bg-[color-mix(in_srgb,var(--paper)_15%,transparent)] md:left-1/2" aria-hidden="true"><span className="timeline-spine-progress block h-full w-full origin-top bg-paper"/></div>
