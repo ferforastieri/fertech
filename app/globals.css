@@ -111,12 +111,12 @@ html{scroll-behavior:smooth}
   border-radius:0;
   border-color:color-mix(in srgb,var(--paper) 22%,transparent);
   padding:11px 6px;
-  font-family:var(--serif);
-  font-size:clamp(1.4375rem,6.5vw,1.8125rem);
-  font-style:italic;
-  font-weight:400;
-  letter-spacing:-.035em;
-  line-height:1;
+  font-family:var(--sans);
+  font-size:clamp(.875rem,3.8vw,1rem);
+  font-style:normal;
+  font-weight:650;
+  letter-spacing:.02em;
+  line-height:1.35;
   text-align:center;
   text-transform:none;
   white-space:nowrap;
