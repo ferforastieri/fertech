@@ -14,7 +14,7 @@ export function ProjectLogo({id,title,className='',framed=true,compact=false,pre
   const imageStyle=compact
     ?{display:'block',width:'48px',height:'30px',maxWidth:'48px',maxHeight:'30px',objectFit:'contain' as const,objectPosition:'center'}
     :{display:'block',width:'100%',height:'100%',maxWidth:'100%',maxHeight:'100%',objectFit:'contain' as const,objectPosition:'center'}
-  return <div className={`project-logo grid place-items-center ${frame} ${className}`} style={boxStyle}>
-    {logo?<Image className={`block object-contain object-center ${compact?'':'h-full w-full'} ${framed?'p-[14%]':'p-0'} ${!framed&&needsLightContrast?'[[data-theme=light]_&]:invert':''}`} style={imageStyle} src={logo} alt={`Logo ${title}`} width={compact?48:320} height={compact?30:220}/>:<span className={`font-display tracking-[-.04em] ${framed?'text-[clamp(30px,5vw,54px)]':'text-2xl'}`} aria-label={`Identidade ${title}`}>{initials}</span>}
+  return <div className={`project-logo grid place-items-center ${preview?'relative':''} ${frame} ${className}`} style={boxStyle}>
+    {logo?(preview?<Image className={`object-contain object-center ${!framed&&needsLightContrast?'[[data-theme=light]_&]:invert':''}`} src={logo} alt={`Logo ${title}`} fill sizes="116px"/>:<Image className={`block object-contain object-center ${compact?'':'h-full w-full'} ${framed?'p-[14%]':'p-0'} ${!framed&&needsLightContrast?'[[data-theme=light]_&]:invert':''}`} style={imageStyle} src={logo} alt={`Logo ${title}`} width={compact?48:320} height={compact?30:220}/>):<span className={`font-display tracking-[-.04em] ${framed?'text-[clamp(30px,5vw,54px)]':'text-2xl'}`} aria-label={`Identidade ${title}`}>{initials}</span>}
   </div>
 }
