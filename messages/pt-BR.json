@@ -50,7 +50,7 @@
   },
   "Experience": {
     "eyebrow": "Trajetória profissional",
-    "title": "Experiência construída em camadas.",
+    "title": "Experiência profissional.",
     "resumeHint": "A versão completa está organizada em uma página",
     "resumeCta": "Ver currículo completo",
     "smart": {"company":"Smart S.A","position":"Desenvolvedor Fullstack","location":"Sorocaba, SP","period":"Jun 2023 — atual","summary":"Desenvolvimento de sistemas internos com React, Redux e Express, da concepção de funcionalidades aos testes, desempenho e boas práticas.","junior":"Júnior · jun 2023","pleno":"Pleno · promoção"},

@@ -59,13 +59,6 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   },[pathname])
 
   useEffect(()=>{
-    const mark=root.current?.querySelector<HTMLElement>('.scroll-cue-mark')
-    if(!mark)return
-    const motion=mark.animate([{transform:'translateY(0)',opacity:.42},{transform:'translateY(8px)',opacity:1}],{duration:760,direction:'alternate',iterations:Infinity,easing:'ease-in-out'})
-    return()=>motion.cancel()
-  },[pathname])
-
-  useEffect(()=>{
     if(!isHome||!root.current)return
     const desktop=matchMedia('(min-width: 768px)')
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)')

@@ -100,6 +100,13 @@ html{scroll-behavior:smooth}
   opacity:1;
 }
 
+.home-pill-link__down-arrow{animation:home-pill-arrow-pulse 900ms ease-in-out infinite alternate}
+
+@keyframes home-pill-arrow-pulse{
+  from{opacity:.68;transform:translateY(-1px)}
+  to{opacity:1;transform:translateY(2px)}
+}
+
 @media(max-width:767px){
   .identity-prompt[data-phase='role']{
     white-space:pre;
@@ -129,4 +136,7 @@ html{scroll-behavior:smooth}
 .custom-cursor[data-variant='pointer'] .custom-cursor__pointer{opacity:1;transform:scale(1) rotate(0)}
 
 @media(hover:hover) and (pointer:fine){html,html *,html *::before,html *::after{cursor:none!important}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important}
+  .home-pill-link__down-arrow{animation:none!important}
+}

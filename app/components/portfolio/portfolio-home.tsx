@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import { Card } from '@/app/components/ui/card'
 import {Logo} from '@/app/components/ui/logo'
+import {HomePillLink} from '@/app/components/ui/home-pill-link'
 import { AnimatedIdentity } from './animated-identity'
 import {CornerDetails} from './corner-details'
 import {TypedText} from '@/app/components/ui/typed-text'
@@ -36,7 +37,7 @@ export function PortfolioHome(){
       <p className="home-supporting-copy mt-3 mr-auto mb-0 max-w-[34ch] text-small leading-[1.5]">{t('resumeIntro')}</p>
       <Link className="group mt-3 inline-flex min-h-9 items-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-[15px] py-2 text-label font-[760] tracking-[.12em] whitespace-nowrap text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none" href="/curriculo"><span>{t('resumeCta')}</span><span className="font-display text-lg font-normal transition-transform duration-250 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true">↗</span></Link>
     </aside>
-    <a className={`scroll-cue scene-item static z-20 order-4 mx-auto flex w-max flex-col items-center gap-1 text-micro font-bold tracking-[.16em] text-inherit uppercase no-underline opacity-62 md:absolute md:right-0 md:left-0 md:gap-2 ${navPosition==='bottom'?'md:bottom-[88px]':'md:bottom-[clamp(24px,3.5vh,42px)]'}`} href="#experiencia"><span>{t('scroll')}</span><i className="scroll-cue-mark relative block h-6 w-4 origin-center before:absolute before:top-0 before:left-1/2 before:h-[21px] before:w-px before:-translate-x-1/2 before:bg-current before:content-[''] after:absolute after:right-0.5 after:bottom-0.5 after:h-[9px] after:w-[9px] after:rotate-45 after:border-r after:border-b after:border-current after:content-[''] md:h-8 md:before:h-[29px]" aria-hidden="true"/></a>
+    <HomePillLink className={`scroll-cue scene-item static z-20 order-4 mx-auto w-max md:absolute md:right-0 md:left-0 ${navPosition==='bottom'?'md:bottom-[88px]':'md:bottom-[clamp(24px,3.5vh,42px)]'}`} href="#experiencia" label={t('scroll')} arrow="down"/>
   </div>
   <ExperienceTimeline/>
 </>}

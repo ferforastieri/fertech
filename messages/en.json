@@ -50,7 +50,7 @@
   },
   "Experience": {
     "eyebrow": "Professional journey",
-    "title": "Experience built in layers.",
+    "title": "Professional experience.",
     "resumeHint": "The complete version is organized on one page",
     "resumeCta": "View complete resume",
     "smart": {"company":"Smart S.A","position":"Full-stack Developer","location":"Sorocaba, SP","period":"Jun 2023 — present","summary":"Internal systems built with React, Redux and Express, spanning feature design, testing, performance and engineering practices.","junior":"Junior · Jun 2023","pleno":"Mid-level · promotion"},
