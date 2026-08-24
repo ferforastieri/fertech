@@ -110,8 +110,8 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   },[isHome])
 
   const dark=theme==='dark'
-  const desktopWash=dark?'radial-gradient(circle at 50% 42%,rgba(231,223,209,.25),transparent 34%),linear-gradient(90deg,rgba(24,23,20,.7),transparent 32%,transparent 68%,rgba(24,23,20,.7)),linear-gradient(180deg,rgba(24,23,20,.12),rgba(24,23,20,.22))':'radial-gradient(circle at 50% 42%,rgba(255,253,248,.3),transparent 42%),linear-gradient(90deg,rgba(242,237,228,.68),rgba(242,237,228,.28) 34%,rgba(242,237,228,.28) 66%,rgba(242,237,228,.68)),linear-gradient(180deg,rgba(242,237,228,.22),rgba(242,237,228,.48))'
-  const mobileWash=dark?'linear-gradient(rgba(24,23,20,.38),rgba(24,23,20,.6))':'linear-gradient(rgba(246,242,234,.42),rgba(246,242,234,.62))'
+  const desktopWash=dark?'radial-gradient(circle at 50% 42%,rgba(243,237,228,.07),transparent 32%),linear-gradient(90deg,rgba(10,11,9,.84),rgba(10,11,9,.34) 34%,rgba(10,11,9,.34) 66%,rgba(10,11,9,.84)),linear-gradient(180deg,rgba(10,11,9,.24),rgba(10,11,9,.42))':'radial-gradient(circle at 50% 42%,rgba(255,253,248,.3),transparent 42%),linear-gradient(90deg,rgba(242,237,228,.68),rgba(242,237,228,.28) 34%,rgba(242,237,228,.28) 66%,rgba(242,237,228,.68)),linear-gradient(180deg,rgba(242,237,228,.22),rgba(242,237,228,.48))'
+  const mobileWash=dark?'linear-gradient(rgba(10,11,9,.58),rgba(10,11,9,.76))':'linear-gradient(rgba(246,242,234,.42),rgba(246,242,234,.62))'
   const washStyle={'--desktop-wash':isAbout?'transparent':desktopWash,'--mobile-wash':isAbout?'transparent':mobileWash} as CSSProperties
 
   return <main ref={root} className={`scene-shell scene-shell--nav-${navPosition}${isAbout?' scene-shell--about':''}${isHome?' scene-shell--home':''} relative isolate min-h-svh overflow-x-hidden bg-ink text-paper ${className}`}>

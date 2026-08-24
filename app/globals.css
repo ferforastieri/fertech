@@ -3,10 +3,12 @@
 @import '@fontsource/instrument-serif';
 
 :root{
-  --paper:#e7dfd1;
-  --paper-light:#f1ece3;
-  --ink:#181714;
-  --graphite:#4a4640;
+  --paper:#f3ede4;
+  --paper-light:#fffaf2;
+  --ink:#11120f;
+  --graphite:#aaa195;
+  --surface:rgba(31,31,27,.78);
+  --surface-strong:rgba(17,18,15,.94);
   --serif:'Instrument Serif',Georgia,serif;
   --sans:'Manrope Variable',Arial,sans-serif;
   --type-micro:clamp(.5625rem,.52rem + .18vw,.6875rem);
@@ -37,10 +39,44 @@
   --paper-light:#302c25;
   --ink:#f2ede4;
   --graphite:#8f8577;
+  --surface:rgba(255,253,248,.52);
+  --surface-strong:rgba(246,242,234,.94);
 }
 
 html{scroll-behavior:smooth}
 ::selection{background:var(--paper);color:var(--ink)}
+
+/* Keep supporting copy readable over the photographic dark canvas. Reveal
+   wrappers use opacity-0 and remain untouched by this contrast floor. */
+[data-theme='dark'] :is(
+  [class~='opacity-40'],[class~='opacity-42'],[class~='opacity-45'],
+  [class~='opacity-46'],[class~='opacity-48']
+){opacity:.64}
+[data-theme='dark'] :is(
+  [class~='opacity-50'],[class~='opacity-52'],[class~='opacity-54'],
+  [class~='opacity-55'],[class~='opacity-56'],[class~='opacity-58']
+){opacity:.74}
+[data-theme='dark'] :is([class~='opacity-62'],[class~='opacity-65'],[class~='opacity-68']){opacity:.82}
+[data-theme='dark'] :is([class~='opacity-70'],[class~='opacity-72']){opacity:.84}
+
+/* Fine rules below 30% disappear against images on dark displays. */
+[data-theme='dark'] :is(
+  [class~='border-[color-mix(in_srgb,var(--paper)_15%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_16%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_18%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_20%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_22%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_23%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_24%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_25%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_26%,transparent)]'],
+  [class~='border-[color-mix(in_srgb,var(--paper)_28%,transparent)]']
+){border-color:color-mix(in srgb,var(--paper) 34%,transparent)}
+
+:where(a,button,summary,input,select,textarea):focus-visible{
+  outline:2px solid var(--paper);
+  outline-offset:3px;
+}
 
 .custom-cursor__arrow,.custom-cursor__pointer{transition:opacity 120ms ease,transform 180ms cubic-bezier(.22,1,.36,1)}
 .custom-cursor__pointer{opacity:0;transform:scale(.76) rotate(-6deg);transform-origin:6px 2px}
