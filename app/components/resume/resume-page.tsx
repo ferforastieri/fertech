@@ -10,7 +10,7 @@ import {projects} from '@/messages/project-data'
 import {SocialIcon} from '@/app/components/ui/social-icon'
 
 const experiences=['smart','inet','getninjas'] as const
-const education=['projectManagement','ai','systems','computer','it','administration'] as const
+const education=['projectManagement','ai','computer','systems','it','administration'] as const
 const featuredProjects=projects.filter(project=>project.id==='miraj'||project.id==='mimelie').sort((a,b)=>Number(b.id==='miraj')-Number(a.id==='miraj'))
 const languages=['portuguese','english'] as const
 
@@ -32,21 +32,6 @@ export function ResumePage(){
       const contentWidth=pageWidth-margin*2
       const bottom=pageHeight-18
       let y=margin
-      const portrait=await new Promise<string>((resolve,reject)=>{
-        const image=new window.Image()
-        image.onload=()=>{
-          const canvas=document.createElement('canvas')
-          canvas.width=image.naturalWidth
-          canvas.height=image.naturalHeight
-          const context=canvas.getContext('2d')
-          if(!context){reject(new Error('Canvas indisponível'));return}
-          context.drawImage(image,0,0)
-          resolve(canvas.toDataURL('image/jpeg',.9))
-        }
-        image.onerror=()=>reject(new Error('Foto do currículo indisponível'))
-        image.src='/assets/fernando.png'
-      })
-
       const nextPage=()=>{pdf.addPage();y=margin}
       const ensureSpace=(height:number)=>{if(y+height>bottom)nextPage()}
       const line=(offset=0)=>{ensureSpace(6);pdf.setDrawColor(185,185,185);pdf.setLineWidth(.25);pdf.line(margin,y+offset,pageWidth-margin,y+offset)}
@@ -88,8 +73,6 @@ export function ResumePage(){
       }
 
       pdf.setProperties({title:`${siteContent.identity.name} - ${t('role')}`,author:siteContent.identity.name,subject:t('eyebrow')})
-      const photoSize=34
-      pdf.addImage(portrait,'JPEG',pageWidth-margin-photoSize,margin,photoSize,photoSize,undefined,'FAST')
       pdf.setFont('helvetica','bold')
       pdf.setFontSize(22)
       pdf.setTextColor(25,25,25)
@@ -104,17 +87,21 @@ export function ResumePage(){
       pdf.text(`${t('location')}  |  ${siteContent.contacts.email}`,margin,y)
       y+=4.5
       pdf.text(`${siteContent.contacts.linkedin}  |  ${siteContent.contacts.github}`,margin,y)
-      y=Math.max(y+8,margin+photoSize+7)
+      y+=8
 
       section(t('summaryEyebrow'))
       paragraph(t('summary'))
 
       section(t('experience'))
-      experiences.forEach(key=>item(
-        t(`experiences.${key}.role`),
-        `${t(`experiences.${key}.company`)} | ${t(`experiences.${key}.location`)} | ${t(`experiences.${key}.period`)}`,
-        t(`experiences.${key}.description`),
-      ))
+      experiences.forEach(key=>{
+        const [role,progression='']=t(`experiences.${key}.role`).split(' · ')
+        const pdfRole=progression?`${role} | ${progression.replace(/\s*→\s*/,' a ')}`:role
+        item(
+          pdfRole,
+          `${t(`experiences.${key}.company`)} | ${t(`experiences.${key}.location`)} | ${t(`experiences.${key}.period`)}`,
+          t(`experiences.${key}.description`),
+        )
+      })
 
       section(t('education'))
       education.forEach(key=>item(
