@@ -2,28 +2,34 @@
 
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
+import {usePathname} from 'next/navigation'
 import {TypedText} from './typed-text'
 import {HomePillLink} from './home-pill-link'
 import {SocialIcon,type SocialNetwork} from './social-icon'
 import {usePreferences} from './preferences-provider'
 import {siteContent} from '@/messages/site-content'
 
-export function GlobalProfile(){
+export function GlobalProfileCorner(){
+  const profile=useTranslations('Profile')
+  return <aside className="global-profile global-profile--corner scene-item relative z-30 mx-auto mt-6 mb-[calc(32px+env(safe-area-inset-bottom))] hidden w-[min(calc(100%_-_48px),300px)] border-t border-[color-mix(in_srgb,var(--paper)_32%,transparent)] pt-6 text-center text-[color-mix(in_srgb,var(--paper)_92%,transparent)] md:fixed md:top-[26px] md:right-[4.5vw] md:m-0 md:block md:w-[min(42vw,340px)] md:border-0 md:pt-0 md:text-right md:will-change-[transform,opacity]">
+      <p className="global-profile__signature m-0 origin-center -rotate-3 font-display text-[clamp(28px,8vw,35px)] leading-none italic md:origin-right md:text-[clamp(30px,3vw,46px)]"><TypedText text={profile('signature')}/></p>
+      <p className="global-profile__introduction home-supporting-copy mx-auto my-2 max-w-[34ch] text-small leading-[1.45] md:mt-[15px] md:mr-0 md:mb-3.5 md:ml-auto md:w-full md:max-w-none md:whitespace-pre md:leading-[1.55]"><TypedText text={profile('introduction')}/></p>
+      <HomePillLink href={siteContent.contacts.linkedin} label={profile('cta')} external/>
+    </aside>
+}
+
+export function GlobalFooter({hideOnHome=false}:{hideOnHome?:boolean}={}){
   const profile=useTranslations('Profile')
   const {navPosition}=usePreferences()
+  const pathname=usePathname()
   const year=new Date().getFullYear()
   const detailLabel='mb-2 block text-micro font-[760] tracking-[.2em] uppercase opacity-45'
   const corner='text-small leading-[1.5] text-[color-mix(in_srgb,var(--paper)_76%,transparent)]'
   const networks:SocialNetwork[]=['github','linkedin','x']
 
-  return <>
-    <aside className="global-profile global-profile--corner scene-item relative z-30 mx-auto mt-6 mb-[calc(32px+env(safe-area-inset-bottom))] hidden w-[min(calc(100%_-_48px),300px)] border-t border-[color-mix(in_srgb,var(--paper)_32%,transparent)] pt-6 text-center text-[color-mix(in_srgb,var(--paper)_92%,transparent)] md:fixed md:top-[26px] md:right-[4.5vw] md:m-0 md:block md:w-[min(42vw,340px)] md:border-0 md:pt-0 md:text-right md:will-change-[transform,opacity]">
-      <p className="global-profile__signature m-0 origin-center -rotate-3 font-display text-[clamp(28px,8vw,35px)] leading-none italic md:origin-right md:text-[clamp(30px,3vw,46px)]"><TypedText text={profile('signature')}/></p>
-      <p className="global-profile__introduction home-supporting-copy mx-auto my-2 max-w-[34ch] text-small leading-[1.45] md:mt-[15px] md:mr-0 md:mb-3.5 md:ml-auto md:w-full md:max-w-none md:whitespace-pre md:leading-[1.55]"><TypedText text={profile('introduction')}/></p>
-      <HomePillLink href={siteContent.contacts.linkedin} label={profile('cta')} external/>
-    </aside>
+  if(hideOnHome&&(pathname.replace(/\/$/,'')||'/')==='/')return null
 
-    <footer id="contato" className={`global-profile relative z-10 mx-auto mt-10 w-[calc(100%_-_36px)] px-1 pt-0 text-paper transition-[padding-bottom] duration-340 ease-[cubic-bezier(.22,1,.36,1)] md:mt-12 md:w-[calc(100%_-_9vw)] md:border-t md:border-[color-mix(in_srgb,var(--paper)_22%,transparent)] md:px-0 md:pt-5 ${navPosition==='bottom'?'pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-[88px]':'pb-[calc(24px+env(safe-area-inset-bottom))] md:pb-5'}`}>
+  return <footer id="contato" className={`global-profile relative z-10 mx-auto mt-10 w-[calc(100%_-_36px)] px-1 pt-0 text-paper transition-[padding-bottom] duration-340 ease-[cubic-bezier(.22,1,.36,1)] md:mt-12 md:w-[calc(100%_-_9vw)] md:border-t md:border-[color-mix(in_srgb,var(--paper)_22%,transparent)] md:px-0 md:pt-5 ${navPosition==='bottom'?'pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-[88px]':'pb-[calc(24px+env(safe-area-inset-bottom))] md:pb-5'}`}>
       <div className="mx-auto flex w-full max-w-[420px] flex-col items-center border-y border-[color-mix(in_srgb,var(--paper)_28%,transparent)] px-1 py-6 text-center md:hidden">
         <p className="m-0 text-micro font-[760] tracking-[.22em] uppercase opacity-48">{profile('eyebrow')}</p>
         <p className="global-profile__signature mt-4 mb-0 origin-center -rotate-2 font-display text-[clamp(38px,10vw,50px)] leading-[.82] italic"><TypedText text={profile('signature')}/></p>
@@ -53,5 +59,4 @@ export function GlobalProfile(){
         <Link className="group text-caption font-[720] tracking-[.12em] text-inherit uppercase no-underline opacity-68 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none md:col-start-3 md:row-start-1 md:justify-self-end" href="/">{profile('home')} <span className="inline-block transition-transform duration-250 group-hover:-translate-y-1" aria-hidden="true">↑</span></Link>
       </div>
     </footer>
-  </>
 }

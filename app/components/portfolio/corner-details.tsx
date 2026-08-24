@@ -10,11 +10,11 @@ import {siteContent} from '@/messages/site-content'
 export function CornerDetails(){
   const metrics=useTranslations('Metrics')
   const home=useTranslations('Home')
-  const items=[[siteContent.metrics.years,metrics('years')],[String(projects.length),metrics('projects')]]
 
   return <>
-    <aside className="corner-metrics scene-item static order-3 z-12 mx-auto block w-full max-w-[260px] self-center text-center text-[color-mix(in_srgb,var(--paper)_82%,transparent)] md:hidden" aria-label={metrics('aria')}>
-      {items.map(([value,label],index)=><div className={`metric-line border-b border-[color-mix(in_srgb,var(--paper)_22%,transparent)] py-2 ${index===0?'pt-0':''}`} key={label}><strong className="block font-display text-[clamp(24px,7vw,30px)] leading-[.86] font-normal tracking-[-.035em]"><TypedText text={value}/></strong><TypedText className="mt-[5px] block text-micro font-[650] tracking-[.1em] uppercase opacity-62" text={label}/></div>)}
+    <aside className="corner-metrics scene-item static order-3 z-12 mx-auto block w-full max-w-[280px] self-center text-center text-[color-mix(in_srgb,var(--paper)_82%,transparent)] md:hidden" aria-label={metrics('aria')}>
+      <p className="mobile-signature-line"><TypedText text={`${siteContent.metrics.years} ${metrics('years').toLocaleLowerCase()}`}/></p>
+      <p className="mobile-signature-line"><TypedText text={`${projects.length} ${metrics('projects').toLocaleLowerCase()}`}/></p>
       <HomePillLink className="mobile-project-signature mx-auto" href="/projetos" label={home('mobileProjectsCta')}/>
     </aside>
 

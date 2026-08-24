@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import type {MouseEventHandler} from 'react'
 
 type HomePillLinkProps={
   href:string
@@ -6,9 +7,10 @@ type HomePillLinkProps={
   arrow?:'external'|'down'
   className?:string
   external?:boolean
+  onClick?:MouseEventHandler<HTMLAnchorElement>
 }
 
-export function HomePillLink({href,label,arrow='external',className='',external=false}:HomePillLinkProps){
+export function HomePillLink({href,label,arrow='external',className='',external=false,onClick}:HomePillLinkProps){
   const classes=`group inline-flex min-h-10 items-center justify-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-4 py-2 text-caption font-[760] tracking-[.12em] whitespace-nowrap text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none md:min-h-9 md:px-[15px] md:text-label ${className}`
   const content=<>
     <span>{label}</span>
@@ -18,6 +20,6 @@ export function HomePillLink({href,label,arrow='external',className='',external=
   </>
 
   return external
-    ?<a className={classes} href={href} target="_blank" rel="noreferrer">{content}</a>
-    :<Link className={classes} href={href}>{content}</Link>
+    ?<a className={classes} href={href} target="_blank" rel="noreferrer" onClick={onClick}>{content}</a>
+    :<Link className={classes} href={href} onClick={onClick}>{content}</Link>
 }
