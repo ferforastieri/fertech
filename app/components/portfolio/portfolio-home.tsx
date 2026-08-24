@@ -28,9 +28,14 @@ export function PortfolioHome(){
       </div>
     </section>
 
-    <div className="home-summary scene-item order-2 grid w-full items-end justify-items-center gap-0 p-0 text-center text-body leading-normal text-[color-mix(in_srgb,var(--paper)_80%,transparent)] md:absolute md:right-[4.5vw] md:bottom-[3.5vh] md:z-12 md:block md:w-[min(36vw,470px)] md:text-right md:text-base md:leading-[1.625] md:max-[1100px]:w-[330px]">
+    <div className="home-summary scene-item order-2 grid w-full items-end justify-items-center gap-0 p-0 text-center text-body leading-normal text-[color-mix(in_srgb,var(--paper)_80%,transparent)] md:hidden">
       <p className="m-0 max-w-[32ch] md:ml-auto md:max-w-none md:whitespace-pre-line"><TypedText text={t('about')}/></p>
     </div>
+    <aside className="home-summary-desktop scene-item absolute bottom-[3.5vh] left-[4.5vw] z-12 hidden w-[min(21vw,250px)] text-left text-[color-mix(in_srgb,var(--paper)_88%,transparent)] md:block md:max-[1100px]:w-[210px]">
+      <p className="m-0 origin-left -rotate-2 font-display text-[clamp(29px,2.7vw,42px)] leading-none italic">{t('resumeEyebrow')}</p>
+      <p className="mt-3 mr-auto mb-0 max-w-[34ch] text-small leading-[1.5] opacity-76">{t('resumeIntro')}</p>
+      <Link className="group mt-3 inline-flex min-h-9 items-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-[15px] py-2 text-label font-[760] tracking-[.12em] whitespace-nowrap text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none" href="/curriculo"><span>{t('resumeCta')}</span><span className="font-display text-lg font-normal transition-transform duration-250 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true">↗</span></Link>
+    </aside>
     <a className={`scroll-cue scene-item static z-20 order-4 mx-auto flex w-max flex-col items-center gap-1 text-micro font-bold tracking-[.16em] text-inherit uppercase no-underline opacity-62 md:absolute md:right-0 md:left-0 md:gap-2 ${navPosition==='bottom'?'md:bottom-[88px]':'md:bottom-[clamp(24px,3.5vh,42px)]'}`} href="#experiencia"><span>{t('scroll')}</span><i className="scroll-cue-mark relative block h-6 w-4 origin-center before:absolute before:top-0 before:left-1/2 before:h-[21px] before:w-px before:-translate-x-1/2 before:bg-current before:content-[''] after:absolute after:right-0.5 after:bottom-0.5 after:h-[9px] after:w-[9px] after:rotate-45 after:border-r after:border-b after:border-current after:content-[''] md:h-8 md:before:h-[29px]" aria-hidden="true"/></a>
   </div>
   <ExperienceTimeline/>
