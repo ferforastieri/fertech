@@ -149,11 +149,11 @@ html{scroll-behavior:smooth}
   }
 
   .scene-shell--nav-bottom .home-experience-cta{
-    transform:translateY(-52px);
+    transform:translateY(0);
   }
 
   .scene-shell:not(.scene-shell--nav-bottom) .home-experience-cta{
-    transform:translateY(0);
+    transform:translateY(52px);
   }
 }
 
