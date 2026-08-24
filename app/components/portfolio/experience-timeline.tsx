@@ -29,7 +29,7 @@ export function ExperienceTimeline(){
     return()=>{sectionObserver.disconnect();itemObserver.disconnect()}
   },[])
 
-  return <section ref={root} id="experiencia" className="experience-section relative min-h-0 px-[18px] pt-4 md:min-h-svh md:px-[4.5vw] md:pt-[clamp(110px,14vh,170px)]" aria-labelledby="experience-title">
+  return <section ref={root} id="experiencia" className="experience-section relative min-h-0 px-[18px] pt-4 md:px-[4.5vw] md:pt-[clamp(110px,14vh,170px)]" aria-labelledby="experience-title">
     <header className="experience-heading mx-auto mb-4 w-full max-w-[1100px] text-center opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:mb-20">
       <p className="m-0 text-label font-bold tracking-[.2em] uppercase opacity-58">{t('eyebrow')}</p>
       <h2 className="mt-2 mb-0 whitespace-nowrap font-display text-[clamp(32px,8.2vw,44px)] leading-[.88] font-normal tracking-[-.045em] md:mt-3.5 md:text-[clamp(48px,5.5vw,88px)]" id="experience-title">{t('title')}</h2>

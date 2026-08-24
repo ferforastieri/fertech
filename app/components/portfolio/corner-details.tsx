@@ -15,7 +15,7 @@ export function CornerDetails(){
   return <>
     <aside className="corner-metrics scene-item static order-3 z-12 mx-auto block w-full max-w-[260px] self-center text-center text-[color-mix(in_srgb,var(--paper)_82%,transparent)] md:hidden" aria-label={metrics('aria')}>
       {items.map(([value,label],index)=><div className={`metric-line border-b border-[color-mix(in_srgb,var(--paper)_22%,transparent)] py-2 ${index===0?'pt-0':''}`} key={label}><strong className="block font-display text-[clamp(24px,7vw,30px)] leading-[.86] font-normal tracking-[-.035em]"><TypedText text={value}/></strong><TypedText className="mt-[5px] block text-micro font-[650] tracking-[.1em] uppercase opacity-62" text={label}/></div>)}
-      <HomePillLink className="mx-auto mt-4" href="/projetos" label={home('mobileProjectsCta')}/>
+      <HomePillLink className="mobile-project-signature mx-auto" href="/projetos" label={home('mobileProjectsCta')}/>
     </aside>
 
     <aside className="corner-metrics home-scroll-fade scene-item absolute right-[4.5vw] bottom-[3.5vh] z-12 hidden w-[min(21vw,250px)] text-right text-[color-mix(in_srgb,var(--paper)_82%,transparent)] md:block md:max-[1100px]:w-[210px] md:will-change-[transform,opacity]" aria-label={metrics('aria')}>
