@@ -21,5 +21,5 @@ export function TypedText({text,className}:{text:string;className?:string}){
     return()=>cancelAnimationFrame(raf)
   },[text])
 
-  return <span className={className} aria-label={text}><span ref={output} aria-hidden="true"/></span>
+  return <span className={className} aria-label={text}><span ref={output} aria-hidden="true">{text}</span></span>
 }
