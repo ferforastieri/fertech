@@ -14,7 +14,7 @@
   --type-micro:clamp(.5625rem,.52rem + .18vw,.6875rem);
   --type-caption:clamp(.625rem,.57rem + .2vw,.75rem);
   --type-label:clamp(.65625rem,.6rem + .2vw,.78125rem);
-  --type-small:clamp(.6875rem,.63rem + .22vw,.8125rem);
+  --type-small:clamp(.75rem,.69rem + .23vw,.875rem);
   --type-body-small:clamp(.75rem,.68rem + .24vw,.875rem);
   --type-body:clamp(.8125rem,.74rem + .25vw,.9375rem);
 }
@@ -92,6 +92,12 @@ html{scroll-behavior:smooth}
   line-height:1;
   opacity:1;
   box-shadow:inset 0 1px 0 color-mix(in srgb,var(--paper) 10%,transparent);
+}
+
+.home-supporting-copy{
+  color:color-mix(in srgb,var(--paper) 92%,transparent);
+  font-weight:560;
+  opacity:1;
 }
 
 @media(max-width:767px){
