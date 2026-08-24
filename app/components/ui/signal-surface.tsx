@@ -94,7 +94,7 @@ function createProgram(gl:WebGLRenderingContext,fragmentSource:string){
 
 const defaultImage='https://images.pexels.com/photos/5408005/pexels-photo-5408005.jpeg?auto=compress&cs=tinysrgb&w=1920'
 
-export function SignalSurface({imageSrc=defaultImage}:{imageSrc?:string}){
+export function SignalSurface({imageSrc=defaultImage,dimmed=false}:{imageSrc?:string;dimmed?:boolean}){
   const canvas=useRef<HTMLCanvasElement>(null)
 
   useEffect(()=>{
@@ -219,5 +219,5 @@ export function SignalSurface({imageSrc=defaultImage}:{imageSrc?:string}){
     }
   },[imageSrc])
 
-  return <canvas ref={canvas} className="signal-surface pointer-events-none fixed inset-0 -z-15 h-full w-full [filter:sepia(.28)_contrast(.88)_brightness(.58)] [[data-theme=light]_&]:opacity-42 [[data-theme=light]_&]:[filter:grayscale(.5)_sepia(.16)_contrast(.78)_brightness(1.16)] motion-reduce:hidden" aria-hidden="true"/>
+  return <canvas ref={canvas} className={`signal-surface pointer-events-none fixed inset-0 -z-15 h-full w-full motion-reduce:hidden ${dimmed?'[filter:grayscale(.2)_sepia(.32)_contrast(.95)_brightness(.44)] [[data-theme=light]_&]:opacity-36 [[data-theme=light]_&]:[filter:grayscale(.55)_sepia(.16)_contrast(.82)_brightness(.94)]':'[filter:sepia(.28)_contrast(.88)_brightness(.58)] [[data-theme=light]_&]:opacity-42 [[data-theme=light]_&]:[filter:grayscale(.5)_sepia(.16)_contrast(.78)_brightness(1.16)]'}`} aria-hidden="true"/>
 }
