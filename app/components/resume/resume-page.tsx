@@ -2,16 +2,21 @@
 
 import {useRef,useState} from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
 import {siteContent} from '@/messages/site-content'
+import {projects} from '@/messages/project-data'
 import {SocialIcon} from '@/app/components/ui/social-icon'
 
 const experiences=['smart','inet','getninjas'] as const
-const education=['administration','projectManagement','ai','computer','systems'] as const
+const education=['projectManagement','ai','systems','computer','it','administration'] as const
+const featuredProjects=projects.filter(project=>project.id==='miraj'||project.id==='mimelie').sort((a,b)=>Number(b.id==='miraj')-Number(a.id==='miraj'))
+const languages=['portuguese','english'] as const
 
 export function ResumePage(){
   const t=useTranslations('Resume')
+  const projectT=useTranslations('Projects')
   const root=useRef<HTMLElement>(null)
   const [exporting,setExporting]=useState(false)
   useScrollReveal(root,'.resume-reveal')
@@ -101,6 +106,7 @@ export function ResumePage(){
       pdf.text(`${siteContent.contacts.linkedin}  |  ${siteContent.contacts.github}`,margin,y)
       y=Math.max(y+8,margin+photoSize+7)
 
+      section(t('summaryEyebrow'))
       paragraph(t('summary'))
 
       section(t('experience'))
@@ -131,8 +137,19 @@ export function ResumePage(){
         y+=Math.max(1,skillLines.length)*4.5+2
       })
 
+      section(t('projects'))
+      featuredProjects.forEach(project=>item(
+        project.title,
+        project.tags.join(' · '),
+        projectT(`items.${project.id}`),
+      ))
+
       section(t('languages'))
-      paragraph(t('languageValue'),9.5,4.2)
+      languages.forEach(language=>item(
+        t(`languageItems.${language}.name`),
+        `${t(`languageItems.${language}.level`)} | ${t(`languageItems.${language}.cefr`)}`,
+        '',
+      ))
 
       const pages=pdf.getNumberOfPages()
       for(let page=1;page<=pages;page++){
@@ -148,37 +165,45 @@ export function ResumePage(){
   const pill='group inline-flex min-h-9 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[color-mix(in_srgb,var(--paper)_34%,transparent)] bg-transparent px-3 text-center text-caption leading-none font-bold tracking-[.09em] text-inherit uppercase no-underline transition-[background,color,border-color] duration-200 hover:border-paper hover:bg-paper hover:text-ink'
   const contactIcon='h-3.5 w-3.5 flex-none transition-transform duration-200 group-hover:scale-110'
   const sectionClass='resume-section grid grid-cols-1 justify-items-center gap-[30px] border-t border-[color-mix(in_srgb,var(--paper)_22%,transparent)] py-10 md:grid-cols-[minmax(180px,.4fr)_1fr] md:justify-items-stretch md:gap-14 md:py-[54px]'
+  const sectionHeaderClass='resume-section-title resume-reveal opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none'
+  const sectionTitleClass='mx-auto mt-3 mb-0 max-w-none font-display text-[clamp(35px,4.5vw,58px)] leading-[.9] font-normal md:mx-0 md:max-w-[8ch]'
   const timelineClass='relative grid w-full before:absolute before:top-[7px] before:bottom-[7px] before:left-[5px] before:w-px before:bg-[color-mix(in_srgb,var(--paper)_24%,transparent)]'
   const timelineItemClass='resume-reveal relative grid grid-cols-[11px_minmax(0,1fr)] gap-x-5 pb-10 text-left opacity-0 last:pb-0 motion-reduce:opacity-100 motion-reduce:transform-none'
   const timelineMarker=<span className="relative z-10 mt-1.5 block h-[11px] w-[11px] rounded-full border-2 border-paper bg-ink shadow-[0_0_0_5px_var(--ink)]" aria-hidden="true"/>
   return <main ref={root} className="editorial-page resume-page mx-auto w-[calc(100%_-_36px)] max-w-[1080px] pt-4 text-center md:w-[min(1180px,91vw)] md:pt-[clamp(78px,9vh,108px)] md:text-left" data-resume-document>
     <header className="resume-header resume-reveal grid grid-cols-1 [grid-template-areas:'eyebrow'_'title'_'photo'_'meta'_'links'] justify-items-center gap-[18px] border-b border-[color-mix(in_srgb,var(--paper)_28%,transparent)] pb-9 opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:grid-cols-[minmax(0,1fr)_190px] md:[grid-template-areas:'eyebrow_eyebrow'_'title_photo'_'meta_photo'_'links_links'] md:items-end md:justify-items-stretch md:gap-x-12 md:gap-y-5 md:pb-12">
       <p className="m-0 [grid-area:eyebrow] text-caption font-[750] tracking-[.2em] uppercase opacity-55">{t('eyebrow')}</p>
-      <h1 className="m-0 [grid-area:title] font-display text-[clamp(52px,17vw,68px)] leading-[.78] font-normal tracking-[-.055em] md:text-[clamp(62px,9vw,118px)]">{t('title')}</h1>
+      <h1 className="m-0 max-w-[12ch] [grid-area:title] font-display text-[clamp(44px,12vw,58px)] leading-[.9] font-normal tracking-[-.04em] md:text-[clamp(54px,6vw,78px)]">{t('title')}</h1>
       <div className="resume-photo-frame pointer-events-none relative w-[min(48vw,180px)] [grid-area:photo] aspect-square overflow-hidden rounded-[20px] border border-[color-mix(in_srgb,var(--paper)_28%,transparent)] shadow-[0_20px_55px_rgba(0,0,0,.24)] md:w-[190px] md:self-start md:rounded-3xl"><Image className="block h-full w-full object-cover" src="/assets/fernando.png" alt={t('portraitAlt')} width={320} height={320} priority/></div>
       <div className="grid [grid-area:meta] gap-1.5"><strong className="font-display text-[25px] font-normal">{t('role')}</strong><span className="text-label tracking-[.11em] uppercase opacity-55">{t('location')}</span></div>
       <nav className="mt-1 flex flex-wrap justify-center gap-2.5 [grid-area:links] md:justify-start" aria-label={t('contact')}><a className={pill} href={`mailto:${siteContent.contacts.email}`}><SocialIcon network="email" className={contactIcon}/>{t('email')} ↗</a><a className={pill} href={siteContent.contacts.linkedin} target="_blank" rel="noreferrer"><SocialIcon network="linkedin" className={contactIcon}/>{t('linkedin')} ↗</a><a className={pill} href={siteContent.contacts.github} target="_blank" rel="noreferrer"><SocialIcon network="github" className={contactIcon}/>{t('github')} ↗</a><button className="resume-download mx-auto mt-1 inline-flex min-h-11 w-full max-w-[290px] items-center justify-center gap-2 rounded-full border border-paper bg-paper px-[18px] text-label font-bold tracking-[.09em] text-ink uppercase shadow-[0_12px_30px_rgba(0,0,0,.18)] transition-[transform,box-shadow] duration-240 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(0,0,0,.25)] focus-visible:-translate-y-0.5 focus-visible:shadow-[0_16px_36px_rgba(0,0,0,.25)] focus-visible:outline-none disabled:cursor-wait disabled:opacity-55 md:mr-0 md:ml-auto md:w-auto" type="button" onClick={download} disabled={exporting} data-html2canvas-ignore>{t(exporting?'generating':'download')} <svg className="h-[15px] w-[15px] flex-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.5]" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 13h10"/></svg></button></nav>
     </header>
 
-    <section className="resume-summary resume-reveal mx-auto max-w-[850px] py-10 opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:py-14">
-      <p className="m-0 font-display text-[clamp(20px,5.6vw,25px)] leading-[1.36] font-normal tracking-[-.01em] opacity-88 md:text-center md:text-[clamp(22px,2.35vw,29px)]">{t('summary')}</p>
+    <section className={sectionClass} aria-labelledby="resume-objective">
+      <header className={sectionHeaderClass}><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.objective}</p><h2 className={sectionTitleClass} id="resume-objective">{t('summaryEyebrow')}</h2></header>
+      <p className="resume-reveal m-0 w-full text-center font-display text-[clamp(20px,5.6vw,25px)] leading-[1.36] font-normal tracking-[-.01em] opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:text-left md:text-[clamp(21px,2.15vw,27px)]">{t('summary')}</p>
     </section>
 
     <section className={sectionClass} aria-labelledby="resume-experience">
-      <header className="resume-section-title resume-reveal opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none"><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.experience}</p><h2 className="mx-auto mt-3 mb-0 max-w-none font-display text-[clamp(35px,4.5vw,58px)] leading-[.9] font-normal md:mx-0 md:max-w-[8ch]" id="resume-experience">{t('experience')}</h2></header>
+      <header className={sectionHeaderClass}><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.experience}</p><h2 className={sectionTitleClass} id="resume-experience">{t('experience')}</h2></header>
       <div className={`resume-experience-list ${timelineClass}`}>{experiences.map(key=><article className={`resume-experience ${timelineItemClass}`} key={key}>{timelineMarker}<div><div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1"><p className="m-0 text-caption font-[750] tracking-[.15em] uppercase opacity-58">{t(`experiences.${key}.company`)}</p><span className="font-display text-base leading-none opacity-62">{t(`experiences.${key}.period`)}</span></div><h3 className="m-0 font-display text-[29px] leading-[.98] font-normal">{t(`experiences.${key}.role`)}</h3><small className="mt-2 block font-sans text-caption tracking-[.1em] uppercase opacity-46">{t(`experiences.${key}.location`)}</small><p className="mt-3.5 mb-0 text-body-sm leading-[1.7] opacity-68">{t(`experiences.${key}.description`)}</p></div></article>)}</div>
     </section>
 
     <section className={sectionClass} aria-labelledby="resume-education">
-      <header className="resume-section-title resume-reveal opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none"><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.education}</p><h2 className="mx-auto mt-3 mb-0 max-w-none font-display text-[clamp(35px,4.5vw,58px)] leading-[.9] font-normal md:mx-0 md:max-w-[8ch]" id="resume-education">{t('education')}</h2></header>
+      <header className={sectionHeaderClass}><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.education}</p><h2 className={sectionTitleClass} id="resume-education">{t('education')}</h2></header>
       <div className={`resume-education-list ${timelineClass}`}>{education.map(key=><article className={timelineItemClass} key={key}>{timelineMarker}<div><div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1"><p className="m-0 text-caption font-[750] tracking-[.15em] uppercase opacity-58">{t(`educationItems.${key}.school`)}</p>{t(`educationItems.${key}.period`)?<span className="font-display text-base leading-none opacity-62">{t(`educationItems.${key}.period`)}</span>:null}</div><h3 className="m-0 font-display text-[29px] leading-[.98] font-normal">{t(`educationItems.${key}.course`)}</h3></div></article>)}</div>
     </section>
 
     <section className={sectionClass} aria-labelledby="resume-skills">
-      <header className="resume-section-title resume-reveal opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none"><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.skills}</p><h2 className="mx-auto mt-3 mb-0 max-w-none font-display text-[clamp(35px,4.5vw,58px)] leading-[.9] font-normal md:mx-0 md:max-w-[8ch]" id="resume-skills">{t('skills')}</h2></header>
-      <div className="resume-skills grid grid-cols-1 justify-items-center gap-x-9 gap-y-7 md:grid-cols-2 md:justify-items-stretch">{Object.entries(siteContent.resumeSkills).map(([group,items])=><article className="resume-reveal opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none" key={group}><h3 className="m-0 mb-3 text-caption tracking-[.15em] uppercase opacity-50">{t(`skillGroups.${group}`)}</h3><ul className="m-0 flex list-none flex-wrap justify-center gap-[7px] p-0 md:justify-start">{items.map(item=><li className="rounded-full border border-[color-mix(in_srgb,var(--paper)_23%,transparent)] px-[9px] py-1.5 text-caption" key={item}>{item}</li>)}</ul></article>)}</div>
+      <header className={sectionHeaderClass}><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.skills}</p><h2 className={sectionTitleClass} id="resume-skills">{t('skills')}</h2></header>
+      <div className="resume-skills grid grid-cols-1 justify-items-center gap-x-9 gap-y-7 md:grid-cols-2 md:justify-items-stretch">{Object.entries(siteContent.resumeSkills).map(([group,items])=><article className="resume-reveal opacity-0 last:md:col-span-2 motion-reduce:opacity-100 motion-reduce:transform-none" key={group}><h3 className="m-0 mb-3 text-caption tracking-[.15em] uppercase opacity-74">{t(`skillGroups.${group}`)}</h3><ul className="m-0 flex list-none flex-wrap justify-center gap-2 p-0 md:justify-start">{items.map(item=><li className="content-chip rounded-full px-3 py-2 text-caption" key={item}>{item}</li>)}</ul></article>)}</div>
     </section>
 
-    <footer className="resume-footer resume-reveal grid grid-cols-1 items-center justify-items-center gap-6 border-t border-[color-mix(in_srgb,var(--paper)_22%,transparent)] pt-[34px] opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none md:grid-cols-[auto_1fr_auto] md:justify-items-stretch"><p className="m-0 text-caption font-[750] tracking-[.18em] uppercase opacity-50">{t('languages')}</p><strong className="font-display text-xl font-normal">{t('languageValue')}</strong><a className={pill} href={`mailto:${siteContent.contacts.email}`}>{t('cta')} ↗</a></footer>
+    <section className={sectionClass} aria-labelledby="resume-projects">
+      <header className={sectionHeaderClass}><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.projects}</p><h2 className={sectionTitleClass} id="resume-projects">{t('projects')}</h2></header>
+      <div className="resume-project-list grid w-full">{featuredProjects.map((project,index)=><Link className={`resume-reveal group grid grid-cols-[minmax(0,1fr)_auto] gap-x-5 border-t border-[color-mix(in_srgb,var(--paper)_18%,transparent)] py-7 text-left text-inherit no-underline opacity-0 motion-reduce:opacity-100 motion-reduce:transform-none ${index===0?'border-t-0 pt-0':''}`} href={`/projetos/${project.id}`} key={project.id}><div><p className="m-0 mb-2 text-caption font-[750] tracking-[.14em] uppercase opacity-52">{project.tags.join(' · ')}</p><h3 className="m-0 font-display text-[clamp(28px,6vw,36px)] leading-none font-normal">{project.title}</h3><p className="mt-3 mb-0 max-w-[54ch] text-body-sm leading-[1.65] opacity-68">{projectT(`items.${project.id}`)}</p></div><span className="mt-6 font-display text-2xl transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">→</span></Link>)}</div>
+    </section>
+
+    <section className={sectionClass} aria-labelledby="resume-languages"><header className={sectionHeaderClass}><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.languages}</p><h2 className={sectionTitleClass} id="resume-languages">{t('languages')}</h2></header><ul className="m-0 grid w-full list-none gap-px bg-[color-mix(in_srgb,var(--paper)_18%,transparent)] p-0 sm:grid-cols-2">{languages.map(language=><li className="grid gap-2 bg-[color-mix(in_srgb,var(--ink)_95%,transparent)] p-5 text-center sm:text-left" key={language}><strong className="font-display text-2xl font-normal">{t(`languageItems.${language}.name`)}</strong><span className="text-label opacity-64">{t(`languageItems.${language}.level`)}</span><span className="text-caption font-[750] tracking-[.14em] uppercase opacity-48">CEFR · {t(`languageItems.${language}.cefr`)}</span></li>)}</ul></section>
   </main>
 }

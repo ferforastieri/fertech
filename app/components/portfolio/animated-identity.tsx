@@ -40,6 +40,6 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
 
   return <div className="identity-stage text-center">
     <h1 id="portfolio-title" className="sr-only">{siteContent.identity.name}</h1>
-    <p ref={prompt} className="identity-prompt mx-auto min-h-[1.55em] max-w-[19ch] overflow-visible p-0 font-display text-[clamp(27px,9vw,39px)] leading-[.94] tracking-[-.03em] motion-reduce:hidden md:min-h-[1.9em] md:max-w-[22ch] md:px-4 md:text-[clamp(34px,5.3vw,78px)]" aria-live="polite"><span ref={output}/><span ref={caret} className="typed-caret ml-[5px] inline-block h-[1.15em] w-px origin-center bg-paper motion-reduce:hidden" aria-hidden="true"/></p>
+    <p ref={prompt} className="identity-prompt mx-auto min-h-[1.55em] max-w-[19ch] overflow-visible p-0 font-display text-[clamp(27px,9vw,39px)] leading-[.94] tracking-[-.03em] motion-reduce:hidden md:min-h-[2em] md:w-max md:max-w-full md:whitespace-pre-line md:px-4 md:text-[clamp(38px,4vw,60px)] md:leading-[.88]" aria-live="polite"><span ref={output}/><span ref={caret} className="typed-caret ml-[5px] inline-block h-[1.15em] w-px origin-center bg-paper motion-reduce:hidden" aria-hidden="true"/></p>
   </div>
 }

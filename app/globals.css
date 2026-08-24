@@ -84,6 +84,16 @@ html{scroll-behavior:smooth}
   opacity:1;
 }
 
+.content-chip{
+  border:1px solid color-mix(in srgb,var(--paper) 48%,transparent);
+  background:color-mix(in srgb,var(--paper) 11%,var(--ink));
+  color:var(--paper);
+  font-weight:680;
+  line-height:1;
+  opacity:1;
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--paper) 10%,transparent);
+}
+
 .route-view:has(.project-explorer){min-height:0}
 
 @media(min-width:768px){
