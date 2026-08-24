@@ -24,6 +24,7 @@ export function FloatingNavigation(){
   const root=useRef<HTMLDivElement>(null)
   const [languagesOpen,setLanguagesOpen]=useState(false)
   const [drawerOpen,setDrawerOpen]=useState(false)
+  const currentLanguage=languageOptions.find(option=>option.locale===locale)??languageOptions[0]
   const vertical=navPosition==='left'||navPosition==='right'
   const rootPosition={
     top:'fixed bottom-[max(12px,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 md:top-5 md:bottom-auto md:m-0',
@@ -65,7 +66,7 @@ export function FloatingNavigation(){
       <a className={control()} href={siteContent.contacts.github} target="_blank" rel="noreferrer" aria-label={siteContent.networks.github} title={siteContent.networks.github}><SocialIcon network="github" className={iconClass}/></a>
       <a className={control()} href={siteContent.contacts.linkedin} target="_blank" rel="noreferrer" aria-label={siteContent.networks.linkedin} title={siteContent.networks.linkedin}><SocialIcon network="linkedin" className={iconClass}/></a>
       <a className={control()} href={siteContent.contacts.x} target="_blank" rel="noreferrer" aria-label={siteContent.networks.x} title={siteContent.networks.x}><SocialIcon network="x" className={`${iconClass} text-[15px]`}/></a>
-      <button className={control()} type="button" onClick={()=>setLanguagesOpen(open=>!open)} aria-label={t('language')} title={t('language')} aria-expanded={languagesOpen}><Icon><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.5 3.6 5.5 3.6 9S14.4 18.5 12 21c-2.4-2.5-3.6-5.5-3.6-9S9.6 5.5 12 3Z"/></Icon></button>
+      <button className={control()} type="button" onClick={()=>setLanguagesOpen(open=>!open)} aria-label={`${t('language')}: ${currentLanguage.code}`} title={`${t('language')}: ${currentLanguage.code}`} aria-expanded={languagesOpen}><span className="text-[10px] font-extrabold tracking-[.08em] md:text-[11px]" aria-hidden="true">{currentLanguage.code}</span></button>
       <button className={control()} type="button" onClick={toggleTheme} aria-label={t('theme')} title={t('theme')}>{theme==='dark'?<Icon><circle cx="12" cy="12" r="3.6"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></Icon>:<Icon><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/></Icon>}</button>
       <button className={control()} type="button" onClick={cycleNavPosition} aria-label={t('move')} title={t('move')}><Icon>{vertical?<><path d="M4 12h16M7 9l-3 3 3 3M17 9l3 3-3 3"/></>:<><path d="M12 4v16M9 7l3-3 3 3M9 17l3 3 3-3"/></>}</Icon></button>
     </nav>

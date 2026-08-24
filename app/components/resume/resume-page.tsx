@@ -106,7 +106,7 @@ export function ResumePage(){
       section(t('education'))
       education.forEach(key=>item(
         t(`educationItems.${key}.course`),
-        [t(`educationItems.${key}.school`),t(`educationItems.${key}.period`)].filter(Boolean).join(' | '),
+        [t(`educationItems.${key}.school`),t(`educationItems.${key}.period`),key==='computer'||key==='systems'?t('parallelEducation'):''].filter(Boolean).join(' | '),
         '',
       ))
 
@@ -178,7 +178,7 @@ export function ResumePage(){
 
     <section className={sectionClass} aria-labelledby="resume-education">
       <header className={sectionHeaderClass}><p className="editorial-number m-0 text-caption tracking-[.18em] uppercase">{siteContent.sectionNumbers.education}</p><h2 className={sectionTitleClass} id="resume-education">{t('education')}</h2></header>
-      <div className={`resume-education-list ${timelineClass}`}>{education.map(key=><article className={timelineItemClass} key={key}>{timelineMarker}<div><div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1"><p className="m-0 text-caption font-[750] tracking-[.15em] uppercase opacity-58">{t(`educationItems.${key}.school`)}</p>{t(`educationItems.${key}.period`)?<span className="font-display text-base leading-none opacity-62">{t(`educationItems.${key}.period`)}</span>:null}</div><h3 className="m-0 font-display text-[29px] leading-[.98] font-normal">{t(`educationItems.${key}.course`)}</h3></div></article>)}</div>
+      <div className={`resume-education-list ${timelineClass}`}>{education.filter(key=>key!=='systems').map(key=>key==='computer'?<article className={timelineItemClass} key="parallel-degrees">{timelineMarker}<div><p className="m-0 mb-3 text-caption font-[750] tracking-[.14em] uppercase opacity-62">{t('parallelEducation')}</p><div className="grid gap-px bg-[color-mix(in_srgb,var(--paper)_20%,transparent)] sm:grid-cols-2">{(['computer','systems'] as const).map(course=><section className="grid content-start gap-2 bg-[color-mix(in_srgb,var(--ink)_94%,transparent)] p-4 text-left" key={course}><span className="font-display text-base leading-none opacity-62">{t(`educationItems.${course}.period`)}</span><p className="m-0 text-caption font-[750] tracking-[.13em] uppercase opacity-58">{t(`educationItems.${course}.school`)}</p><h3 className="m-0 font-display text-[26px] leading-[.98] font-normal">{t(`educationItems.${course}.course`)}</h3></section>)}</div></div></article>:<article className={timelineItemClass} key={key}>{timelineMarker}<div><div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1"><p className="m-0 text-caption font-[750] tracking-[.15em] uppercase opacity-58">{t(`educationItems.${key}.school`)}</p>{t(`educationItems.${key}.period`)?<span className="font-display text-base leading-none opacity-62">{t(`educationItems.${key}.period`)}</span>:null}</div><h3 className="m-0 font-display text-[29px] leading-[.98] font-normal">{t(`educationItems.${key}.course`)}</h3></div></article>)}</div>
     </section>
 
     <section className={sectionClass} aria-labelledby="resume-skills">
