@@ -112,13 +112,13 @@ html{scroll-behavior:smooth}
   border-color:color-mix(in srgb,var(--paper) 22%,transparent);
   padding:11px 6px;
   font-family:var(--sans);
-  font-size:clamp(.875rem,3.8vw,1rem);
+  font-size:var(--type-caption);
   font-style:normal;
-  font-weight:650;
-  letter-spacing:.02em;
-  line-height:1.35;
+  font-weight:760;
+  letter-spacing:.12em;
+  line-height:normal;
   text-align:center;
-  text-transform:none;
+  text-transform:uppercase;
   white-space:nowrap;
 }
 
@@ -152,11 +152,26 @@ html{scroll-behavior:smooth}
     transition:padding-top 340ms cubic-bezier(.22,1,.36,1);
   }
 
-  .scene-shell:not(.scene-shell--nav-top) .editorial-page{
+  .home-experience-cta{
+    transition:bottom 340ms cubic-bezier(.22,1,.36,1),background-color 250ms ease,color 250ms ease,transform 250ms ease;
+  }
+
+  .scene-shell--nav-bottom .home-experience-cta{bottom:88px}
+  .scene-shell:not(.scene-shell--nav-bottom) .home-experience-cta{bottom:clamp(24px,3.5vh,42px)}
+
+  .scene-shell--nav-bottom .editorial-page{
+    padding-top:clamp(78px,9vh,108px);
+  }
+
+  .scene-shell:not(.scene-shell--nav-bottom) .editorial-page{
     padding-top:clamp(28px,4vh,48px);
   }
 
-  .scene-shell:not(.scene-shell--nav-top) .experience-section{
+  .scene-shell--nav-bottom .experience-section{
+    padding-top:clamp(110px,14vh,170px);
+  }
+
+  .scene-shell:not(.scene-shell--nav-bottom) .experience-section{
     padding-top:clamp(64px,8vh,96px);
   }
 }

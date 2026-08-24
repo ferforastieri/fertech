@@ -12,11 +12,9 @@ import { AnimatedIdentity } from './animated-identity'
 import {CornerDetails} from './corner-details'
 import {TypedText} from '@/app/components/ui/typed-text'
 import {ExperienceTimeline} from './experience-timeline'
-import {usePreferences} from '@/app/components/ui/preferences-provider'
 
 export function PortfolioHome(){
   const t=useTranslations('Home')
-  const {navPosition}=usePreferences()
   const showExperienceAndFooter:MouseEventHandler<HTMLAnchorElement>=event=>{
     if(!matchMedia('(min-width: 768px)').matches)return
     const section=document.getElementById('experiencia-home')
@@ -47,7 +45,7 @@ export function PortfolioHome(){
       <p className="home-supporting-copy mt-3 mr-auto mb-0 max-w-[34ch] text-small leading-[1.5]">{t('resumeIntro')}</p>
       <Link className="group mt-3 inline-flex min-h-9 items-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-[15px] py-2 text-label font-[760] tracking-[.12em] whitespace-nowrap text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none" href="/curriculo"><span>{t('resumeCta')}</span><span className="font-display text-lg font-normal transition-transform duration-250 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true">↗</span></Link>
     </aside>
-    <HomePillLink className={`scroll-cue scene-item static z-20 order-4 mx-auto w-max md:absolute md:right-0 md:left-0 ${navPosition==='bottom'?'md:bottom-[88px]':'md:bottom-[clamp(24px,3.5vh,42px)]'}`} href="#experiencia" label={t('scroll')} arrow="down" onClick={showExperienceAndFooter}/>
+    <HomePillLink className="home-experience-cta scroll-cue scene-item static z-20 order-4 mx-auto w-max md:absolute md:right-0 md:left-0" href="#experiencia" label={t('scroll')} arrow="down" onClick={showExperienceAndFooter}/>
   </div>
   <div id="experiencia-home"><ExperienceTimeline/><GlobalFooter/></div>
 </>}
