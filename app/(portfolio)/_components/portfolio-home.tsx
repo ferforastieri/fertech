@@ -4,11 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type {MouseEventHandler} from 'react'
 import {useTranslations} from 'next-intl'
-import { Card } from '@/app/components/ui/card'
+import {Card} from '@/app/components/ui/card'
 import {Logo} from '@/app/components/ui/logo'
 import {HomePillLink} from '@/app/components/ui/home-pill-link'
 import {GlobalFooter} from '@/app/components/ui/global-profile'
-import { AnimatedIdentity } from './animated-identity'
+import {AnimatedIdentity} from './animated-identity'
 import {CornerDetails} from './corner-details'
 import {TypedText} from '@/app/components/ui/typed-text'
 import {ExperienceTimeline} from './experience-timeline'
@@ -24,7 +24,7 @@ export function PortfolioHome(){
     history.replaceState(null,'','#experiencia')
   }
   return <>
-  <div id="inicio" className="home-hero relative flex h-dvh min-h-dvh w-full flex-col justify-around gap-0 px-[18px] pt-16 pb-[calc(64px+env(safe-area-inset-bottom))] md:grid md:h-auto md:min-h-svh md:w-auto md:grid-rows-[1fr_auto] md:px-10 md:py-8 lg:px-[4.5vw] lg:py-[3.5vh]">
+  <div id="inicio" className="home-hero relative flex h-svh min-h-svh w-full flex-col justify-around gap-0 px-[18px] pt-16 pb-[calc(64px+env(safe-area-inset-bottom))] md:grid md:h-auto md:w-auto md:grid-rows-[1fr_auto] md:px-10 md:py-8 lg:px-[4.5vw] lg:py-[3.5vh]">
     <Link className="absolute top-[18px] left-1/2 z-30 -translate-x-1/2 text-paper no-underline md:hidden" href="/" aria-label="Fertec"><Logo/></Link>
     <CornerDetails/>
 
@@ -42,10 +42,10 @@ export function PortfolioHome(){
     </div>
     <aside className="home-summary-desktop home-scroll-fade scene-item absolute bottom-[3.5vh] left-[4.5vw] z-12 hidden w-[min(21vw,250px)] text-left text-[color-mix(in_srgb,var(--paper)_88%,transparent)] md:block md:max-[1100px]:w-[210px] md:will-change-[transform,opacity]">
       <p className="m-0 origin-left -rotate-2 font-display text-[clamp(29px,2.7vw,42px)] leading-none italic"><TypedText text={t('resumeEyebrow')}/></p>
-      <p className="home-supporting-copy mt-3 mr-auto mb-0 max-w-[34ch] text-small leading-[1.5]"><TypedText text={t('resumeIntro')}/></p>
-      <Link className="group mt-3 inline-flex min-h-9 items-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--paper)_54%,transparent)] px-[15px] py-2 text-label font-[760] tracking-[.12em] whitespace-nowrap text-inherit uppercase no-underline transition-[background,color,transform] duration-250 hover:-translate-y-0.5 hover:bg-paper hover:text-ink focus-visible:-translate-y-0.5 focus-visible:bg-paper focus-visible:text-ink focus-visible:outline-none" href="/curriculo"><span>{t('resumeCta')}</span><span className="font-display text-lg font-normal transition-transform duration-250 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true">↗</span></Link>
+      <p className="mt-3 mr-auto mb-0 max-w-[34ch] text-small leading-[1.5] font-[560] text-[color-mix(in_srgb,var(--paper)_92%,transparent)]"><TypedText text={t('resumeIntro')}/></p>
+      <HomePillLink className="mt-3" href="/curriculo" label={t('resumeCta')}/>
     </aside>
-    <HomePillLink className="home-experience-cta scroll-cue scene-item static z-20 order-4 mx-auto w-max md:absolute md:right-0 md:left-0" href="#experiencia" label={t('scroll')} arrow="down" onClick={showExperienceAndFooter}/>
+    <HomePillLink className="scroll-cue scene-item static z-20 order-4 mx-auto w-max transition-[transform,background-color,color] duration-340 ease-[cubic-bezier(.22,1,.36,1)] max-md:translate-y-13 [[data-nav-position=bottom]_&]:max-md:translate-y-0 md:absolute md:right-0 md:bottom-[clamp(24px,3.5vh,42px)] md:left-0 md:transition-[bottom,background-color,color,transform] [[data-nav-position=bottom]_&]:md:bottom-22" href="#experiencia" label={t('scroll')} arrow="down" onClick={showExperienceAndFooter}/>
   </div>
   <div id="experiencia-home"><ExperienceTimeline/><GlobalFooter/></div>
 </>}

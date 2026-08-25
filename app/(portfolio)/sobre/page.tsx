@@ -1,4 +1,4 @@
-import {AboutPage} from '@/app/components/about/about-page'
+import {AboutPage} from './_components/about-page'
 import {JsonLd} from '@/app/components/seo/json-ld'
 import {siteContent} from '@/messages/site-content'
 import {breadcrumbJsonLd,pageMetadata} from '@/app/seo'

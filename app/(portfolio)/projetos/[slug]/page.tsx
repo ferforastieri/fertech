@@ -1,8 +1,8 @@
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
-import {ProjectDetailPage} from '@/app/components/projects/project-detail-page'
+import {ProjectDetailPage} from '../_components/project-detail-page'
 import {JsonLd} from '@/app/components/seo/json-ld'
-import {getProject,projects} from '@/app/components/projects/project-data'
+import {getProject,projects} from '@/messages/project-data'
 import messages from '@/messages/pt-BR.json'
 import {breadcrumbJsonLd,pageMetadata} from '@/app/seo'
 

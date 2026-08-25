@@ -14,7 +14,7 @@ export function GlobalProfileCorner(){
   const profile=useTranslations('Profile')
   return <aside className="global-profile global-profile--corner scene-item relative z-30 mx-auto mt-6 mb-[calc(32px+env(safe-area-inset-bottom))] hidden w-[min(calc(100%_-_48px),300px)] border-t border-[color-mix(in_srgb,var(--paper)_32%,transparent)] pt-6 text-center text-[color-mix(in_srgb,var(--paper)_92%,transparent)] md:fixed md:top-[26px] md:right-[4.5vw] md:m-0 md:block md:w-[min(42vw,340px)] md:border-0 md:pt-0 md:text-right md:will-change-[transform,opacity]">
       <p className="global-profile__signature m-0 origin-center -rotate-3 font-display text-[clamp(28px,8vw,35px)] leading-none italic md:origin-right md:text-[clamp(30px,3vw,46px)]"><TypedText text={profile('signature')}/></p>
-      <p className="global-profile__introduction home-supporting-copy mx-auto my-2 max-w-[34ch] text-small leading-[1.45] md:mt-[15px] md:mr-0 md:mb-3.5 md:ml-auto md:w-full md:max-w-none md:whitespace-pre md:leading-[1.55]"><TypedText text={profile('introduction')}/></p>
+      <p className="global-profile__introduction mx-auto my-2 max-w-[34ch] text-small leading-[1.45] font-[560] text-[color-mix(in_srgb,var(--paper)_92%,transparent)] md:mt-[15px] md:mr-0 md:mb-3.5 md:ml-auto md:w-full md:max-w-none md:whitespace-pre md:leading-[1.55]"><TypedText text={profile('introduction')}/></p>
       <HomePillLink href={siteContent.contacts.linkedin} label={profile('cta')} external/>
     </aside>
 }

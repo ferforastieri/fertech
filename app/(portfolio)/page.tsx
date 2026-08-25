@@ -1,3 +1,3 @@
-import { PortfolioHome } from '@/app/components/portfolio/portfolio-home'
+import {PortfolioHome} from './_components/portfolio-home'
 
 export default function PortfolioPage(){return <PortfolioHome/>}

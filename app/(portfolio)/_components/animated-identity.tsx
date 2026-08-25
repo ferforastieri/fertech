@@ -41,6 +41,6 @@ export function AnimatedIdentity({passion,role}:{passion:string;role:string}){
 
   return <div className="identity-stage w-full text-center">
     <h1 id="portfolio-title" className="sr-only">{siteContent.identity.name} — {siteContent.identity.jobTitle}</h1>
-    <p ref={prompt} className="identity-prompt mx-auto min-h-[2em] w-full max-w-none overflow-visible p-0 font-display text-[clamp(27px,9vw,39px)] leading-[.94] tracking-[-.03em] motion-reduce:hidden md:w-max md:max-w-full md:whitespace-pre-line md:px-4 md:text-[clamp(38px,4vw,60px)] md:leading-[.88]" aria-live="polite"><span ref={output}>{role}</span><span ref={caret} className="typed-caret inline-block h-[1.15em] w-px translate-x-[5px] origin-center bg-paper motion-reduce:hidden" aria-hidden="true"/></p>
+    <p ref={prompt} className="identity-prompt mx-auto min-h-[2em] w-full max-w-none overflow-visible p-0 font-display text-[clamp(27px,9vw,39px)] leading-[.94] tracking-[-.03em] max-md:data-[phase=role]:whitespace-pre max-md:data-[phase=role]:text-[clamp(27px,8vw,36px)] motion-reduce:hidden md:w-max md:max-w-full md:whitespace-pre-line md:px-4 md:text-[clamp(38px,4vw,60px)] md:leading-[.88]" aria-live="polite"><span ref={output}>{role}</span><span ref={caret} className="typed-caret inline-block h-[1.15em] w-px translate-x-[5px] origin-center bg-paper motion-reduce:hidden" aria-hidden="true"/></p>
   </div>
 }

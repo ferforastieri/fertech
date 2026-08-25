@@ -42,7 +42,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   useEffect(()=>{
     const view=root.current?.querySelector<HTMLElement>('.route-view')
     if(!view)return
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches){view.style.opacity='1';view.style.transform='none';view.style.filter='none';view.style.clipPath='none';return}
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){view.style.opacity='1';view.style.transform='none';view.style.filter='none';view.style.clipPath='none';view.style.willChange='auto';return}
     const route=pathname.replace(/\/$/,'')||'/'
     const frames:Keyframe[]=route==='/'
       ?[{opacity:0,transform:'scale(.965) translateY(18px)',filter:'blur(14px)'},{opacity:1,transform:'scale(1) translateY(0)',filter:'blur(0)'}]
@@ -54,8 +54,19 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
               ?[{opacity:0,transform:'translate3d(-44px,22px,0) scale(.98)',filter:'blur(10px)'},{opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'}]
               :[{opacity:0,transform:'translateY(48px) skewY(.8deg)',filter:'blur(10px)'},{opacity:1,transform:'translateY(0) skewY(0)',filter:'blur(0)'}]
     view.style.transformOrigin=route==='/curriculo'?'50% 0':'50% 50%'
+    view.style.willChange='opacity, transform, filter'
     const motion=view.animate(frames,{duration:920,easing:'cubic-bezier(.16,1,.3,1)',fill:'both'})
-    return()=>motion.cancel()
+    let active=true
+    void motion.finished.then(()=>{
+      if(!active)return
+      motion.cancel()
+      view.style.opacity='1'
+      view.style.transform='none'
+      view.style.filter='none'
+      view.style.clipPath='none'
+      view.style.willChange='auto'
+    }).catch(()=>{})
+    return()=>{active=false;motion.cancel();view.style.willChange='auto'}
   },[pathname])
 
   useEffect(()=>{
@@ -135,7 +146,7 @@ export function SceneShell({children,className=''}:{children:ReactNode;className
   const mobileWash=dark?'linear-gradient(rgba(10,11,9,.58),rgba(10,11,9,.76))':'linear-gradient(rgba(246,242,234,.42),rgba(246,242,234,.62))'
   const washStyle={'--desktop-wash':isAbout?'transparent':desktopWash,'--mobile-wash':isAbout?'transparent':mobileWash} as CSSProperties
 
-  return <main ref={root} className={`scene-shell scene-shell--nav-${navPosition}${isAbout?' scene-shell--about':''}${isHome?' scene-shell--home':''} relative isolate min-h-svh overflow-x-hidden bg-ink text-paper ${className}`}>
+  return <main ref={root} data-nav-position={navPosition} className={`scene-shell scene-shell--nav-${navPosition}${isAbout?' scene-shell--about':''}${isHome?' scene-shell--home':''} relative isolate min-h-svh overflow-x-hidden bg-ink text-paper ${className}`}>
     <div className={`server-layer pointer-events-none fixed inset-0 -z-20 bg-cover bg-center max-md:bg-[position:54%_center] ${dark?'[filter:sepia(.28)_saturate(.5)_contrast(.9)]':'opacity-42 [filter:grayscale(.62)_sepia(.2)_contrast(.82)_brightness(1.18)]'}`} style={{backgroundImage:"linear-gradient(rgba(12,13,13,.62),rgba(12,13,13,.7)),url('https://images.pexels.com/photos/5408005/pexels-photo-5408005.jpeg?auto=compress&cs=tinysrgb&w=1920')"}} aria-hidden="true"/>
     {isAbout&&<div className={`about-shell-background pointer-events-none fixed inset-0 -z-20 bg-cover bg-center after:absolute after:inset-0 after:content-[''] max-md:bg-[position:58%_center] ${dark?'[filter:grayscale(.88)_sepia(.18)_contrast(1.08)_brightness(.42)] after:bg-[linear-gradient(90deg,rgba(15,15,13,.82),rgba(15,15,13,.48)_52%,rgba(15,15,13,.78)),linear-gradient(180deg,rgba(15,15,13,.18),rgba(15,15,13,.58))] max-md:[filter:grayscale(.9)_sepia(.2)_contrast(1.05)_brightness(.34)]':'opacity-38 [filter:grayscale(.82)_sepia(.18)_contrast(.78)_brightness(1.1)] after:bg-[rgba(246,242,234,.42)]'}`} style={{backgroundImage:`url(${siteContent.assets.aboutBook})`}} aria-hidden="true"/>}
     <SignalSurface imageSrc={isAbout?siteContent.assets.aboutBook:undefined} dimmed={isAbout}/>

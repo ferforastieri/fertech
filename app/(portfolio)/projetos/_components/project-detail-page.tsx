@@ -2,7 +2,7 @@
 
 import {useRef} from 'react'
 import {useTranslations} from 'next-intl'
-import type {Project} from './project-data'
+import type {Project} from '@/messages/project-data'
 import {RepositoryTree} from './repository-tree'
 import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
 import {getProjectInsight} from '@/messages/project-insights'

@@ -100,6 +100,7 @@ export function SignalSurface({imageSrc=defaultImage,dimmed=false}:{imageSrc?:st
   useEffect(()=>{
     const element=canvas.current
     if(!element||matchMedia('(prefers-reduced-motion: reduce)').matches)return
+    const interactive=matchMedia('(hover: hover) and (pointer: fine)').matches
     const gl=element.getContext('webgl',{alpha:false,antialias:false,premultipliedAlpha:false})
     if(!gl)return
     const simulation=createProgram(gl,simulationShader)
@@ -110,7 +111,7 @@ export function SignalSurface({imageSrc=defaultImage,dimmed=false}:{imageSrc?:st
     gl.bindBuffer(gl.ARRAY_BUFFER,buffer)
     gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW)
 
-    const stateSize=384
+    const stateSize=interactive?384:192
     const initialState=new Uint8Array(stateSize*stateSize*4)
     for(let index=0;index<initialState.length;index+=4){initialState[index]=128;initialState[index+1]=128;initialState[index+3]=255}
     const textures:Array<WebGLTexture>=[]
@@ -141,7 +142,13 @@ export function SignalSurface({imageSrc=defaultImage,dimmed=false}:{imageSrc?:st
     const image=new Image()
     image.crossOrigin='anonymous'
     image.src=imageSrc
-    image.onload=()=>{imageAspect=image.naturalWidth/image.naturalHeight;gl.bindTexture(gl.TEXTURE_2D,imageTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image)}
+    image.onload=()=>{
+      imageAspect=image.naturalWidth/image.naturalHeight
+      gl.bindTexture(gl.TEXTURE_2D,imageTexture)
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1)
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image)
+      if(!interactive)renderFrame()
+    }
 
     const positionLocation=new Map<WebGLProgram,number>()
     const useProgram=(program:WebGLProgram)=>{
@@ -153,8 +160,13 @@ export function SignalSurface({imageSrc=defaultImage,dimmed=false}:{imageSrc?:st
       gl.vertexAttribPointer(location,2,gl.FLOAT,false,0,0)
     }
     const uniform=(program:WebGLProgram,name:string)=>gl.getUniformLocation(program,name)
-    const resize=()=>{const ratio=Math.min(devicePixelRatio,1.5);element.width=Math.round(innerWidth*ratio);element.height=Math.round(innerHeight*ratio)}
+    const resize=()=>{
+      const ratio=interactive?Math.min(devicePixelRatio,1.5):1
+      element.width=Math.round(innerWidth*ratio)
+      element.height=Math.round(innerHeight*ratio)
+    }
     resize()
+    let viewportWidth=innerWidth
 
     let source=0
     let target=1
@@ -162,6 +174,7 @@ export function SignalSurface({imageSrc=defaultImage,dimmed=false}:{imageSrc?:st
     let pendingDrop:{x:number;y:number;strength:number}|null=null
     let previousPoint:{x:number;y:number;time:number}|null=null
     const pointerMove=(event:PointerEvent)=>{
+      if(event.pointerType!=='mouse')return
       const now=performance.now()
       const elapsed=Math.max(8,now-(previousPoint?.time??now-16))
       const distance=previousPoint?Math.hypot(event.clientX-previousPoint.x,event.clientY-previousPoint.y):0
@@ -170,7 +183,7 @@ export function SignalSurface({imageSrc=defaultImage,dimmed=false}:{imageSrc?:st
     }
     const pointerLeave=()=>{previousPoint=null;pendingDrop=null}
 
-    const draw=()=>{
+    const renderFrame=()=>{
       useProgram(simulation)
       gl.bindFramebuffer(gl.FRAMEBUFFER,framebuffers[target])
       gl.viewport(0,0,stateSize,stateSize)
@@ -199,17 +212,25 @@ export function SignalSurface({imageSrc=defaultImage,dimmed=false}:{imageSrc?:st
       gl.uniform1f(uniform(render,'u_canvasAspect'),element.width/element.height)
       gl.uniform1f(uniform(render,'u_imageAspect'),imageAspect)
       gl.drawArrays(gl.TRIANGLES,0,6)
-      frame=requestAnimationFrame(draw)
     }
-    frame=requestAnimationFrame(draw)
-    addEventListener('resize',resize)
-    addEventListener('pointermove',pointerMove,{passive:true})
-    document.documentElement.addEventListener('pointerleave',pointerLeave)
+    const draw=()=>{frame=0;renderFrame();frame=requestAnimationFrame(draw)}
+    const start=()=>{if(interactive&&!frame&&!document.hidden)frame=requestAnimationFrame(draw)}
+    const stop=()=>{if(frame)cancelAnimationFrame(frame);frame=0}
+    const visibilityChange=()=>document.hidden?stop():start()
+    const handleResize=()=>{
+      if(!interactive&&innerWidth===viewportWidth)return
+      viewportWidth=innerWidth
+      resize()
+      if(!interactive)renderFrame()
+    }
+    if(interactive)start()
+    else renderFrame()
+    addEventListener('resize',handleResize,{passive:true})
+    if(interactive){addEventListener('pointermove',pointerMove,{passive:true});document.documentElement.addEventListener('pointerleave',pointerLeave);document.addEventListener('visibilitychange',visibilityChange)}
     return()=>{
-      cancelAnimationFrame(frame)
-      removeEventListener('resize',resize)
-      removeEventListener('pointermove',pointerMove)
-      document.documentElement.removeEventListener('pointerleave',pointerLeave)
+      stop()
+      removeEventListener('resize',handleResize)
+      if(interactive){removeEventListener('pointermove',pointerMove);document.documentElement.removeEventListener('pointerleave',pointerLeave);document.removeEventListener('visibilitychange',visibilityChange)}
       textures.forEach(texture=>gl.deleteTexture(texture))
       framebuffers.forEach(framebuffer=>gl.deleteFramebuffer(framebuffer))
       gl.deleteTexture(imageTexture)

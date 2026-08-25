@@ -3,7 +3,7 @@
 import {useEffect,useRef,useState} from 'react'
 import {useTranslations} from 'next-intl'
 import Link from 'next/link'
-import {projects} from './project-data'
+import {projects} from '@/messages/project-data'
 import {useScrollReveal} from '@/app/hooks/use-scroll-reveal'
 import {ProjectLogo} from './project-logo'
 

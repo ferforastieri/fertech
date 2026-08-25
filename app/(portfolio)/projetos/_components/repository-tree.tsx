@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect,useRef,useState} from 'react'
-import type {TreeNode} from './project-data'
+import type {TreeNode} from '@/messages/project-data'
 
 function FolderNode({node,depth=0}:{node:TreeNode;depth?:number}){
   const [open,setOpen]=useState(depth<3)
